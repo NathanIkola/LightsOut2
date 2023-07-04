@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+	<AssemblyVersion>1.0.0</AssemblyVersion>
+	<FileVersion>$(AssemblyVersion)</FileVersion>
+	<Version>$(AssemblyVersion)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Debug\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3704" />
+  </ItemGroup>
+
+</Project>

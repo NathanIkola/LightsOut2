@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut2", "LightsOut2\LightsOut2.csproj", "{35256733-09C0-4503-B050-433679821FCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35256733-09C0-4503-B050-433679821FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35256733-09C0-4503-B050-433679821FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35256733-09C0-4503-B050-433679821FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35256733-09C0-4503-B050-433679821FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB826588-80E2-4E52-AB9D-0460F92DC933}
+	EndGlobalSection
+EndGlobal
