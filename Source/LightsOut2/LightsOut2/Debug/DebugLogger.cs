@@ -13,11 +13,7 @@ namespace LightsOut2.Debug
         /// <returns><see langword="true"/> in debug mode, <see langword="false"/> otherwise</returns>
         private static bool ShouldLog()
         {
-#if DEBUG
-            return true;
-#else
             return LightsOut2Settings.ShowDebugMessages;
-#endif
         }
 
         /// <summary>

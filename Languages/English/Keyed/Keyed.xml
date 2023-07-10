@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 	<ModName>LightsOut 2</ModName>
+	<Settings_ShowDebugMessages>Show debug messages</Settings_ShowDebugMessages>
+	<Settings_ShowDebugMessagesTooltip>Allow LightsOut 2 to print debugging info to the log (should be off unless you're troubleshooting).</Settings_ShowDebugMessagesTooltip>
 </LanguageData>
