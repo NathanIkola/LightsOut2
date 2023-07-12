@@ -3,4 +3,7 @@
 	<ModName>LightsOut 2</ModName>
 	<Settings_ShowDebugMessages>Show debug messages</Settings_ShowDebugMessages>
 	<Settings_ShowDebugMessagesTooltip>Allow LightsOut 2 to print debugging info to the log (should be off unless you're troubleshooting).</Settings_ShowDebugMessagesTooltip>
+
+	<Gizmos_KeepOnLabel>Keep On</Gizmos_KeepOnLabel>
+	<Gizmos_KeepOnTooltip>Stop this building from entering standby mode.</Gizmos_KeepOnTooltip>
 </LanguageData>
