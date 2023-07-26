@@ -32,8 +32,8 @@ namespace LightsOut2.ThingComps
         {
             base.Initialize(props);
             KeepOnGizmo = new KeepOnGizmo();
-
-            OnStandbyChanged?.Invoke(m_isInStandby);
+            OnStandbyChanged?.Invoke(IsInStandby);
+            OnEnabledChanged?.Invoke(IsEnabled);
         }
 
         /// <summary>
@@ -48,17 +48,56 @@ namespace LightsOut2.ThingComps
         {
             get { return m_isInStandby; }
             set 
-            { 
+            {
+                if (m_isInStandby == value) return;
                 m_isInStandby = value;
+
+                // if we are toggling this, then it must be active
+                if (!IsEnabled)
+                    IsEnabled = true;
+
                 OnStandbyChanged?.Invoke(value);
             }
         }
 
         /// <summary>
+        /// Backing field for IsEnabled
+        /// </summary>
+        private bool m_isEnabled;
+
+        /// <summary>
+        /// Whether or not this comp is even enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get { return m_isEnabled; }
+            set 
+            {
+                if (m_isEnabled == value) return;
+                m_isEnabled = value;
+                OnEnabledChanged?.Invoke(value);
+            }
+        }
+
+        /// <summary>
+        /// Backing field for IsLight
+        /// </summary>
+        private bool m_isLight;
+
+        /// <summary>
         /// Whether or not the owner of this comp is a light
         /// (as determined by LightsOut 2, at least)
         /// </summary>
-        public bool IsLight;
+        public bool IsLight
+        {
+            get { return m_isLight; }
+            set
+            {
+                if (m_isLight == value) return;
+                m_isLight = value;
+                if (value) IsEnabled = true;
+            }
+        }
 
         /// <summary>
         /// Whether or not this light is being kept on
@@ -76,11 +115,17 @@ namespace LightsOut2.ThingComps
         public override void PostExposeData()
         {
             base.PostExposeData();
-            bool isInStandby = false;
-            Scribe_Values.Look(ref isInStandby, "IsInStandby", false, false);
-            IsInStandby = isInStandby;
-            Scribe_Values.Look(ref IsLight, "IsLight", false, false);
             Scribe_Values.Look(ref KeepOnGizmo.KeepOn, "KeepOn", false, false);
+
+            bool isInStandby = false;
+            bool isEnabled = false;
+            bool isLight = false;
+            Scribe_Values.Look(ref isInStandby, "IsInStandby", false, false);
+            Scribe_Values.Look(ref isEnabled, "IsEnabled", false, false);
+            Scribe_Values.Look(ref isLight, "IsLight", false, false);
+            IsInStandby = isInStandby;
+            IsEnabled = isEnabled;
+            IsLight = isLight;
         }
 
         /// <summary>
@@ -89,19 +134,24 @@ namespace LightsOut2.ThingComps
         /// <returns>A list of applicable gizmos to display</returns>
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            //if (!IsLight) yield break;
+            if (!IsEnabled || !IsLight) yield break;
             yield return KeepOnGizmo;
         }
 
         /// <summary>
-        /// Handler for when the standby status changes
+        /// Handler for when a boolean status changes
         /// </summary>
-        /// <param name="isInStandby">Whether or not this is curently in standby mode</param>
-        public delegate void OnStandbyChangedHandler(bool isInStandby);
+        /// <param name="value">The value it was changed to</param>
+        public delegate void OnBoolChangedHandler(bool value);
 
         /// <summary>
         /// The event raised when the standby status changes
         /// </summary>
-        public event OnStandbyChangedHandler OnStandbyChanged;
+        public event OnBoolChangedHandler OnStandbyChanged;
+
+        /// <summary>
+        /// The event raised whtn the enabled status changes
+        /// </summary>
+        public event OnBoolChangedHandler OnEnabledChanged;
     }
 }
