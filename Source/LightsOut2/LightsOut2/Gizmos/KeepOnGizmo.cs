@@ -20,7 +20,7 @@ namespace LightsOut2.Gizmos
             icon = Widgets.GetIconFor(ThingDefOf.StandingLamp);
             isActive = () => KeepOn;
             toggleAction = () => KeepOn = !KeepOn;
-            Order = 420;
+            Order = 69420;
         }
     }
 }

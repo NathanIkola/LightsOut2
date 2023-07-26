@@ -21,10 +21,8 @@ namespace LightsOut2.Patches
         /// <param name="__0">The properties for this comp</param>
         public static void Postfix(ThingComp __instance, CompProperties __0)
         {
-            if (__0 is CompProperties_Power props)
-            {
+            if (__0 is CompProperties_Power props && props.PowerConsumption > 0)
                 EnsureStandbyComp(__instance.parent, props);
-            }
         }
 
         /// <summary>
