@@ -44,7 +44,9 @@ namespace LightsOut2.Patches
                 {
                     StandbyPowerUpgrade upgrade = new StandbyPowerUpgrade();
                     comp.OnStandbyChanged += upgrade.OnStandbyChanged;
+                    comp.OnEnabledChanged += upgrade.OnEnabledChanged;
                     upgrade.OnStandbyChanged(comp.IsInStandby);
+                    upgrade.OnEnabledChanged(comp.IsEnabled);
                     props.powerUpgrades.Add(upgrade);
                 }
             }
