@@ -1,4 +1,7 @@
-﻿using LightsOut2.Gizmos;
+﻿using LightsOut2.Common;
+using LightsOut2.Debug;
+using LightsOut2.Gizmos;
+using RimWorld;
 using System.Collections.Generic;
 using Verse;
 
@@ -10,18 +13,12 @@ namespace LightsOut2.ThingComps
     public class StandbyComp : ThingComp
     {
         /// <summary>
-        /// Create and Initialize a StandbyComp, and add it to a ThingWithComps
+        /// Determines if the comp should be enabled by default
         /// </summary>
-        /// <param name="thing">The parent for this comp</param>
-        /// <returns>The associated StandbyPowerUpgrade</returns>
-        public static StandbyComp CreateOnThing(ThingWithComps thing)
+        /// <param name="thing">The ThingWithComps to inspect</param>
+        public static bool ShouldStartEnabled(ThingWithComps thing)
         {
-            CompProperties props = new CompProperties() { compClass = typeof(StandbyComp) };
-            StandbyComp comp = new StandbyComp { parent = thing };
-            thing.AllComps.Add(comp);
-            comp.Initialize(props);
-
-            return comp;
+            return thing.IsTable();
         }
 
         /// <summary>
@@ -32,8 +29,8 @@ namespace LightsOut2.ThingComps
         {
             base.Initialize(props);
             KeepOnGizmo = new KeepOnGizmo();
-            OnStandbyChanged?.Invoke(IsInStandby);
-            OnEnabledChanged?.Invoke(IsEnabled);
+            if (!IsLight) IsLight = parent.IsLight();
+            if (IsLight || ShouldStartEnabled(parent)) IsEnabled = true;
         }
 
         /// <summary>
@@ -46,7 +43,7 @@ namespace LightsOut2.ThingComps
         /// </summary>
         public bool IsInStandby
         {
-            get { return m_isInStandby; }
+            get { return !KeepOn && m_isInStandby; }
             set 
             {
                 if (m_isInStandby == value) return;
@@ -55,29 +52,13 @@ namespace LightsOut2.ThingComps
                 // if we are toggling this, then it must be active
                 if (!IsEnabled)
                     IsEnabled = true;
-
-                OnStandbyChanged?.Invoke(value);
             }
         }
-
-        /// <summary>
-        /// Backing field for IsEnabled
-        /// </summary>
-        private bool m_isEnabled;
 
         /// <summary>
         /// Whether or not this comp is even enabled
         /// </summary>
-        public bool IsEnabled
-        {
-            get { return m_isEnabled; }
-            set 
-            {
-                if (m_isEnabled == value) return;
-                m_isEnabled = value;
-                OnEnabledChanged?.Invoke(value);
-            }
-        }
+        public bool IsEnabled { get; set; }
 
         /// <summary>
         /// Backing field for IsLight
@@ -100,6 +81,24 @@ namespace LightsOut2.ThingComps
         }
 
         /// <summary>
+        /// Calculates the rate to modify the power draw by
+        /// </summary>
+        public float Rate
+        {
+            get
+            {
+                // if it's not enabled, don't modify anything
+                if (!IsEnabled) return 1f;
+                // lights are either on or off
+                if (IsLight) return IsInStandby ? 0f : 1f;
+                // otherwise benches are subject to the standby/active rates from the settings
+                return IsInStandby 
+                    ? LightsOut2Settings.StandbyPowerDraw 
+                    : LightsOut2Settings.ActivePowerDraw;
+            }
+        }
+
+        /// <summary>
         /// Whether or not this light is being kept on
         /// </summary>
         public bool KeepOn => KeepOnGizmo.KeepOn;
@@ -115,14 +114,14 @@ namespace LightsOut2.ThingComps
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref KeepOnGizmo.KeepOn, "KeepOn", false, false);
+            Scribe_Values.Look(ref KeepOnGizmo.KeepOn, "KeepOn", false);
 
-            bool isInStandby = false;
-            bool isEnabled = false;
-            bool isLight = false;
-            Scribe_Values.Look(ref isInStandby, "IsInStandby", false, false);
-            Scribe_Values.Look(ref isEnabled, "IsEnabled", false, false);
-            Scribe_Values.Look(ref isLight, "IsLight", false, false);
+            bool isInStandby = IsInStandby;
+            bool isEnabled = IsEnabled;
+            bool isLight = IsLight;
+            Scribe_Values.Look(ref isInStandby, "IsInStandby", false);
+            Scribe_Values.Look(ref isEnabled, "IsEnabled", false);
+            Scribe_Values.Look(ref isLight, "IsLight", false);
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
             IsLight = isLight;
@@ -137,21 +136,5 @@ namespace LightsOut2.ThingComps
             if (!IsEnabled || !IsLight) yield break;
             yield return KeepOnGizmo;
         }
-
-        /// <summary>
-        /// Handler for when a boolean status changes
-        /// </summary>
-        /// <param name="value">The value it was changed to</param>
-        public delegate void OnBoolChangedHandler(bool value);
-
-        /// <summary>
-        /// The event raised when the standby status changes
-        /// </summary>
-        public event OnBoolChangedHandler OnStandbyChanged;
-
-        /// <summary>
-        /// The event raised whtn the enabled status changes
-        /// </summary>
-        public event OnBoolChangedHandler OnEnabledChanged;
     }
 }
