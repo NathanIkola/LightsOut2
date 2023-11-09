@@ -1,7 +1,5 @@
 ﻿using LightsOut2.Common;
-using LightsOut2.Debug;
 using LightsOut2.Gizmos;
-using RimWorld;
 using System.Collections.Generic;
 using Verse;
 

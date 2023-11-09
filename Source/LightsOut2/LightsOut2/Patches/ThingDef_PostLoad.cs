@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
 using LightsOut2.ThingComps;
 using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace LightsOut2.Patches
