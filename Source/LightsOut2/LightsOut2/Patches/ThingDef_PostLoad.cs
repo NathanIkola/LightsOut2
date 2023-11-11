@@ -17,24 +17,24 @@ namespace LightsOut2.Patches
         /// <param name="__instance"></param>
         public static void Prefix(ThingDef __instance)
         {
-            if (HasPowerProps(__instance))
-                __instance.comps.Add(new CompProperties() { compClass = typeof(StandbyComp) });
+            CompProperties_Power powerProps = GetPowerProps(__instance);
+            if (powerProps is null) return;
+
+            // insert the additional StandbyComp
+            __instance.comps.Add(new CompProperties() { compClass = typeof(StandbyComp) });
         }
 
         /// <summary>
-        /// Determines if the def has a <see cref="CompProperties_Power"/> present that could be affected by this mod.
-        /// Specifically, it will trigger for any power-consuming ThingDef.
+        /// Retrieves the power props for the given def
         /// </summary>
-        /// <param name="def">The <see cref="ThingDef"/> to check</param>
-        /// <returns><see langword="true"/> for this def if it has one, or <see langword="false"/> otherwise</returns>
-        private static bool HasPowerProps(ThingDef def)
+        /// <param name="def">The <see cref="ThingDef"/> to look up</param>
+        /// <returns>The assocaited <see cref="CompProperties_Power"/> if present, <see langword="null"/> otherwise</returns>
+        private static CompProperties_Power GetPowerProps(ThingDef def)
         {
-            if (def.comps is null) return false;
-
+            if (def.comps is null) return null;
             foreach (CompProperties props in def.comps)
-                if (props is CompProperties_Power powerProps && powerProps.PowerConsumption > 0) 
-                    return true;
-            return false;
+                if (props is CompProperties_Power powerProps && powerProps.compClass == typeof(CompPowerTrader)) return powerProps;
+            return null;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace LightsOut2.ThingComps
         {
             base.Initialize(props);
             KeepOnGizmo = new KeepOnGizmo();
+            KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
             if (!IsLight) IsLight = parent.IsLight();
             if (IsLight || ShouldStartEnabled(parent)) IsEnabled = true;
         }
@@ -50,13 +51,29 @@ namespace LightsOut2.ThingComps
                 // if we are toggling this, then it must be active
                 if (!IsEnabled)
                     IsEnabled = true;
+
+                OnStandbyChanged?.Invoke(value);
             }
         }
 
         /// <summary>
+        /// Backing field for IsEnabled
+        /// </summary>
+        private bool m_isEnabled;
+
+        /// <summary>
         /// Whether or not this comp is even enabled
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled
+        {
+            get { return m_isEnabled; }
+            set
+            {
+                if (m_isEnabled == value) return;
+                m_isEnabled = value;
+                OnEnabledChanged?.Invoke(value);
+            }
+        }
 
         /// <summary>
         /// Backing field for IsLight
@@ -112,7 +129,9 @@ namespace LightsOut2.ThingComps
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref KeepOnGizmo.KeepOn, "KeepOn", false);
+            bool keepOn = KeepOnGizmo.KeepOn;
+            Scribe_Values.Look(ref keepOn, "KeepOn", false);
+            KeepOnGizmo.KeepOn = keepOn;
 
             bool isInStandby = IsInStandby;
             bool isEnabled = IsEnabled;
@@ -123,6 +142,9 @@ namespace LightsOut2.ThingComps
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
             IsLight = isLight;
+
+            OnStandbyChanged?.Invoke(IsInStandby);
+            OnEnabledChanged?.Invoke(IsEnabled);
         }
 
         /// <summary>
@@ -134,5 +156,30 @@ namespace LightsOut2.ThingComps
             if (!IsEnabled || !IsLight) yield break;
             yield return KeepOnGizmo;
         }
+
+        /// <summary>
+        /// Handler for the event fired when the keep on status changes
+        /// </summary>
+        /// <param name="newValue">Whether or not it is being kept on</param>
+        private void OnKeepOnChangedHandler(bool newValue)
+        {
+            OnStandbyChanged?.Invoke(IsInStandby);
+        }
+
+        /// <summary>
+        /// A delegate for the boolean change events
+        /// </summary>
+        /// <param name="newValue">The new value of the boolean</param>
+        public delegate void OnBoolChangedHandler(bool newValue);
+
+        /// <summary>
+        /// The event invoked when the standby status of a thing changes
+        /// </summary>
+        public event OnBoolChangedHandler OnStandbyChanged;
+
+        /// <summary>
+        /// The event invoked when the enabled status of a thing changes
+        /// </summary>
+        public event OnBoolChangedHandler OnEnabledChanged;
     }
 }
