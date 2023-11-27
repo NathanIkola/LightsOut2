@@ -17,9 +17,13 @@ namespace LightsOut2
         public static bool FlickLights = true;
         public static bool TurnOffLightsInBed = true;
         public static bool AnimalsActivateLights = false;
-        public static float StandbyPowerDraw = 0f;
-        public static float ActivePowerDraw = 2f;
+        public static float StandbyPowerDraw = MinDraw;
+        public static float ActivePowerDraw = 1f;
         public static int LightDelaySeconds = 5;
+
+        // the minimum amount of power that something can draw
+        // this allows it to respond when the PowerNet loses power
+        public static readonly float MinDraw = 0.001f;
 
         /// <summary>
         /// Saves or loads the settings

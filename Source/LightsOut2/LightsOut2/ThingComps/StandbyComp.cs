@@ -1,5 +1,6 @@
 ﻿using LightsOut2.Common;
 using LightsOut2.Gizmos;
+using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -35,14 +36,14 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Backing field for IsInStandby
         /// </summary>
-        private bool m_isInStandby;
+        private bool m_isInStandby = true;
 
         /// <summary>
         /// Whether or not the owner of this comp is currently in standby
         /// </summary>
         public bool IsInStandby
         {
-            get { return !KeepOn && m_isInStandby; }
+            get { return IsEnabled && !KeepOn && m_isInStandby; }
             set 
             {
                 if (m_isInStandby == value) return;
@@ -105,10 +106,10 @@ namespace LightsOut2.ThingComps
                 // if it's not enabled, don't modify anything
                 if (!IsEnabled) return 1f;
                 // lights are either on or off
-                if (IsLight) return IsInStandby ? 0f : 1f;
+                if (IsLight) return IsInStandby ? LightsOut2Settings.MinDraw : 1f;
                 // otherwise benches are subject to the standby/active rates from the settings
                 return IsInStandby 
-                    ? LightsOut2Settings.StandbyPowerDraw 
+                    ? LightsOut2Settings.StandbyPowerDraw
                     : LightsOut2Settings.ActivePowerDraw;
             }
         }
@@ -136,9 +137,9 @@ namespace LightsOut2.ThingComps
             bool isInStandby = IsInStandby;
             bool isEnabled = IsEnabled;
             bool isLight = IsLight;
-            Scribe_Values.Look(ref isInStandby, "IsInStandby", false);
-            Scribe_Values.Look(ref isEnabled, "IsEnabled", false);
-            Scribe_Values.Look(ref isLight, "IsLight", false);
+            Scribe_Values.Look(ref isInStandby, "IsInStandby", isInStandby);
+            Scribe_Values.Look(ref isEnabled, "IsEnabled", isEnabled);
+            Scribe_Values.Look(ref isLight, "IsLight", isLight);
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
             IsLight = isLight;

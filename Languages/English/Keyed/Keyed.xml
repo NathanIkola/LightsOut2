@@ -6,4 +6,6 @@
 
 	<Gizmos_KeepOnLabel>Keep On</Gizmos_KeepOnLabel>
 	<Gizmos_KeepOnTooltip>Stop this building from entering standby mode.</Gizmos_KeepOnTooltip>
+
+	<InspectString_OnStandby>On Standby</InspectString_OnStandby>
 </LanguageData>
