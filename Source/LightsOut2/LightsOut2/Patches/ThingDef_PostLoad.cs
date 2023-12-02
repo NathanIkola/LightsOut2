@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using LightsOut2.Common;
 using LightsOut2.ThingComps;
 using RimWorld;
 using Verse;
@@ -21,7 +22,12 @@ namespace LightsOut2.Patches
             if (powerProps is null) return;
 
             // insert the additional StandbyComp
-            __instance.comps.Add(new CompProperties() { compClass = typeof(StandbyComp) });
+            __instance.comps.Add(new CompProperties
+            {
+                compClass = __instance.IsLight() 
+                    ? typeof(StandbyLightComp) 
+                    : typeof(StandbyComp)
+            });
         }
 
         /// <summary>

@@ -27,10 +27,7 @@ namespace LightsOut2.ThingComps
         public override void Initialize(CompProperties props)
         {
             base.Initialize(props);
-            KeepOnGizmo = new KeepOnGizmo();
-            KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
-            if (!IsLight) IsLight = parent.IsLight();
-            if (IsLight || ShouldStartEnabled(parent)) IsEnabled = true;
+            if (!IsEnabled && ShouldStartEnabled(parent)) IsEnabled = true;
         }
 
         /// <summary>
@@ -41,9 +38,9 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Whether or not the owner of this comp is currently in standby
         /// </summary>
-        public bool IsInStandby
+        public virtual bool IsInStandby
         {
-            get { return IsEnabled && !KeepOn && m_isInStandby; }
+            get { return IsEnabled && m_isInStandby; }
             set 
             {
                 if (m_isInStandby == value) return;
@@ -67,46 +64,19 @@ namespace LightsOut2.ThingComps
         /// </summary>
         public bool IsEnabled
         {
-            get { return m_isEnabled; }
-            set
-            {
-                if (m_isEnabled == value) return;
-                m_isEnabled = value;
-                OnEnabledChanged?.Invoke(value);
-            }
-        }
-
-        /// <summary>
-        /// Backing field for IsLight
-        /// </summary>
-        private bool m_isLight;
-
-        /// <summary>
-        /// Whether or not the owner of this comp is a light
-        /// (as determined by LightsOut 2, at least)
-        /// </summary>
-        public bool IsLight
-        {
-            get { return m_isLight; }
-            set
-            {
-                if (m_isLight == value) return;
-                m_isLight = value;
-                if (value) IsEnabled = true;
-            }
+            get => m_isEnabled;
+            set => m_isEnabled = value;
         }
 
         /// <summary>
         /// Calculates the rate to modify the power draw by
         /// </summary>
-        public float Rate
+        public virtual float Rate
         {
             get
             {
                 // if it's not enabled, don't modify anything
                 if (!IsEnabled) return 1f;
-                // lights are either on or off
-                if (IsLight) return IsInStandby ? LightsOut2Settings.MinDraw : 1f;
                 // otherwise benches are subject to the standby/active rates from the settings
                 return IsInStandby 
                     ? LightsOut2Settings.StandbyPowerDraw
@@ -115,37 +85,19 @@ namespace LightsOut2.ThingComps
         }
 
         /// <summary>
-        /// Whether or not this light is being kept on
-        /// </summary>
-        public bool KeepOn => KeepOnGizmo.KeepOn;
-
-        /// <summary>
-        /// The gizmo that allows us to keep a light on
-        /// </summary>
-        public KeepOnGizmo KeepOnGizmo { get; set; }
-
-        /// <summary>
         /// Saves the state of the comp
         /// </summary>
         public override void PostExposeData()
         {
             base.PostExposeData();
-            bool keepOn = KeepOnGizmo.KeepOn;
-            Scribe_Values.Look(ref keepOn, "KeepOn", false);
-            KeepOnGizmo.KeepOn = keepOn;
-
             bool isInStandby = IsInStandby;
             bool isEnabled = IsEnabled;
-            bool isLight = IsLight;
             Scribe_Values.Look(ref isInStandby, "IsInStandby", isInStandby);
             Scribe_Values.Look(ref isEnabled, "IsEnabled", isEnabled);
-            Scribe_Values.Look(ref isLight, "IsLight", isLight);
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
-            IsLight = isLight;
 
             OnStandbyChanged?.Invoke(IsInStandby);
-            OnEnabledChanged?.Invoke(IsEnabled);
         }
 
         /// <summary>
@@ -154,17 +106,7 @@ namespace LightsOut2.ThingComps
         /// <returns>A list of applicable gizmos to display</returns>
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            if (!IsEnabled || !IsLight) yield break;
-            yield return KeepOnGizmo;
-        }
-
-        /// <summary>
-        /// Handler for the event fired when the keep on status changes
-        /// </summary>
-        /// <param name="newValue">Whether or not it is being kept on</param>
-        private void OnKeepOnChangedHandler(bool newValue)
-        {
-            OnStandbyChanged?.Invoke(IsInStandby);
+            yield break;
         }
 
         /// <summary>
@@ -179,8 +121,12 @@ namespace LightsOut2.ThingComps
         public event OnBoolChangedHandler OnStandbyChanged;
 
         /// <summary>
-        /// The event invoked when the enabled status of a thing changes
+        /// A method that allows derived classes to raise this event
         /// </summary>
-        public event OnBoolChangedHandler OnEnabledChanged;
+        /// <param name="newValue">The new standby value</param>
+        protected void RaiseOnStandbyChanged(bool newValue)
+        {
+            OnStandbyChanged?.Invoke(newValue);
+        }
     }
 }
