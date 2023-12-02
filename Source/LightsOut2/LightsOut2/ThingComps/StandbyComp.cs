@@ -1,7 +1,5 @@
 ﻿using LightsOut2.Common;
 using LightsOut2.CompProperties;
-using LightsOut2.Gizmos;
-using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -52,7 +50,7 @@ namespace LightsOut2.ThingComps
                 if (!IsEnabled)
                     IsEnabled = true;
 
-                OnStandbyChanged?.Invoke(value);
+                RaiseOnStandbyChanged(value);
             }
         }
 
@@ -64,7 +62,7 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Whether or not this comp is even enabled
         /// </summary>
-        public bool IsEnabled
+        public virtual bool IsEnabled
         {
             get => m_isEnabled;
             set => m_isEnabled = value;
@@ -99,7 +97,7 @@ namespace LightsOut2.ThingComps
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
 
-            OnStandbyChanged?.Invoke(IsInStandby);
+            RaiseOnStandbyChanged(IsInStandby);
         }
 
         /// <summary>

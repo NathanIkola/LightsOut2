@@ -24,7 +24,7 @@ namespace LightsOut2.Patches
 
             bool startEnabled = true;
             bool isLight = __instance.IsLight();
-            if (!isLight && !__instance.IsTable())
+            if (!isLight && !StandbyComp.ShouldStartEnabled(__instance))
                 startEnabled = false;
 
             // insert the additional StandbyComp
