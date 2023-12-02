@@ -1,4 +1,5 @@
 ﻿using LightsOut2.Common;
+using LightsOut2.CompProperties;
 using LightsOut2.Gizmos;
 using System;
 using System.Collections.Generic;
@@ -14,20 +15,21 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Determines if the comp should be enabled by default
         /// </summary>
-        /// <param name="thing">The ThingWithComps to inspect</param>
-        public static bool ShouldStartEnabled(ThingWithComps thing)
+        /// <param name="def">The ThingDef to inspect</param>
+        public static bool ShouldStartEnabled(ThingDef def)
         {
-            return thing.IsTable();
+            return def.IsTable();
         }
 
         /// <summary>
         /// Initialize the comp and set up the gizmo
         /// </summary>
         /// <param name="props">The properties for this comp</param>
-        public override void Initialize(CompProperties props)
+        public override void Initialize(Verse.CompProperties props)
         {
             base.Initialize(props);
-            if (!IsEnabled && ShouldStartEnabled(parent)) IsEnabled = true;
+            if (props is CompProperties_Standby standbyProps)
+                IsEnabled = standbyProps.startEnabled;
         }
 
         /// <summary>

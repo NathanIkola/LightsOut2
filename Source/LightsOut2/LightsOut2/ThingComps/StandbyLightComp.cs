@@ -1,17 +1,12 @@
-﻿using LightsOut2.Debug;
-using LightsOut2.Gizmos;
-using System;
+﻿using LightsOut2.Gizmos;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace LightsOut2.ThingComps
 {
     public class StandbyLightComp : StandbyComp
     {
-        public override void Initialize(CompProperties props)
+        public override void Initialize(Verse.CompProperties props)
         {
             IsEnabled = true;
             base.Initialize(props);

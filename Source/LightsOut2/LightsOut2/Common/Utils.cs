@@ -42,9 +42,18 @@ namespace LightsOut2.Common
         /// <returns><see langword="true"/> if the given <paramref name="thing"/> is considered a table</returns>
         public static bool IsTable(this ThingWithComps thing)
         {
-            if (!IsBillGiver(thing)) return false;
+            return IsTable(thing.def);
+        }
 
-            DebugLogger.LogInfo($"{thing} is officially a table");
+        /// <summary>
+        /// Determines if the given <paramref name="def"/> is a table
+        /// </summary>
+        /// <param name="def">The <see cref="ThingDef"/> to check</param>
+        /// <returns><see langword="true"/> if the given <paramref name="def"/> is considered a table</returns>
+        public static bool IsTable(this ThingDef def)
+        {
+            if (!IsBillGiver(def)) return false;
+            DebugLogger.LogInfo($"{def} detected as a table");
             return true;
         }
 

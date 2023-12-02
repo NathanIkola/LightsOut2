@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.CompProperties;
 using LightsOut2.ThingComps;
 using RimWorld;
 using Verse;
@@ -21,10 +22,16 @@ namespace LightsOut2.Patches
             CompProperties_Power powerProps = GetPowerProps(__instance);
             if (powerProps is null) return;
 
+            bool startEnabled = true;
+            bool isLight = __instance.IsLight();
+            if (!isLight && !__instance.IsTable())
+                startEnabled = false;
+
             // insert the additional StandbyComp
-            __instance.comps.Add(new CompProperties
+            __instance.comps.Add(new CompProperties_Standby
             {
-                compClass = __instance.IsLight() 
+                startEnabled = startEnabled,
+                compClass = isLight 
                     ? typeof(StandbyLightComp) 
                     : typeof(StandbyComp)
             });
@@ -38,7 +45,7 @@ namespace LightsOut2.Patches
         private static CompProperties_Power GetPowerProps(ThingDef def)
         {
             if (def.comps is null) return null;
-            foreach (CompProperties props in def.comps)
+            foreach (Verse.CompProperties props in def.comps)
                 if (props is CompProperties_Power powerProps && powerProps.compClass == typeof(CompPowerTrader)) return powerProps;
             return null;
         }
