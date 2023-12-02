@@ -6,6 +6,10 @@ namespace LightsOut2.ThingComps
 {
     public class StandbyLightComp : StandbyComp
     {
+        /// <summary>
+        /// Initialize the comp and set up the gizmo
+        /// </summary>
+        /// <param name="props">The properties for this comp</param>
         public override void Initialize(Verse.CompProperties props)
         {
             IsEnabled = true;
@@ -14,6 +18,10 @@ namespace LightsOut2.ThingComps
             KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
         }
 
+        /// <summary>
+        /// Retrieves a list of the gizmos to display for this comp
+        /// </summary>
+        /// <returns>A list of applicable gizmos to display</returns>
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             foreach (Gizmo gizmo in base.CompGetGizmosExtra())
@@ -23,6 +31,9 @@ namespace LightsOut2.ThingComps
             yield return KeepOnGizmo;
         }
 
+        /// <summary>
+        /// Saves the state of the comp
+        /// </summary>
         public override void PostExposeData()
         {
             base.PostExposeData();
