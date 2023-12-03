@@ -94,8 +94,21 @@ namespace LightsOut2.Common
         /// <returns><see langword="true"/> if the given <paramref name="def"/> has a glower</returns>
         public static bool HasGlower(ThingDef def)
         {
-            if (def.GetCompProperties<CompProperties_Glower>() is null) return false;
-            return true;
+            if (def.comps is null) return false;
+            return (def.GetCompProperties<CompProperties_Glower>() != null) || HasModdedGlower(def);
+        }
+
+        /// <summary>
+        /// Determines if something has a modded glower
+        /// </summary>
+        /// <param name="def">The <see cref="ThingDef"/> to check</param>
+        /// <returns><see langword="true"/> if the given <paramref name="def"/> has a modded glower</returns>
+        public static bool HasModdedGlower(ThingDef def)
+        {
+            if (def.comps is null) return false;
+            foreach (Verse.CompProperties props in def.comps)
+                if (props.compClass.Name.Contains("Glow")) return true;
+            return false;
         }
 
         /// <summary>
@@ -171,6 +184,21 @@ namespace LightsOut2.Common
                     return standby;
 
             return null;
+        }
+
+        /// <summary>
+        /// A function that attempts to retrieve the room a given light is attributed to
+        /// </summary>
+        /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
+        /// <returns>The room that thie <paramref name="thing"/> exists in</returns>
+        public static Room GetLightRoom(this ThingWithComps thing)
+        {
+            // if the region and room updater isn't enabled it will throw lots of errors
+            if (!(thing.Map?.regionAndRoomUpdater?.Enabled ?? false)) return null;
+            Room room = RegionAndRoomQuery.RoomAt(thing.Position, thing.Map);
+            // wall lights will not return a room from the above and require getting the room for the cell they face
+            if (room is null) return RegionAndRoomQuery.RoomAt(thing.Position + thing.Rotation.FacingCell, thing.Map);
+            return room;
         }
     }
 }

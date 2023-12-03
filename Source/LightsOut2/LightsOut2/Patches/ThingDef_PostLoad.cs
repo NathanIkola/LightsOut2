@@ -11,7 +11,7 @@ namespace LightsOut2.Patches
     /// A patch that adds my power upgrade to objects with CompProperties_Power comps
     /// </summary>
     [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.PostLoad))]
-    public class ThingWithComps_InitializeComps
+    public class ThingDef_PostLoad
     {
         /// <summary>
         /// The patch that adds the PowerComp to a ThingDef as they are loaded into the game
@@ -23,7 +23,7 @@ namespace LightsOut2.Patches
             if (powerProps is null) return;
 
             bool startEnabled = true;
-            bool isLight = __instance.IsLight();
+            bool isLight = !__instance.IsTable() && __instance.IsLight();
             if (!isLight && !StandbyComp.ShouldStartEnabled(__instance))
                 startEnabled = false;
 
