@@ -112,6 +112,23 @@ namespace LightsOut2.Common
         }
 
         /// <summary>
+        /// Function for retrieving the glower off of a ThingWithComps
+        /// </summary>
+        /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
+        /// <returns>The <see cref="ThingComp"/> for this building's glower comp</returns>
+        public static ThingComp GetGlower(this ThingWithComps thing)
+        {
+            ThingComp glower = thing.TryGetComp<CompGlower>();
+            if (glower != null) return glower;
+
+            // try to get modded glowers
+            foreach (ThingComp comp in thing.AllComps)
+                if (comp.GetType().Name.Contains("Glow")) return comp;
+
+            return null;
+        }
+
+        /// <summary>
         /// Determines if something is a temp controlling building
         /// </summary>
         /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>

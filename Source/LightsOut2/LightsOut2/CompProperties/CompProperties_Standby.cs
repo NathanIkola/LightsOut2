@@ -12,5 +12,10 @@ namespace LightsOut2.CompProperties
         /// Whether or not this StandbyComp should start enabled
         /// </summary>
         public bool startEnabled;
+
+        /// <summary>
+        /// An option to override the GlowerActuator class being used for this StandbyLightComp
+        /// </summary>
+        public Type glowerActuatorClass;
     }
 }

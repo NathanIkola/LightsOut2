@@ -1,4 +1,9 @@
-﻿using LightsOut2.Gizmos;
+﻿using LightsOut2.Common;
+using LightsOut2.CompProperties;
+using LightsOut2.Debug;
+using LightsOut2.Gizmos;
+using LightsOut2.GlowerActuators;
+using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -16,6 +21,14 @@ namespace LightsOut2.ThingComps
             base.Initialize(props);
             KeepOnGizmo = new KeepOnGizmo();
             KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
+            GlowerComp = parent.GetGlower();
+            DebugLogger.Assert(GlowerComp != null, "Couldn't find glower for light", true);
+            if (props is CompProperties_Standby standbyProps)
+            {
+                Type actuatorType = standbyProps.glowerActuatorClass ?? typeof(VanillaGlowerActuator);
+                GlowerActuator = Activator.CreateInstance(actuatorType) as IGlowerActuator;
+                DebugLogger.Assert(GlowerActuator != null, $"Failed to create glower actuator of type: {actuatorType}", true);
+            }
         }
 
         /// <summary>
@@ -77,5 +90,15 @@ namespace LightsOut2.ThingComps
                     : 1f;
             }
         }
+
+        /// <summary>
+        /// This light's glower comp
+        /// </summary>
+        public ThingComp GlowerComp { get; set; }
+
+        /// <summary>
+        /// The actuator for this comp's glower
+        /// </summary>
+        public IGlowerActuator GlowerActuator { get; set; }
     }
 }
