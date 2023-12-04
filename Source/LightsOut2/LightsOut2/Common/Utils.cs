@@ -2,6 +2,7 @@
 using LightsOut2.ThingComps;
 using RimWorld;
 using System;
+using System.Reflection;
 using Verse;
 
 namespace LightsOut2.Common
@@ -231,5 +232,14 @@ namespace LightsOut2.Common
             if (room is null) return RegionAndRoomQuery.RoomAt(thing.Position + thing.Rotation.FacingCell, thing.Map);
             return room;
         }
+
+        /// <summary>
+        /// A good list of <see cref="BindingFlags"/> to use to get most things
+        /// </summary>
+        public readonly static BindingFlags BindingFlags = BindingFlags.Public
+                            | BindingFlags.NonPublic
+                            | BindingFlags.Instance
+                            | BindingFlags.Static
+                            | BindingFlags.FlattenHierarchy;
     }
 }

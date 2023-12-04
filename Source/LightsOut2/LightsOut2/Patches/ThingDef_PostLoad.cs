@@ -58,7 +58,7 @@ namespace LightsOut2.Patches
             DebugLogger.Assert(shouldBeLitNow.DeclaringType == shouldBeLitNow.ReflectedType, $"Class \"{glowerClass}\" does not define a ShouldBeLitNow property", true);
 
             MethodInfo original = shouldBeLitNow.GetMethod;
-            MethodInfo patch = typeof(ThingDef_PostLoad).GetMethod(nameof(ShouldBeLitNowPatch), BindingFlags);
+            MethodInfo patch = typeof(ThingDef_PostLoad).GetMethod(nameof(ShouldBeLitNowPatch), Utils.BindingFlags);
             LightsOut2Mod.HarmonyInstance.Patch(original, null, new HarmonyMethod(patch));
             DebugLogger.LogInfo($"Patching type \"{glowerClass}\" as a glower");
             PatchedGlowerTypes.Add(glowerClass, true);
@@ -72,12 +72,12 @@ namespace LightsOut2.Patches
         public static PropertyInfo GetShouldBeLitNowPropertyInfo(Type glowerClass)
         {
             // most common ones first
-            PropertyInfo prop = glowerClass.GetProperty("ShouldBeLitNow", BindingFlags)
-                ?? glowerClass.GetProperty("shouldBeLitNow", BindingFlags)
-                ?? glowerClass.GetProperty("_ShouldBeLitNow", BindingFlags);
+            PropertyInfo prop = glowerClass.GetProperty("ShouldBeLitNow", Utils.BindingFlags)
+                ?? glowerClass.GetProperty("shouldBeLitNow", Utils.BindingFlags)
+                ?? glowerClass.GetProperty("_ShouldBeLitNow", Utils.BindingFlags);
             if (prop != null) return prop;
 
-            foreach (PropertyInfo propInfo in glowerClass.GetProperties(BindingFlags))
+            foreach (PropertyInfo propInfo in glowerClass.GetProperties(Utils.BindingFlags))
                 if (propInfo.Name.ToLower().Contains("shouldbelitnow")) return propInfo;
             return null;
         }
@@ -91,12 +91,9 @@ namespace LightsOut2.Patches
         {
             // if it's already false, ignore it
             if (!__result) return;
-            StandbyLightComp standbyComp = __instance.parent.TryGetComp<StandbyLightComp>();
-            if (standbyComp is null)
-            {
-                DebugLogger.LogWarning($"Failed to find StandbyLightComp on type: {__instance.parent.def}");
-                return;
-            }
+
+            StandbyLightComp standbyComp = __instance.parent?.TryGetComp<StandbyLightComp>();
+            if (standbyComp is null) return;
 
             // if the light is in standby, it shouldn't be lit
             if (standbyComp.IsInStandby)
@@ -120,14 +117,5 @@ namespace LightsOut2.Patches
         /// A dictionary of the glowers that have been patched by this mod
         /// </summary>
         public static Dictionary<Type, bool> PatchedGlowerTypes = new Dictionary<Type, bool>();
-
-        /// <summary>
-        /// A good list of <see cref="BindingFlags"/> to use to get most things
-        /// </summary>
-        public readonly static BindingFlags BindingFlags = BindingFlags.Public
-                            | BindingFlags.NonPublic
-                            | BindingFlags.Instance
-                            | BindingFlags.Static
-                            | BindingFlags.FlattenHierarchy;
     }
 }

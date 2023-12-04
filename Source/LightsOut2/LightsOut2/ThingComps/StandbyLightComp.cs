@@ -19,6 +19,7 @@ namespace LightsOut2.ThingComps
         {
             IsEnabled = true;
             base.Initialize(props);
+            OnStandbyChanged += OnStandbyChangedHandler;
             KeepOnGizmo = new KeepOnGizmo();
             KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
             GlowerComp = parent.GetGlower();
@@ -68,6 +69,15 @@ namespace LightsOut2.ThingComps
         private void OnKeepOnChangedHandler(bool newValue)
         {
             RaiseOnStandbyChanged(IsInStandby);
+        }
+
+        /// <summary>
+        /// Handles invoking the glower actuator when standby changes
+        /// </summary>
+        /// <param name="newValue">Ignored</param>
+        private void OnStandbyChangedHandler(bool newValue)
+        {
+            GlowerActuator.OnStandbyChanged(GlowerComp);
         }
 
         /// <summary>

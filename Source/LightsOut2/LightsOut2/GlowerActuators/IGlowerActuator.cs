@@ -1,15 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Verse;
 
 namespace LightsOut2.GlowerActuators
 {
     /// <summary>
     /// Interface that all glower actuators must extend
     /// </summary>
-    public interface IGlowerActuator
+    public abstract class IGlowerActuator
     {
+        /// <summary>
+        /// Method used to update the given <paramref name="glower"/>
+        /// </summary>
+        /// <param name="glower">The glower to update</param>
+        public abstract void UpdateLit(ThingComp glower);
+
+        /// <summary>
+        /// Actually updates the <paramref name="glower"/>'s lit status on the map
+        /// </summary>
+        /// <param name="glower">The glower to update</param>
+        public virtual void OnStandbyChanged(ThingComp glower)
+        {
+            if (glower is null) return;
+            UpdateLit(glower);
+        }
     }
 }
