@@ -32,7 +32,7 @@ namespace LightsOut2
         /// <summary>
         /// The Harmony instance used by the mod
         /// </summary>
-        public Harmony HarmonyInstance { get; private set; }
+        public static Harmony HarmonyInstance { get; private set; }
 
         /// <summary>
         /// Draws the settings window

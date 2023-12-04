@@ -1,6 +1,7 @@
 ﻿using LightsOut2.Debug;
 using LightsOut2.ThingComps;
 using RimWorld;
+using System;
 using Verse;
 
 namespace LightsOut2.Common
@@ -125,6 +126,19 @@ namespace LightsOut2.Common
             foreach (ThingComp comp in thing.AllComps)
                 if (comp.GetType().Name.Contains("Glow")) return comp;
 
+            return null;
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the glower class from a <paramref name="def"/>
+        /// </summary>
+        /// <param name="def">The <see cref="ThingDef"/> to check</param>
+        /// <returns>The associated glower type</returns>
+        public static Type GetGlowerClass(this ThingDef def)
+        {
+            if (def.comps is null) return null;
+            foreach (Verse.CompProperties props in def.comps)
+                if (props.compClass.Name.Contains("Glow")) return props.compClass;
             return null;
         }
 
