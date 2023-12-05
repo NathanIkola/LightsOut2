@@ -245,7 +245,7 @@ namespace LightsOut2.Common
         /// <returns>Whether or not the given <paramref name="room"/> will still be occupied if <paramref name="excludedPawn"/> leaves</returns>
         public static bool IsRoomEmpty(Room room, Pawn excludedPawn)
         {
-            if (!LightsOut2Settings.FlickLights || room is null || room.OutdoorsForWork)
+            if (room is null || room.OutdoorsForWork)
                 return false;
 
             Thing[] things = GetThingsInRoom(room);
@@ -262,21 +262,17 @@ namespace LightsOut2.Common
         /// <returns>Whether or not the given <paramref name="pawn"/> is considered an occupant</returns>
         public static bool PawnCountsAsOccupant(Pawn pawn)
         {
-            // globally disabled flicking of lights
-            if (!LightsOut2Settings.FlickLights)
-                return true;
-
-            // pawn is an animal, but the animal option is disabled
-            if (!LightsOut2Settings.AnimalsActivateLights && pawn.RaceProps.Animal)
-                return false;
-
-            // pawn isn't a tool user
-            if (!pawn.RaceProps.Animal && !pawn.RaceProps.ToolUser)
-                return false;
+            // verify that this pawn even counts as a valid pawn for our considerations
+            bool isValidPawn = pawn.RaceProps.ToolUser || (LightsOut2Settings.AnimalsActivateLights && pawn.RaceProps.Animal);
+            if (!isValidPawn) return false;
 
             // pawn is asleep, and we turn off lights on sleeping pawns
             if (LightsOut2Settings.TurnOffLightsInBed && PawnIsAsleep(pawn))
                 return false;
+
+            // if light flicking for waking pawns is disabled, return true for all valid pawns
+            if (!LightsOut2Settings.FlickLights)
+                return true;
 
             // pawn is leaving the room, ignore them
             if ((pawn.pather.nextCell.GetEdifice(pawn.Map) as Building_Door) != null)

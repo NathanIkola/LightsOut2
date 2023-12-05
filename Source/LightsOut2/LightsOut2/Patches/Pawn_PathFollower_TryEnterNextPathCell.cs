@@ -49,8 +49,12 @@ namespace LightsOut2.Patches
         /// <returns>Whether or not the <paramref name="pawn"/> can flick lights</returns>
         private static bool ShouldPawnFlickLights(Pawn pawn)
         {
-            if (!LightsOut2Settings.FlickLights) return false;
+            // animals shouldn't flick lights unless this is true
             if (!LightsOut2Settings.AnimalsActivateLights && pawn.RaceProps.Animal) return false;
+            // allow flicking lights for sleeping pawns
+            if (LightsOut2Settings.TurnOffLightsInBed) return true;
+            // otherwise fall back to the global override
+            if (!LightsOut2Settings.FlickLights) return false;
             return true;
         }
 
