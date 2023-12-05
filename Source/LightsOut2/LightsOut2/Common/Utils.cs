@@ -7,6 +7,9 @@ using Verse;
 
 namespace LightsOut2.Common
 {
+    /// <summary>
+    /// A class that holds many utility functions for the mod
+    /// </summary>
     public static class Utils
     {
         /// <summary>
@@ -231,6 +234,103 @@ namespace LightsOut2.Common
             // wall lights will not return a room from the above and require getting the room for the cell they face
             if (room is null) return RegionAndRoomQuery.RoomAt(thing.Position + thing.Rotation.FacingCell, thing.Map);
             return room;
+        }
+
+        /// <summary>
+        /// Goes over the list of things in a <paramref name="room"/> to see if any of
+        /// them are <see cref="Pawn"/>s that count as occupant, excluding the given <paramref name="excludedPawn"/>
+        /// </summary>
+        /// <param name="room">The <see cref="Room"/> to check</param>
+        /// <param name="excludedPawn">The <see cref="Pawn"/> that initiated the request and should be ignored</param>
+        /// <returns>Whether or not the given <paramref name="room"/> will still be occupied if <paramref name="excludedPawn"/> leaves</returns>
+        public static bool IsRoomEmpty(Room room, Pawn excludedPawn)
+        {
+            if (!LightsOut2Settings.FlickLights || room is null || room.OutdoorsForWork)
+                return false;
+
+            Thing[] things = GetThingsInRoom(room);
+            foreach (Thing thing in things)
+                if (thing is Pawn pawn && pawn != excludedPawn && PawnCountsAsOccupant(pawn))
+                    return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Determines if the given <paramref name="pawn"/> counts as an occupant
+        /// </summary>
+        /// <param name="pawn">The <see cref="Pawn"/> to check</param>
+        /// <returns>Whether or not the given <paramref name="pawn"/> is considered an occupant</returns>
+        public static bool PawnCountsAsOccupant(Pawn pawn)
+        {
+            // globally disabled flicking of lights
+            if (!LightsOut2Settings.FlickLights)
+                return true;
+
+            // pawn is an animal, but the animal option is disabled
+            if (!LightsOut2Settings.AnimalsActivateLights && pawn.RaceProps.Animal)
+                return false;
+
+            // pawn isn't a tool user
+            if (!pawn.RaceProps.Animal && !pawn.RaceProps.ToolUser)
+                return false;
+
+            // pawn is asleep, and we turn off lights on sleeping pawns
+            if (LightsOut2Settings.TurnOffLightsInBed && PawnIsAsleep(pawn))
+                return false;
+
+            // pawn is leaving the room, ignore them
+            if ((pawn.pather.nextCell.GetEdifice(pawn.Map) as Building_Door) != null)
+                return false;
+
+            // pawn is currently in a doorway, ignore them
+            if ((pawn.Position.GetEdifice(pawn.Map) as Building_Door) != null)
+                return false;
+
+            // pawn passed all above exceptions, consider them to be an occupant
+            return true;
+        }
+
+        /// <summary>
+        /// Determines if the given <paramref name="pawn"/> is asleep
+        /// </summary>
+        /// <param name="pawn">The <see cref="Pawn"/> to check</param>
+        /// <returns>Whether or not the <paramref name="pawn"/> is asleep</returns>
+        public static bool PawnIsAsleep(Pawn pawn)
+        {
+            return pawn.jobs?.curDriver?.asleep ?? false;
+        }
+
+        /// <summary>
+        /// A function which repeatedly attempts to get all the things in a room.
+        /// Needs to happen in a try/catch block + while loop because the collection
+        /// does end up being modified fairly frequently
+        /// </summary>
+        /// <param name="room">The <see cref="Room"/> to get things in</param>
+        /// <returns>A list of the <see cref="Thing"/>s in the <paramref name="room"/></returns>
+        private static Thing[] GetThingsInRoom(Room room)
+        {
+            int attempts = 0;
+            bool done = false;
+            Thing[] things = null;
+            while (!done)
+            {
+                try
+                {
+                    things = room.ContainedAndAdjacentThings.ToArray();
+                    done = true;
+                }
+                catch (InvalidOperationException ex)
+                {
+                    if (ex.Message.ToLower().Contains("modified"))
+                        done = (++attempts > 100);
+                    else
+                    {
+                        DebugLogger.LogWarning($"InvalidOperationException: {ex.Message}");
+                        done = true;
+                    }
+                }
+            }
+            return things;
         }
 
         /// <summary>

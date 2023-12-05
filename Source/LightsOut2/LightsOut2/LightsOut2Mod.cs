@@ -44,6 +44,10 @@ namespace LightsOut2
             base.DoSettingsWindowContents(inRect);
         }
 
+        /// <summary>
+        /// The category that shows in the Mod Settings page
+        /// </summary>
+        /// <returns>The name of the mod</returns>
         public override string SettingsCategory()
         {
             return "ModName".Translate();

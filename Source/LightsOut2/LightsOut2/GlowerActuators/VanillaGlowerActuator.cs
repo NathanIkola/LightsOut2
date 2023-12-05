@@ -2,10 +2,7 @@
 using LightsOut2.Debug;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace LightsOut2.GlowerActuators
@@ -59,6 +56,9 @@ namespace LightsOut2.GlowerActuators
             return method;
         }
 
+        /// <summary>
+        /// Dictionary of all types which have already been patched. Used to avoid re-patching the same glower multiple times.
+        /// </summary>
         public static Dictionary<Type, MethodInfo> UpdateLitMethods = new Dictionary<Type, MethodInfo>();
     }
 }

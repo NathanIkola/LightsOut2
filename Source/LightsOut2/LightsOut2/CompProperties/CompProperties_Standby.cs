@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightsOut2.CompProperties
 {
+    /// <summary>
+    /// The comp properties passed from XML mods to the StandbyComp classes
+    /// </summary>
     public class CompProperties_Standby : Verse.CompProperties
     {
         /// <summary>

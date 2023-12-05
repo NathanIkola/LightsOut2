@@ -13,6 +13,12 @@ namespace LightsOut2.Patches
     [HarmonyPatch(typeof(CompPowerTrader), nameof(CompPowerTrader.CompInspectStringExtra))]
     public class CompPowerTrader_CompInspectStringExtra
     {
+        /// <summary>
+        /// Used to hijack the inspect string and properlly display the power usage when LightsOut is modifying things
+        /// </summary>
+        /// <param name="__instance">The <see cref="CompPowerTrader"/> that is outputting a string</param>
+        /// <param name="__result">The output message to print</param>
+        /// <returns><see langword="false"/> to prevent the actual method from running</returns>
         public static bool Prefix(CompPowerTrader __instance, ref string __result)
         {
             float powerOutput = __instance.PowerOutput;

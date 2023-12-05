@@ -5,6 +5,9 @@
 	<AssemblyVersion>1.0.0</AssemblyVersion>
 	<FileVersion>$(AssemblyVersion)</FileVersion>
 	<Version>$(AssemblyVersion)</Version>
+	<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+	<EnableNETAnalyzers>False</EnableNETAnalyzers>
+	<AnalysisLevel>none</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>

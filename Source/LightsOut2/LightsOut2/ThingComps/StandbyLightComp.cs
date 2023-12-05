@@ -3,12 +3,16 @@ using LightsOut2.CompProperties;
 using LightsOut2.Debug;
 using LightsOut2.Gizmos;
 using LightsOut2.GlowerActuators;
+using LightsOut2.Patches;
 using System;
 using System.Collections.Generic;
 using Verse;
 
 namespace LightsOut2.ThingComps
 {
+    /// <summary>
+    /// A class that handles standby specifically for lights
+    /// </summary>
     public class StandbyLightComp : StandbyComp
     {
         /// <summary>
@@ -20,6 +24,7 @@ namespace LightsOut2.ThingComps
             IsEnabled = true;
             base.Initialize(props);
             OnStandbyChanged += OnStandbyChangedHandler;
+            Pawn_PathFollower_TryEnterNextPathCell.OnRoomOccupancyChanged += OnRoomOccupancyChangedHandler; ;
             KeepOnGizmo = new KeepOnGizmo();
             KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
             GlowerComp = parent.GetGlower();
@@ -30,6 +35,28 @@ namespace LightsOut2.ThingComps
                 GlowerActuator = Activator.CreateInstance(actuatorType) as IGlowerActuator;
                 DebugLogger.Assert(GlowerActuator != null, $"Failed to create glower actuator of type: {actuatorType}", true);
             }
+        }
+
+        public override void PostDestroy(DestroyMode mode, Map previousMap)
+        {
+            base.PostDestroy(mode, previousMap);
+            Cleanup();
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            Cleanup();
+        }
+
+        /// <summary>
+        /// A tag that performs necessary cleanup when this comp is being retired
+        /// </summary>
+        private void Cleanup()
+        {
+            OnStandbyChanged -= OnStandbyChangedHandler;
+            Pawn_PathFollower_TryEnterNextPathCell.OnRoomOccupancyChanged -= OnRoomOccupancyChangedHandler;
+            KeepOnGizmo.OnKeepOnChanged -= OnKeepOnChangedHandler;
         }
 
         /// <summary>
@@ -78,6 +105,17 @@ namespace LightsOut2.ThingComps
         private void OnStandbyChangedHandler(bool newValue)
         {
             GlowerActuator.OnStandbyChanged(GlowerComp);
+        }
+
+        /// <summary>
+        /// Handles changing the standby mode of this comp when its room occupancy changes
+        /// </summary>
+        /// <param name="room">The room that has an occupancy change</param>
+        /// <param name="isOccupied">Whether or not the room is occupied</param>
+        private void OnRoomOccupancyChangedHandler(Room room, bool isOccupied)
+        {
+            if (parent.GetLightRoom() == room)
+                IsInStandby = !isOccupied;
         }
 
         /// <summary>
