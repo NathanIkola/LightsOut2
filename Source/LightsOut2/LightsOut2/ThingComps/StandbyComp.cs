@@ -79,8 +79,8 @@ namespace LightsOut2.ThingComps
                 if (!IsEnabled) return 1f;
                 // otherwise benches are subject to the standby/active rates from the settings
                 return IsInStandby 
-                    ? LightsOut2Settings.StandbyPowerDraw
-                    : LightsOut2Settings.ActivePowerDraw;
+                    ? LightsOut2Settings.StandbyPowerDraw / 100f
+                    : LightsOut2Settings.ActivePowerDraw / 100f;
             }
         }
 

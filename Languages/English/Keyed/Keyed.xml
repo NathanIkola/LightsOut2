@@ -3,6 +3,15 @@
 	<ModName>LightsOut 2</ModName>
 	<Settings_ShowDebugMessages>Show debug messages</Settings_ShowDebugMessages>
 	<Settings_ShowDebugMessagesTooltip>Allow LightsOut 2 to print debugging info to the log (should be off unless you're troubleshooting).</Settings_ShowDebugMessagesTooltip>
+	<Settings_FlickLights>Turn lights off</Settings_FlickLights>
+	<Settings_FlickLightsTooltip>If enabled, LightsOut 2 will turn lights on/off as pawns move between rooms.</Settings_FlickLightsTooltip>
+	<Settings_TurnOffLightsInBed>Turn lights off when pawns are sleeping</Settings_TurnOffLightsInBed>
+	<Settings_TurnOffLightsInBedTooltip>If enabled, LightsOut 2 will turn lights off when all pawns in a room are sleeping.</Settings_TurnOffLightsInBedTooltip>
+	<Settings_AnimalsActivateLights>Keep lights on for animals</Settings_AnimalsActivateLights>
+	<Settings_AnimalsActivateLightsTooltip>If enabled, LightsOut2 will turn the lights on/off for animals.</Settings_AnimalsActivateLightsTooltip>
+	<Settings_StandbyPowerDraw>Power draw in standby (%)</Settings_StandbyPowerDraw>
+	<Settings_ActivePowerDraw>Power draw when in use (%)</Settings_ActivePowerDraw>
+	<Settings_LightDelaySeconds>Seconds to delay turning off lights</Settings_LightDelaySeconds>
 
 	<Gizmos_KeepOnLabel>Keep On</Gizmos_KeepOnLabel>
 	<Gizmos_KeepOnTooltip>Stop this building from entering standby mode.</Gizmos_KeepOnTooltip>
