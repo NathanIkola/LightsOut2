@@ -29,9 +29,7 @@ namespace LightsOut2.Common
         /// <returns><see langword="true"/> if the given <paramref name="def"/> is considered a light</returns>
         public static bool IsLight(this ThingDef def)
         {
-            if (def.defName == "Autobong") return false;
-
-            if (IsBillGiver(def)) return false;
+            if (IsTable(def)) return false;
             if (!HasGlower(def)) return false;
             if (IsTempController(def)) return false;
             if (HasMiscIllegalComp(def)) return false;
@@ -57,29 +55,30 @@ namespace LightsOut2.Common
         /// <returns><see langword="true"/> if the given <paramref name="def"/> is considered a table</returns>
         public static bool IsTable(this ThingDef def)
         {
-            if (!IsBillGiver(def)) return false;
-            DebugLogger.LogInfo($"{def} detected as a table");
-            return true;
+            bool isTable = IsProductionBuilding(def)
+                && !SupportsPlants(def);
+            if (isTable) DebugLogger.LogInfo($"{def} detected as a table");
+            return isTable;
         }
 
         /// <summary>
-        /// Determines if something is an <see cref="IBillGiver"/>
-        /// </summary>
-        /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
-        /// <returns><see langword="true"/> if the given <paramref name="thing"/> is an <see cref="IBillGiver"/></returns>
-        public static bool IsBillGiver(ThingWithComps thing)
-        {
-            return thing is IBillGiver;
-        }
-
-        /// <summary>
-        /// Determines if something is an <see cref="IBillGiver"/>
+        /// Determines if the given <paramref name="def"/> is a produciton building
         /// </summary>
         /// <param name="def">The <see cref="ThingDef"/> to check</param>
-        /// <returns><see langword="true"/> if the given <paramref name="def"/> is an <see cref="IBillGiver"/></returns>
-        public static bool IsBillGiver(ThingDef def)
+        /// <returns>Whether or not the given <paramref name="def"/> is a production building</returns>
+        public static bool IsProductionBuilding(ThingDef def)
         {
-            return typeof(IBillGiver).IsAssignableFrom(def.thingClass);
+            return def.building?.buildingTags?.Contains("Production") ?? false;
+        }
+
+        /// <summary>
+        /// Determines if the given <paramref name="def"/> supports plants
+        /// </summary>
+        /// <param name="def">The <see cref="ThingDef"/> to check</param>
+        /// <returns>Whether or not this <paramref name="def"/> supports plants</returns>
+        public static bool SupportsPlants(ThingDef def)
+        {
+            return def.building?.SupportsPlants ?? false;
         }
 
         /// <summary>
@@ -203,6 +202,8 @@ namespace LightsOut2.Common
             if (def.comps.Any(x => x.compClass == typeof(CompLoudspeaker))) return true;
             // lightball
             if (def.comps.Any(x => x.compClass == typeof(CompLightball))) return true;
+            // autobong
+            if (def.comps.Any(x => x.compClass == typeof(CompGiveHediffSeverity))) return true;
             return false;
         }
 
