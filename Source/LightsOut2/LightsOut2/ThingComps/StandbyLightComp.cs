@@ -128,15 +128,11 @@ namespace LightsOut2.ThingComps
         /// </summary>
         public bool KeepOn => KeepOnGizmo.KeepOn;
 
-        public override float Rate
+        public override float GetRateAsStandbyStatus(bool isInStandby)
         {
-            get
-            {
-                if (!IsEnabled) return 1f;
-                return IsInStandby
-                    ? LightsOut2Settings.MinDraw
-                    : 1f;
-            }
+            return IsInStandby
+                ? LightsOut2Settings.MinDraw / 100f
+                : 1f;
         }
 
         /// <summary>

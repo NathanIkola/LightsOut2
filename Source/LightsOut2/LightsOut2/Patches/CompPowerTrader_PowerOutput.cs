@@ -2,6 +2,7 @@
 using LightsOut2.Common;
 using LightsOut2.ThingComps;
 using RimWorld;
+using UnityEngine;
 
 namespace LightsOut2.Patches
 {
@@ -20,7 +21,10 @@ namespace LightsOut2.Patches
         public static void Postfix(CompPowerTrader __instance, ref float __result)
         {
             StandbyComp standbyComp = __instance.parent.GetStandbyComp();
-            __result *= standbyComp?.Rate ?? 1f;
+            // detect vanilla standby as well as LightsOut standby
+            float standbyRate = (standbyComp.props as CompProperties_Power).idlePowerDraw;
+            bool isInStandby = standbyComp.IsInStandby || (!Mathf.Approximately(standbyRate, -1) && __result == standbyRate);
+            __result *= standbyComp.GetRateAsStandbyStatus(isInStandby);
         }
     }
 }

@@ -71,17 +71,27 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Calculates the rate to modify the power draw by
         /// </summary>
-        public virtual float Rate
+        public float Rate
         {
             get
             {
                 // if it's not enabled, don't modify anything
                 if (!IsEnabled) return 1f;
                 // otherwise benches are subject to the standby/active rates from the settings
-                return IsInStandby 
+                return GetRateAsStandbyStatus(IsInStandby);
+            }
+        }
+
+        /// <summary>
+        /// A function for determining the rate given a specific standby state
+        /// </summary>
+        /// <param name="isInStandby">Whether or not the thing is in standby</param>
+        /// <returns>The rate to modify the power draw by</returns>
+        public virtual float GetRateAsStandbyStatus(bool isInStandby)
+        {
+            return isInStandby
                     ? LightsOut2Settings.StandbyPowerDraw / 100f
                     : LightsOut2Settings.ActivePowerDraw / 100f;
-            }
         }
 
         /// <summary>
