@@ -19,7 +19,7 @@ namespace LightsOut2
         public static bool AnimalsActivateLights = false;
         public static float StandbyPowerDraw = MinDraw;
         public static float ActivePowerDraw = 100f;
-        public static int LightDelaySeconds = 5;
+        public static int LightDelaySeconds = 3;
 
         // the minimum amount of power that something can draw
         // this allows it to respond when the PowerNet loses power
