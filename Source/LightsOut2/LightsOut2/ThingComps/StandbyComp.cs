@@ -1,5 +1,7 @@
 ﻿using LightsOut2.Common;
 using LightsOut2.CompProperties;
+using LightsOut2.StandbyActuators;
+using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -27,7 +29,25 @@ namespace LightsOut2.ThingComps
         {
             base.Initialize(props);
             if (props is CompProperties_Standby standbyProps)
+            {
                 IsEnabled = standbyProps.startEnabled;
+                Type standbyActuatorType = standbyProps.standbyActuatorClass;
+                if (standbyActuatorType is null)
+                    standbyActuatorType = typeof(BenchStandbyActuator);
+                StandbyActuator = Activator.CreateInstance(standbyActuatorType) as IStandbyActuator;
+            }
+        }
+
+        /// <summary>
+        /// Adds some info to the comp inspect string if in dev mode and god mode
+        /// </summary>
+        /// <returns>A string with some extra info, or nothing</returns>
+        public override string CompInspectStringExtra()
+        {
+            if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
+            return $"Standby: {IsInStandby}\n" +
+                $"Enabled: {IsEnabled}\n" +
+                $"Rate: {Rate}";
         }
 
         /// <summary>
@@ -138,5 +158,24 @@ namespace LightsOut2.ThingComps
         {
             OnStandbyChanged?.Invoke(newValue);
         }
+
+        /// <summary>
+        /// Updates this comp's standby state
+        /// </summary>
+        /// <remarks>
+        /// Not used by lights because it would be really inefficient to check the room
+        /// once for each light to have them determine if they're in standby or not. It's
+        /// much easier to check it for a single pawn and apply that result to any lights.
+        /// </remarks>
+        public virtual void UpdateStandbyFromActuator()
+        {
+            if (StandbyActuator is null) return;
+            IsInStandby = StandbyActuator.IsInStandby(parent);
+        }
+
+        /// <summary>
+        /// The actuator used when turning this thing on or off
+        /// </summary>
+        public IStandbyActuator StandbyActuator { get; set; }
     }
 }

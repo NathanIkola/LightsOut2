@@ -72,6 +72,13 @@ namespace LightsOut2.ThingComps
             yield return KeepOnGizmo;
         }
 
+        public override string CompInspectStringExtra()
+        {
+            if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
+            return base.CompInspectStringExtra() + "\n" +
+                $"Keep On: {KeepOn}";
+        }
+
         /// <summary>
         /// Saves the state of the comp
         /// </summary>
@@ -134,6 +141,12 @@ namespace LightsOut2.ThingComps
                 ? LightsOut2Settings.MinDraw / 100f
                 : 1f;
         }
+
+        /// <summary>
+        /// Lights do not use any actuators for standby status for performance reasons
+        /// </summary>
+        /// <returns>IsInStandby</returns>
+        public override void UpdateStandbyFromActuator() { }
 
         /// <summary>
         /// This light's glower comp

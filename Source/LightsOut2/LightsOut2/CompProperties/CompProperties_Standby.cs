@@ -16,5 +16,10 @@ namespace LightsOut2.CompProperties
         /// An option to override the GlowerActuator class being used for this StandbyLightComp
         /// </summary>
         public Type glowerActuatorClass;
+
+        /// <summary>
+        /// An option to override the StandbyActuator class being used for this StandbyComp
+        /// </summary>
+        public Type standbyActuatorClass;
     }
 }
