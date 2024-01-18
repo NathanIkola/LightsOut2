@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Vanilla Autodoor -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Autodoor"]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                <startEnabled>True</startEnabled>
+                <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+            </li>
+        </value>
+    </Operation>
+</Patch>
