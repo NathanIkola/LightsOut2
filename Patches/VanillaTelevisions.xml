@@ -1,9 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Patch>
+    <!-- Tube Television -->
     <Operation Class="PatchOperationAdd">
-        <xpath>/ThingDefs/ThingDef[defName="FlatscreenTelevision"]/comps</xpath>
+        <xpath>Defs/ThingDef[defName="TubeTelevision"]/comps</xpath>
         <value>
-            <li Class="CompProperties_Standby">
-                <compClass>CompStandby</compClass>
+            <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+                <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+            </li>
+        </value>
+    </Operation>
+
+    <!-- Flatscreen Television -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="FlatscreenTelevision"]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+                <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+            </li>
+        </value>
+    </Operation>
+
+    <!-- Megascreen Television -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="MegascreenTelevision"]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
                 <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
             </li>
         </value>
