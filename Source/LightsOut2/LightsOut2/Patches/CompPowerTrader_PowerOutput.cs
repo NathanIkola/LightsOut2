@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
-using LightsOut2.CompProperties;
 using LightsOut2.ThingComps;
 using RimWorld;
 using UnityEngine;

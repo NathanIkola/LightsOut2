@@ -1,10 +1,12 @@
-﻿using LightsOut2.Debug;
-using RimWorld;
+﻿using RimWorld;
 using System.Collections.Generic;
 using Verse;
 
 namespace LightsOut2.StandbyActuators
 {
+    /// <summary>
+    /// The actuator that allows TVs to turn on and off
+    /// </summary>
     public class TVStandbyActuator : IStandbyActuator
     {
         public bool IsInStandby(ThingWithComps thing, Pawn pawn)

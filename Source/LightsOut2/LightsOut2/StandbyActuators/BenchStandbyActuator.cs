@@ -1,8 +1,10 @@
-﻿using LightsOut2.Debug;
-using Verse;
+﻿using Verse;
 
 namespace LightsOut2.StandbyActuators
 {
+    /// <summary>
+    /// The actuator in charge of turning a bench on and off
+    /// </summary>
     public class BenchStandbyActuator : IStandbyActuator
     {
         public bool IsInStandby(ThingWithComps thing, Pawn actuatingPawn)

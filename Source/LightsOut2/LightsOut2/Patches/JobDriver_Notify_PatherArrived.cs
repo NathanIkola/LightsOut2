@@ -6,9 +6,18 @@ using Verse.AI;
 
 namespace LightsOut2.Patches
 {
+    /// <summary>
+    /// The patch responsible for notifying benches (et al) that a pawn has arrived at their location and they should turn on.
+    /// </summary>
     [HarmonyPatch(typeof(JobDriver), nameof(JobDriver.Notify_PatherArrived))]
     public class JobDriver_Notify_PatherArrived
     {
+        /// <summary>
+        /// Determines if the given job driver has a target with a StandbyComp variant; if so,
+        /// that comp is updated to ensure it accurately reflects the pawn's arrival, and another
+        /// update is queued to the job's finish action so that it reflects the pawn leaving.
+        /// </summary>
+        /// <param name="__instance"></param>
         public static void Prefix(JobDriver __instance)
         {
             ThingWithComps thing = __instance.job?.targetA.Thing as ThingWithComps;

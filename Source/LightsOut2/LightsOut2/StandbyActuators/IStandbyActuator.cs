@@ -2,6 +2,9 @@
 
 namespace LightsOut2.StandbyActuators
 {
+    /// <summary>
+    /// The interface that all standby actuators must inhereit from
+    /// </summary>
     public interface IStandbyActuator
     {
         /// <summary>

@@ -5,16 +5,31 @@ using Verse;
 
 namespace LightsOut2.Patches
 {
+    /// <summary>
+    /// The class responsible for handling tick-wise scheduling, such as the light turn off delay
+    /// </summary>
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
     public class TickManager_DoSingleTick
     {
+        /// <summary>
+        /// Notifies any subscribers that a tick is happening, and attempts to run any previously-scheduled deferred tasks
+        /// </summary>
         public static void Prefix()
         {
             OnTick?.Invoke();
+            RunDeferredTasks();
+        }
+
+        /// <summary>
+        /// Attempts to run the deferred tasks that have been scheduled and not run. Any task whose predicate passes will be
+        /// executed and removed from the dictionary; any task whose predicate fails will remain in the list to be reattempted next tick.
+        /// </summary>
+        private static void RunDeferredTasks()
+        {
             if (DeferredTasks.Count == 0) return;
 
             Dictionary<Predicate, Action> failedTasks = new Dictionary<Predicate, Action>();
-            foreach(KeyValuePair<Predicate, Action> pair in DeferredTasks)
+            foreach (KeyValuePair<Predicate, Action> pair in DeferredTasks)
             {
                 // if the predicate fails, put it in the failed tasks dictionary to attempt next time
                 if (!pair.Key.Invoke())

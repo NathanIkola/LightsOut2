@@ -7,9 +7,18 @@ using Verse.AI;
 
 namespace LightsOut2.Patches
 {
+    /// <summary>
+    /// The patch responsible for turning off the lights when a pawn goes to sleep
+    /// </summary>
     [HarmonyPatch(typeof(Toils_LayDown), nameof(Toils_LayDown.LayDown))]
     public class Toils_LayDown_LayDown
     {
+        /// <summary>
+        /// This method determines if the pawn is currently asleep or may go to sleep, and hijacks the LayDown toil to 
+        /// turn on/off the lights as appropriate.
+        /// </summary>
+        /// <param name="__result">The LayDown toil that was created</param>
+        /// <param name="canSleep">Whether or not the pawn can sleep with this toil</param>
         public static void Postfix(Toil __result, bool canSleep)
         {
             // if we don't turn lights off in bed or the pawn can't sleep, ignore this patch
@@ -58,6 +67,11 @@ namespace LightsOut2.Patches
             };
         }
 
+        /// <summary>
+        /// A more-attractive wrapper for RaiseOnRoomOccupancyChangedEvent
+        /// </summary>
+        /// <param name="room">The room whose occupancy has changed</param>
+        /// <param name="occupied">Whether or not the room is occupied</param>
         private static void SetRoomOccupiedStatus(Room room, bool occupied)
         {
             Pawn_PathFollower_TryEnterNextPathCell.RaiseOnRoomOccupancyChangedEvent(room, occupied);
