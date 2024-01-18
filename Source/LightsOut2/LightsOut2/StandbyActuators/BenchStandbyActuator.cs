@@ -23,5 +23,10 @@ namespace LightsOut2.StandbyActuators
             // if all of the above pass, then this shouldn't be in standby
             return false;
         }
+
+        public bool ReadyToRun(ThingWithComps thing)
+        {
+            return true;
+        }
     }
 }

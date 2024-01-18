@@ -1,5 +1,6 @@
 ﻿using LightsOut2.Common;
 using LightsOut2.CompProperties;
+using LightsOut2.Patches;
 using LightsOut2.StandbyActuators;
 using System;
 using System.Collections.Generic;
@@ -171,7 +172,13 @@ namespace LightsOut2.ThingComps
         public virtual void UpdateStandbyFromActuator(Pawn pawn)
         {
             if (StandbyActuator is null) return;
-            IsInStandby = StandbyActuator.IsInStandby(parent, pawn);
+            if (StandbyActuator.ReadyToRun(parent))
+                IsInStandby = StandbyActuator.IsInStandby(parent, pawn);
+            // if the actuator is not quite ready to run, defer it until it is ready
+            else
+                TickManager_DoSingleTick.AddDeferredTask(
+                    () => StandbyActuator.ReadyToRun(parent),
+                    () => IsInStandby = StandbyActuator.IsInStandby(parent, pawn));
         }
 
         /// <summary>

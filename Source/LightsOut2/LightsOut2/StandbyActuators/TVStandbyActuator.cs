@@ -12,6 +12,11 @@ namespace LightsOut2.StandbyActuators
             return !AnyPawnWatching(thing, pawn);
         }
 
+        public bool ReadyToRun(ThingWithComps thing)
+        {
+            return thing.Map?.regionAndRoomUpdater?.Enabled ?? false;
+        }
+
         /// <summary>
         /// Determines if any pawn is watching the <paramref name="tv"/>
         /// </summary>
