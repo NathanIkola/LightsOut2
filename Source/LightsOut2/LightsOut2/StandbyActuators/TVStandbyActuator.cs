@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using LightsOut2.Debug;
+using RimWorld;
 using System.Collections.Generic;
 using Verse;
 
@@ -19,7 +20,7 @@ namespace LightsOut2.StandbyActuators
         /// <returns>Whether any pawn is watching the <paramref name="tv"/></returns>
         private bool AnyPawnWatching(ThingWithComps tv, Pawn pawnToIgnore)
         {
-            if (tv is null || tv.Map is null)
+            if (tv is null || tv.Map is null || !(tv.Map.regionAndRoomUpdater?.Enabled ?? false))
                 return false;
 
             IEnumerable<IntVec3> watchArea = WatchBuildingUtility.CalculateWatchCells(tv.def, tv.Position, tv.Rotation, tv.Map);
