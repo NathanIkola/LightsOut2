@@ -145,8 +145,7 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Lights do not use any actuators for standby status for performance reasons
         /// </summary>
-        /// <returns>IsInStandby</returns>
-        public override void UpdateStandbyFromActuator() { }
+        public override void UpdateStandbyFromActuator(Pawn pawn) { }
 
         /// <summary>
         /// This light's glower comp

@@ -18,12 +18,13 @@ namespace LightsOut2.Patches
             StandbyComp standbyComp = Utils.GetStandbyComp(thing);
             if (standbyComp is null) return;
 
-            standbyComp.UpdateStandbyFromActuator();
+            Pawn pawn = __instance.GetActor();
+            standbyComp.UpdateStandbyFromActuator(null);
             if (!standbyComp.IsInStandby)
             {
                 __instance.AddFinishAction(() =>
                 {
-                    standbyComp.UpdateStandbyFromActuator();
+                    standbyComp.UpdateStandbyFromActuator(pawn);
                 });
             }
         }

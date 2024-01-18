@@ -11,8 +11,6 @@ namespace LightsOut2.Patches
     {
         public static void Postfix(Pawn __instance)
         {
-            NotifyPawnSpawnedInRoom(__instance);
-
             JobDriver driver = __instance.jobs?.curDriver;
             if (driver is null) return;
 
@@ -25,28 +23,14 @@ namespace LightsOut2.Patches
             if (comp is null) return;
 
             // if it does have a standby comp ensure the finish action is accounted for
-            comp.UpdateStandbyFromActuator();
+            comp.UpdateStandbyFromActuator(null);
             if (!comp.IsInStandby)
             {
                 driver.AddFinishAction(() =>
                 {
-                    comp.UpdateStandbyFromActuator();
+                    comp.UpdateStandbyFromActuator(__instance);
                 });
             }
-        }
-
-        private static void NotifyPawnSpawnedInRoom(Pawn pawn)
-        {
-            Room room = pawn.GetRoom();
-            if (room is null) return;
-
-            // if turning off lights for sleeping pawns and this pawn is sleeping, don't update lights
-            // since they're either correctly off or on for a reason
-            if (LightsOut2Settings.TurnOffLightsInBed && Utils.PawnIsAsleep(pawn))
-                return;
-
-            // otherwise, invoke the room occupancy change handler to notify any lights
-            Pawn_PathFollower_TryEnterNextPathCell.RaiseOnRoomOccupancyChangedEvent(room, true);
         }
     }
 }

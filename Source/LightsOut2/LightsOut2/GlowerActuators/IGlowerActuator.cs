@@ -20,6 +20,7 @@ namespace LightsOut2.GlowerActuators
         public virtual void OnStandbyChanged(ThingComp glower)
         {
             if (glower is null) return;
+            if (!(glower.parent?.Map?.regionAndRoomUpdater?.Enabled ?? false)) return;
             UpdateLit(glower);
         }
     }

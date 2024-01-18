@@ -5,7 +5,7 @@ namespace LightsOut2.StandbyActuators
 {
     public class BenchStandbyActuator : IStandbyActuator
     {
-        public bool IsInStandby(ThingWithComps thing)
+        public bool IsInStandby(ThingWithComps thing, Pawn actuatingPawn)
         {
             // no map, just quit out
             Map map = thing?.Map;

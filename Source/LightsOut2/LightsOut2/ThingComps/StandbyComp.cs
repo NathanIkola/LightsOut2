@@ -162,15 +162,16 @@ namespace LightsOut2.ThingComps
         /// <summary>
         /// Updates this comp's standby state
         /// </summary>
+        /// <param name="pawn">The <see cref="Pawn"/> doing the actuation</param>
         /// <remarks>
         /// Not used by lights because it would be really inefficient to check the room
         /// once for each light to have them determine if they're in standby or not. It's
         /// much easier to check it for a single pawn and apply that result to any lights.
         /// </remarks>
-        public virtual void UpdateStandbyFromActuator()
+        public virtual void UpdateStandbyFromActuator(Pawn pawn)
         {
             if (StandbyActuator is null) return;
-            IsInStandby = StandbyActuator.IsInStandby(parent);
+            IsInStandby = StandbyActuator.IsInStandby(parent, pawn);
         }
 
         /// <summary>

@@ -1,0 +1,11 @@
+<Patch>
+    <Operation Class="PatchOperationAdd">
+        <xpath>/ThingDefs/ThingDef[defName="FlatscreenTelevision"]/comps</xpath>
+        <value>
+            <li Class="CompProperties_Standby">
+                <compClass>CompStandby</compClass>
+                <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+            </li>
+        </value>
+    </Operation>
+</Patch>
