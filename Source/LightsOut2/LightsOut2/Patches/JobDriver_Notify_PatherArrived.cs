@@ -31,7 +31,7 @@ namespace LightsOut2.Patches
             standbyComp.UpdateStandbyFromActuator(null);
             if (!standbyComp.IsInStandby)
             {
-                __instance.AddFinishAction(() =>
+                __instance.AddFinishAction((JobCondition) =>
                 {
                     standbyComp.UpdateStandbyFromActuator(pawn);
                 });

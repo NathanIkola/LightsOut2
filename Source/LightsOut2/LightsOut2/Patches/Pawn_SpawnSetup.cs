@@ -40,7 +40,7 @@ namespace LightsOut2.Patches
             comp.UpdateStandbyFromActuator(null);
             if (!comp.IsInStandby)
             {
-                driver.AddFinishAction(() =>
+                driver.AddFinishAction((JobCondition) =>
                 {
                     comp.UpdateStandbyFromActuator(__instance);
                 });
