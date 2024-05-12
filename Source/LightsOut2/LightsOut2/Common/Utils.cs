@@ -1,4 +1,5 @@
-﻿using LightsOut2.Debug;
+﻿using LightsOut2.Core.Debug;
+using LightsOut2.Core;
 using LightsOut2.ThingComps;
 using RimWorld;
 using System;

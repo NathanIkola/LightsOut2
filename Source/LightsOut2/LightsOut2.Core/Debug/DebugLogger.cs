@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace LightsOut2.Debug
+namespace LightsOut2.Core.Debug
 {
     /// <summary>
     /// A static class that holds all of the logging functionality needed by the mod

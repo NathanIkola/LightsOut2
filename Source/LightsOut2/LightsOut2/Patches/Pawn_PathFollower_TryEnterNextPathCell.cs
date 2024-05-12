@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
-using LightsOut2.Debug;
+using LightsOut2.Core.Debug;
+using LightsOut2.Core;
 using Verse;
 using Verse.AI;
 

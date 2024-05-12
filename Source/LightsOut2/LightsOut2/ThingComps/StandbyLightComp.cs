@@ -1,9 +1,10 @@
 ﻿using LightsOut2.Common;
 using LightsOut2.CompProperties;
-using LightsOut2.Debug;
+using LightsOut2.Core.Debug;
 using LightsOut2.Gizmos;
 using LightsOut2.GlowerActuators;
 using LightsOut2.Patches;
+using LightsOut2.Core;
 using System;
 using System.Collections.Generic;
 using Verse;

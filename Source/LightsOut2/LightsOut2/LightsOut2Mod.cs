@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 using Verse;
+using LightsOut2.Core;
 
 namespace LightsOut2
 {

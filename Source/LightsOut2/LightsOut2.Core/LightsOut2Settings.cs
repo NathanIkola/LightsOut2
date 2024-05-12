@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace LightsOut2
+namespace LightsOut2.Core
 {
     /// <summary>
     /// All of the settings for the mod

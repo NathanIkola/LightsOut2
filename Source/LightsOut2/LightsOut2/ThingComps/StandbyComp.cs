@@ -2,6 +2,7 @@
 using LightsOut2.CompProperties;
 using LightsOut2.Patches;
 using LightsOut2.StandbyActuators;
+using LightsOut2.Core;
 using System;
 using System.Collections.Generic;
 using Verse;

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.Core;
 using RimWorld;
 using System;
 using Verse;
