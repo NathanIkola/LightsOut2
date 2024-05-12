@@ -30,6 +30,8 @@ namespace LightsOut2.Common
         /// <returns><see langword="true"/> if the given <paramref name="def"/> is considered a light</returns>
         public static bool IsLight(this ThingDef def)
         {
+            // ignore thing holders -- electric lights shouldn't hold anything
+            if (def.ThisOrAnyCompIsThingHolder()) return false;
             if (IsTable(def)) return false;
             if (!HasGlower(def)) return false;
             if (IsTempController(def)) return false;
@@ -205,6 +207,9 @@ namespace LightsOut2.Common
             if (def.comps.Any(x => x.compClass == typeof(CompLightball))) return true;
             // autobong
             if (def.comps.Any(x => x.compClass == typeof(CompGiveHediffSeverity))) return true;
+            // lights may not affect temperature
+            if (def.comps.Any(x => x.compClass == typeof(CompHeatPusher))) return true;
+            if (def.comps.Any(x => x.compClass == typeof(CompHeatPusherPowered))) return true;
             return false;
         }
 
