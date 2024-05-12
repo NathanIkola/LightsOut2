@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightsOut2", "LightsOut2\LightsOut2.csproj", "{35256733-09C0-4503-B050-433679821FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut2.Core", "LightsOut2.Common\LightsOut2.Core.csproj", "{EEDC85B7-50D3-4EF5-BEC8-F471777F4E51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut2.Core", "LightsOut2.Core\LightsOut2.Core.csproj", "{B9EDD1A6-6BD9-49BD-866F-F2501D43DFB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{35256733-09C0-4503-B050-433679821FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35256733-09C0-4503-B050-433679821FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35256733-09C0-4503-B050-433679821FCD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEDC85B7-50D3-4EF5-BEC8-F471777F4E51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEDC85B7-50D3-4EF5-BEC8-F471777F4E51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEDC85B7-50D3-4EF5-BEC8-F471777F4E51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEDC85B7-50D3-4EF5-BEC8-F471777F4E51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9EDD1A6-6BD9-49BD-866F-F2501D43DFB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9EDD1A6-6BD9-49BD-866F-F2501D43DFB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9EDD1A6-6BD9-49BD-866F-F2501D43DFB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9EDD1A6-6BD9-49BD-866F-F2501D43DFB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

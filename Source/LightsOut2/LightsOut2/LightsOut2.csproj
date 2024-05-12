@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LightsOut2.Common\LightsOut2.Core.csproj" />
+    <ProjectReference Include="..\LightsOut2.Core\LightsOut2.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
