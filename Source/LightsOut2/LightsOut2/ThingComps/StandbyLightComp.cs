@@ -148,7 +148,7 @@ namespace LightsOut2.ThingComps
         public override float GetRateAsStandbyStatus(bool isInStandby)
         {
             return IsInStandby
-                ? LightsOut2Settings.MinDraw / 100f
+                ? LightsOut2Settings.MinDrawDecimal
                 : 1f;
         }
 

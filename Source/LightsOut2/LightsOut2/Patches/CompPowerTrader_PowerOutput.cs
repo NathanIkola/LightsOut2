@@ -24,7 +24,7 @@ namespace LightsOut2.Patches
             if (standbyComp is null) return;
             // detect vanilla standby as well as LightsOut standby
             float standbyRate = (__instance.props as CompProperties_Power).idlePowerDraw;
-            bool isInStandby = standbyComp.IsInStandby || (!Mathf.Approximately(standbyRate, -1) && __result == standbyRate);
+            bool isInStandby = standbyComp.IsInStandby || (__result == standbyRate && !Mathf.Approximately(standbyRate, -1));
             __result *= standbyComp.GetRateAsStandbyStatus(isInStandby);
         }
     }

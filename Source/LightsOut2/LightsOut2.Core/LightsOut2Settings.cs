@@ -18,13 +18,16 @@ namespace LightsOut2.Core
         public static bool FlickLights = true;
         public static bool TurnOffLightsInBed = true;
         public static bool AnimalsActivateLights = false;
-        public static float StandbyPowerDraw = MinDraw;
-        public static float ActivePowerDraw = 100f;
+        private static float StandbyPowerDraw = MinDraw;
+        public static float StandbyPowerDrawDecimal = StandbyPowerDraw / 100f;
+        private static float ActivePowerDraw = 100f;
+        public static float ActivePowerDrawDecimal = ActivePowerDraw / 100f;
         public static int LightDelaySeconds = 3;
 
         // the minimum amount of power that something can draw
         // this allows it to respond when the PowerNet loses power
-        public static readonly float MinDraw = 0.1f;
+        private static readonly float MinDraw = 0.1f;
+        public static readonly float MinDrawDecimal = MinDraw / 100f;
 
         /// <summary>
         /// Saves or loads the settings
@@ -39,6 +42,10 @@ namespace LightsOut2.Core
             Scribe_Values.Look(ref ActivePowerDraw, "activePowerDraw", 1f);
             Scribe_Values.Look(ref LightDelaySeconds, "lightDelaySeconds", 5);
             base.ExposeData();
+
+            // calculate the decimal values to avoid unnecessary floating point divisions
+            StandbyPowerDrawDecimal = StandbyPowerDraw / 100f;
+            ActivePowerDrawDecimal = ActivePowerDraw / 100f;
 
             OnSettingsChanged?.Invoke();
         }
