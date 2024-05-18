@@ -115,9 +115,9 @@ namespace LightsOut2.ThingComps
         /// <param name="newValue">Ignored</param>
         private void OnStandbyChangedHandler(bool newValue)
         {
-            if (newValue && StandbyDelayTicks == -1 && LightsOut2Settings.LightDelaySeconds > 0)
+            if (newValue && StandbyDelayTicks == -1 && LightsOut2Mod.LightDelaySeconds > 0)
             {
-                StandbyDelayTicks = GenTicks.SecondsToTicks(LightsOut2Settings.LightDelaySeconds);
+                StandbyDelayTicks = GenTicks.SecondsToTicks(LightsOut2Mod.LightDelaySeconds);
                 TickManager_DoSingleTick.OnTick += OnTickHandler;
             }
             else 
@@ -148,7 +148,7 @@ namespace LightsOut2.ThingComps
         public override float GetRateAsStandbyStatus(bool isInStandby)
         {
             return IsInStandby
-                ? LightsOut2Settings.MinDrawDecimal
+                ? LightsOut2Mod.MinDrawDecimal
                 : 1f;
         }
 

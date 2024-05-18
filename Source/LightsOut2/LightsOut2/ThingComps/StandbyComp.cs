@@ -112,8 +112,8 @@ namespace LightsOut2.ThingComps
         public virtual float GetRateAsStandbyStatus(bool isInStandby)
         {
             return isInStandby
-                    ? LightsOut2Settings.StandbyPowerDrawDecimal
-                    : LightsOut2Settings.ActivePowerDrawDecimal;
+                    ? LightsOut2Mod.StandbyPowerDrawDecimal
+                    : LightsOut2Mod.ActivePowerDrawDecimal;
         }
 
         /// <summary>

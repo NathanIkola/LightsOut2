@@ -14,40 +14,14 @@ namespace LightsOut2.Core
         /// </summary>
         public static bool ShowDebugMessages = false;
 
-        // other settings to use later
-        public static bool FlickLights = true;
-        public static bool TurnOffLightsInBed = true;
-        public static bool AnimalsActivateLights = false;
-        private static float StandbyPowerDraw = MinDraw;
-        public static float StandbyPowerDrawDecimal = StandbyPowerDraw / 100f;
-        private static float ActivePowerDraw = 100f;
-        public static float ActivePowerDrawDecimal = ActivePowerDraw / 100f;
-        public static int LightDelaySeconds = 3;
-
-        // the minimum amount of power that something can draw
-        // this allows it to respond when the PowerNet loses power
-        private static readonly float MinDraw = 0.1f;
-        public static readonly float MinDrawDecimal = MinDraw / 100f;
-
         /// <summary>
         /// Saves or loads the settings
         /// </summary>
         public override void ExposeData()
         {
             Scribe_Values.Look(ref ShowDebugMessages, "showDebugMessages", false);
-            Scribe_Values.Look(ref FlickLights, "flickLights", true);
-            Scribe_Values.Look(ref TurnOffLightsInBed, "turnOffLightsInBed", true);
-            Scribe_Values.Look(ref AnimalsActivateLights, "animalsActivateLights", false);
-            Scribe_Values.Look(ref StandbyPowerDraw, "standbyPowerDraw", MinDraw);
-            Scribe_Values.Look(ref ActivePowerDraw, "activePowerDraw", 1f);
-            Scribe_Values.Look(ref LightDelaySeconds, "lightDelaySeconds", 5);
+            OnSettingsExposeData?.Invoke();
             base.ExposeData();
-
-            // calculate the decimal values to avoid unnecessary floating point divisions
-            StandbyPowerDrawDecimal = StandbyPowerDraw / 100f;
-            ActivePowerDrawDecimal = ActivePowerDraw / 100f;
-
-            OnSettingsChanged?.Invoke();
         }
 
         /// <summary>
@@ -58,29 +32,32 @@ namespace LightsOut2.Core
         {
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
-            string standbyBuf = StandbyPowerDraw.ToString();
-            string activeBuf = ActivePowerDraw.ToString();
-            string delayBuf = LightDelaySeconds.ToString();
 
             listingStandard.CheckboxLabeled("Settings_ShowDebugMessages".Translate(), ref ShowDebugMessages, "Settings_ShowDebugMessagesTooltip".Translate());
-            listingStandard.CheckboxLabeled("Settings_FlickLights".Translate(), ref FlickLights, "Settings_FlickLightsTooltip".Translate());
-            listingStandard.CheckboxLabeled("Settings_TurnOffLightsInBed".Translate(), ref TurnOffLightsInBed, "Settings_TurnOffLightsInBedTooltip".Translate());
-            listingStandard.CheckboxLabeled("Settings_AnimalsActivateLights".Translate(), ref AnimalsActivateLights, "Settings_AnimalsActivateLightsTooltip".Translate());
-            listingStandard.TextFieldNumericLabeled("Settings_StandbyPowerDraw".Translate(), ref StandbyPowerDraw, ref standbyBuf, MinDraw, 100f);
-            listingStandard.TextFieldNumericLabeled("Settings_ActivePowerDraw".Translate(), ref ActivePowerDraw, ref activeBuf, 100f, 1000f);
-            listingStandard.TextFieldNumericLabeled("Settings_LightDelaySeconds".Translate(), ref LightDelaySeconds, ref delayBuf, 0);
-            
+            OnSettingsRendered?.Invoke(listingStandard);
+
             listingStandard.End();
         }
 
         /// <summary>
-        /// Delegate to allow subscribers to know when settings change
+        /// Delegate to allow subscribers to show custom settings
         /// </summary>
-        public delegate void OnSettingsChangedHandler();
+        /// <param name="settingListing">The settings listing to add settings to</param>
+        public delegate void OnSettingsRenderedHandler(Listing_Standard settingListing);
 
         /// <summary>
-        /// Event triggered whenever the settings are changed
+        /// The event fired when the settings window is being rendered
         /// </summary>
-        public static event OnSettingsChangedHandler OnSettingsChanged;
+        public static event OnSettingsRenderedHandler OnSettingsRendered;
+
+        /// <summary>
+        /// Delegate allowing subscribers to load and save settings data
+        /// </summary>
+        public delegate void OnSettingsExposeDataHandler();
+
+        /// <summary>
+        /// The event fired when loading or saving settings data
+        /// </summary>
+        public static event OnSettingsExposeDataHandler OnSettingsExposeData;
     }
 }

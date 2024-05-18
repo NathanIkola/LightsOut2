@@ -23,7 +23,7 @@ namespace LightsOut2.Patches
         public static void Postfix(Toil __result, bool canSleep)
         {
             // if we don't turn lights off in bed or the pawn can't sleep, ignore this patch
-            if (!LightsOut2Settings.TurnOffLightsInBed || !canSleep)
+            if (!LightsOut2Mod.TurnOffLightsInBed || !canSleep)
                 return;
 
             __result.AddPreInitAction(() =>

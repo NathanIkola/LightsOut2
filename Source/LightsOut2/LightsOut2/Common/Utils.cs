@@ -270,15 +270,15 @@ namespace LightsOut2.Common
         public static bool PawnCountsAsOccupant(Pawn pawn)
         {
             // verify that this pawn even counts as a valid pawn for our considerations
-            bool isValidPawn = pawn.RaceProps.ToolUser || (LightsOut2Settings.AnimalsActivateLights && pawn.RaceProps.Animal);
+            bool isValidPawn = pawn.RaceProps.ToolUser || (LightsOut2Mod.AnimalsActivateLights && pawn.RaceProps.Animal);
             if (!isValidPawn) return false;
 
             // pawn is asleep, and we turn off lights on sleeping pawns
-            if (LightsOut2Settings.TurnOffLightsInBed && PawnIsAsleep(pawn))
+            if (LightsOut2Mod.TurnOffLightsInBed && PawnIsAsleep(pawn))
                 return false;
 
             // if light flicking for waking pawns is disabled, return true for all valid pawns
-            if (!LightsOut2Settings.FlickLights)
+            if (!LightsOut2Mod.FlickLights)
                 return true;
 
             // pawn is leaving the room, ignore them

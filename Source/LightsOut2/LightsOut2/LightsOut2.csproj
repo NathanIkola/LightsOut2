@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-	<AssemblyVersion>2024.5.12</AssemblyVersion>
+	<AssemblyVersion>2024.5.18</AssemblyVersion>
 	<FileVersion>$(AssemblyVersion)</FileVersion>
 	<Version>$(AssemblyVersion)</Version>
 	<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
