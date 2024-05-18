@@ -7,6 +7,7 @@
             <li Class="LightsOut2.CompProperties.CompProperties_Standby">
                 <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
                 <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+                <startEnabled>True</startEnabled>
             </li>
         </value>
     </Operation>
@@ -18,6 +19,7 @@
             <li Class="LightsOut2.CompProperties.CompProperties_Standby">
                 <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
                 <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+                <startEnabled>True</startEnabled>
             </li>
         </value>
     </Operation>
@@ -29,6 +31,7 @@
             <li Class="LightsOut2.CompProperties.CompProperties_Standby">
                 <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
                 <standbyActuatorClass>LightsOut2.StandbyActuators.TVStandbyActuator</standbyActuatorClass>
+                <startEnabled>True</startEnabled>
             </li>
         </value>
     </Operation>

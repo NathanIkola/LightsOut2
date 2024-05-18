@@ -23,8 +23,12 @@ namespace LightsOut2.Patches
         /// <param name="__instance"></param>
         public static void Prefix(ThingDef __instance)
         {
+            // no power props/power trader, nothing to do
             CompProperties_Power powerProps = GetPowerProps(__instance);
             if (powerProps is null) return;
+            // already has a standby comp assigned by an XML patch
+            CompProperties_Standby standbyProps = GetStandbyProps(__instance);
+            if (standbyProps != null) return;
 
             bool startEnabled = true;
             bool isLight = !__instance.IsTable() && __instance.IsLight();
@@ -110,6 +114,20 @@ namespace LightsOut2.Patches
             if (def.comps is null) return null;
             foreach (Verse.CompProperties props in def.comps)
                 if (props is CompProperties_Power powerProps && powerProps.compClass == typeof(CompPowerTrader)) return powerProps;
+            return null;
+        }
+
+        /// <summary>
+        /// Retrieves the standby props for the given def
+        /// </summary>
+        /// <param name="def">The <see cref="ThingDef"/> to look up</param>
+        /// <returns>The associated <see cref="CompProperties_Standby"/> if present, <see langword="null"/> otherwise</returns>
+        private static CompProperties_Standby GetStandbyProps(ThingDef def)
+        {
+            if (def.comps is null) return null;
+            foreach (Verse.CompProperties props in def.comps)
+                if (props is CompProperties_Standby standbyProps)
+                    return standbyProps;
             return null;
         }
 
