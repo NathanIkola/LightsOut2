@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using LightsOut2.Common;
-using LightsOut2.ThingComps;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 using RimWorld;
 
 namespace LightsOut2.Patches
@@ -20,7 +20,7 @@ namespace LightsOut2.Patches
             // manual doors are not affected
             if (!__instance.DoorPowerOn) return;
 
-            StandbyComp comp = __instance.GetStandbyComp();
+            IStandbyComp comp = __instance.GetStandbyComp();
             if (comp is null) return;
 
             comp.IsInStandby = !__instance.Open;

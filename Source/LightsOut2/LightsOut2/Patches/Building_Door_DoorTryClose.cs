@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 using LightsOut2.ThingComps;
 using RimWorld;
 
@@ -22,7 +24,7 @@ namespace LightsOut2.Patches
             if (!__result) return;
 
             // otherwise put the door into standby
-            StandbyComp comp = __instance.GetStandbyComp();
+            IStandbyComp comp = __instance.GetStandbyComp();
             if (comp is null) return;
             comp.IsInStandby = true;
         }

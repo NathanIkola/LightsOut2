@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 using LightsOut2.ThingComps;
 using Verse;
 using Verse.AI;
@@ -24,7 +26,7 @@ namespace LightsOut2.Patches
             if (thing is null) return;
 
             // retrieve the standby comp and update it
-            StandbyComp standbyComp = Utils.GetStandbyComp(thing);
+            IStandbyComp standbyComp = thing.GetStandbyComp();
             if (standbyComp is null) return;
 
             Pawn pawn = __instance.GetActor();

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Verse;
 
-namespace LightsOut2.Patches
+namespace LightsOut2.Core
 {
     /// <summary>
     /// The class responsible for handling tick-wise scheduling, such as the light turn off delay

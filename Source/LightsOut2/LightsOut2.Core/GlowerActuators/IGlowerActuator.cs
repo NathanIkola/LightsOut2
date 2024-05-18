@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace LightsOut2.GlowerActuators
+namespace LightsOut2.Core.GlowerActuators
 {
     /// <summary>
     /// Interface that all glower actuators must extend

@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 using LightsOut2.ThingComps;
 using RimWorld;
 using UnityEngine;
@@ -20,7 +22,7 @@ namespace LightsOut2.Patches
         /// <param name="__result">The current power consumption rate</param>
         public static void Postfix(CompPowerTrader __instance, ref float __result)
         {
-            StandbyComp standbyComp = __instance.parent?.GetStandbyComp();
+            IStandbyComp standbyComp = __instance.parent?.GetStandbyComp();
             if (standbyComp is null) return;
             // detect vanilla standby as well as LightsOut standby
             float standbyRate = (__instance.props as CompProperties_Power).idlePowerDraw;

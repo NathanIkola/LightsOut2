@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace LightsOut2.StandbyActuators
+namespace LightsOut2.Core.StandbyActuators
 {
     /// <summary>
     /// The interface that all standby actuators must inhereit from

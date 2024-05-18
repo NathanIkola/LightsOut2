@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Verse;
+using LightsOut2.Core.GlowerActuators;
 
 namespace LightsOut2.GlowerActuators
 {

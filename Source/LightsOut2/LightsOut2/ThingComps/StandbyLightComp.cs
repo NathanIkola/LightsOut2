@@ -8,6 +8,7 @@ using LightsOut2.Core;
 using System;
 using System.Collections.Generic;
 using Verse;
+using LightsOut2.Core.GlowerActuators;
 
 namespace LightsOut2.ThingComps
 {

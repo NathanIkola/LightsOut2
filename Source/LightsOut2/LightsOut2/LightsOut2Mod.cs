@@ -32,8 +32,6 @@ namespace LightsOut2
             Log.Message($"Initializing LightsOut 2 [{typeof(LightsOut2Mod).Assembly.GetName().Version}]");
             HarmonyInstance = new Harmony("LightsOut2");
             HarmonyInstance.PatchAll();
-            // now load all compatibility patches that have been loaded by this point
-            ModCompatibilityManager.LoadCompatibilityPatches(HarmonyInstance);
         }
 
         /// <summary>

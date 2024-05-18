@@ -1,4 +1,5 @@
 ﻿using Verse;
+using LightsOut2.Core.StandbyActuators;
 
 namespace LightsOut2.StandbyActuators
 {

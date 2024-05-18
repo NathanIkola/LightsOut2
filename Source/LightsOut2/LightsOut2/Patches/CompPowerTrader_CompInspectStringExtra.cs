@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using LightsOut2.Common;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 using LightsOut2.ThingComps;
 using RimWorld;
 using UnityEngine;
@@ -26,7 +28,7 @@ namespace LightsOut2.Patches
             float idleDraw = __instance.Props.idlePowerDraw;
             if (idleDraw >= 0 && Mathf.Approximately(powerOutput, -idleDraw)) return true;
 
-            StandbyComp standbyComp = __instance.parent.GetStandbyComp();
+            IStandbyComp standbyComp = __instance.parent.GetStandbyComp();
             if (standbyComp is null) return true;
             if (standbyComp.IsInStandby)
                 __result = "InspectString_OnStandby".Translate();

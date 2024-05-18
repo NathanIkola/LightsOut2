@@ -214,21 +214,6 @@ namespace LightsOut2.Common
         }
 
         /// <summary>
-        /// Retrieve the first StandbyComp encountered on the given <paramref name="thing"/>
-        /// </summary>
-        /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
-        /// <returns>The <see cref="StandbyComp"/> or derived class from thie <paramref name="thing"/></returns>
-        public static StandbyComp GetStandbyComp(this ThingWithComps thing)
-        {
-            if (thing.AllComps is null) return null;
-            foreach (ThingComp comp in thing.AllComps)
-                if (comp is StandbyComp standby) 
-                    return standby;
-
-            return null;
-        }
-
-        /// <summary>
         /// A function that attempts to retrieve the room a given light is attributed to
         /// </summary>
         /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
@@ -334,6 +319,15 @@ namespace LightsOut2.Common
                 }
             }
             return things;
+        }
+
+        /// <summary>
+        /// Determines if the comp should be enabled by default
+        /// </summary>
+        /// <param name="def">The ThingDef to inspect</param>
+        public static bool ShouldStartEnabled(this ThingDef def)
+        {
+            return def.IsTable();
         }
 
         /// <summary>

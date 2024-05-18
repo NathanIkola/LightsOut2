@@ -2,6 +2,7 @@
 using LightsOut2.Core.Debug;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Verse;
@@ -29,17 +30,17 @@ namespace LightsOut2.Core.ModCompatibility
         /// <returns>A list of the compatibility patch objects</returns>
         private static IEnumerable<IModCompatibilityPatch> GetAllPatches()
         {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                foreach (Type type in assembly.GetTypes())
-                    if (type.IsSubclassOf(typeof(IModCompatibilityPatch)))
-                    {
-                        IModCompatibilityPatch patch = null;
-                        try { patch = Activator.CreateInstance(type) as IModCompatibilityPatch; }
-                        catch (Exception ex) { DebugLogger.LogWarning($"Failed to instantiate mod compatibility patch of type {type}: {ex.Message}"); }
-                        if (patch != null)
-                            yield return patch;
-                    }
-
+            foreach (ModContentPack modContentPack in LoadedModManager.RunningMods)
+                foreach (Assembly assembly in modContentPack.assemblies.loadedAssemblies)
+                    foreach (Type type in assembly.GetTypes())
+                        if (type.IsSubclassOf(typeof(IModCompatibilityPatch)))
+                        {
+                            IModCompatibilityPatch patch = null;
+                            try { patch = Activator.CreateInstance(type) as IModCompatibilityPatch; }
+                            catch (Exception ex) { DebugLogger.LogWarning($"Failed to instantiate mod compatibility patch of type {type}: {ex.Message}"); }
+                            if (patch != null)
+                                yield return patch;
+                        }
             yield break;
         }
 
@@ -48,30 +49,42 @@ namespace LightsOut2.Core.ModCompatibility
         /// </summary>
         public static void LoadCompatibilityPatches(Harmony harmonyInstance)
         {
+            DebugLogger.LogInfo("Searching for compatibility patches...");
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            int patchCount = 0;
+            int appliedPatches = 0;
             foreach (IModCompatibilityPatch patch in GetAllPatches())
-                ApplyPatch(harmonyInstance, patch);
+            {
+                ++patchCount;
+                if (ApplyPatch(harmonyInstance, patch))
+                    ++appliedPatches;
+            }
+            watch.Stop();
+            DebugLogger.LogInfo($"Found {patchCount} compatibility patche(s) in {watch.Elapsed.Seconds} seconds, applied {appliedPatches} patche(s)");
         }
 
         /// <summary>
         /// Applies a whole, single compatibility patch
         /// </summary>
         /// <param name="patch">The patch to apply</param>
-        private static void ApplyPatch(Harmony harmonyInstance, IModCompatibilityPatch patch)
+        /// <returns><see langword="true"/> if the patch was applied, <see langword="false"/> otherwise</returns>
+        private static bool ApplyPatch(Harmony harmonyInstance, IModCompatibilityPatch patch)
         {
             if (string.IsNullOrWhiteSpace(patch.CompatibilityPatchName))
             {
-                DebugLogger.LogWarning($"encountered compatibility patch with empty name; skipping it.");
-                return;
+                DebugLogger.LogWarning($"Encountered compatibility patch with empty name; skipping it.");
+                return false;
             }
 
             // only load this patch if the target mod is present and accounted for
             if (!string.IsNullOrEmpty(patch.TargetMod))
             {
-                if (!LoadedModManager.RunningModsListForReading.Any(x => x.Name == patch.TargetMod))
-                    return;
+                if (!LoadedModManager.RunningModsListForReading.Any(x => (x.Name == patch.TargetMod) || (x.PackageId == patch.TargetMod) || (x.PackageIdPlayerFacing == patch.TargetMod)))
+                    return false;
             }
 
-            DebugLogger.LogInfo($"applying mod compatibility patch: {patch.CompatibilityPatchName}");
+            DebugLogger.LogInfo($"Applying mod compatibility patch: {patch.CompatibilityPatchName}");
             patch.OnBeforePatchApplied();
             foreach (IModCompatibilityPatchComponent component in patch.GetComponents())
             {
@@ -80,6 +93,7 @@ namespace LightsOut2.Core.ModCompatibility
                 component.OnAfterComponentApplied();
             }
             patch.OnAfterPatchApplied();
+            return true;
         }
 
         /// <summary>
@@ -90,13 +104,13 @@ namespace LightsOut2.Core.ModCompatibility
         {
             if (string.IsNullOrWhiteSpace(comp.ComponentName))
             {
-                DebugLogger.LogWarning("encountered a compatibility component with an empty name; skipping it.");
+                DebugLogger.LogWarning("Encountered a compatibility component with an empty name; skipping it.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(comp.TypeNameToPatch))
             {
-                DebugLogger.LogWarning($"encountered a compatibility component ({comp.ComponentName}) with an empty type to patch; skipping it.");
+                DebugLogger.LogWarning($"Encountered a compatibility component ({comp.ComponentName}) with an empty type to patch; skipping it.");
                 return;
             }
 
@@ -116,20 +130,20 @@ namespace LightsOut2.Core.ModCompatibility
                     continue;
 
                 if (!wasApplied)
-                    DebugLogger.LogInfo($"    component applied: {comp.ComponentName}");
+                    DebugLogger.LogInfo($"    Component applied: {comp.ComponentName}");
                 wasApplied = true;
 
                 foreach (PatchInfo patch in comp.GetPatches(type))
                 {
                     if (patch.method is null && patch.methodName is null)
                     {
-                        DebugLogger.LogWarning($"    encountered a component with a null method; skipping it.");
+                        DebugLogger.LogWarning($"    Encountered a component with a null method; skipping it.");
                         continue;
                     }
 
                     if (patch.patch is null)
                     {
-                        DebugLogger.LogWarning($"    encountered a component with a null patch; skipping it.");
+                        DebugLogger.LogWarning($"    Encountered a component with a null patch; skipping it.");
                         continue;
                     }
 
@@ -143,7 +157,7 @@ namespace LightsOut2.Core.ModCompatibility
                             harmonyInstance.Patch(GetMethod(type, patch), null, new HarmonyMethod(patch.patch));
                             break;
                         default:
-                            DebugLogger.LogWarning($"    encountered an invalid patch type in component {comp.ComponentName}; skipping it.");
+                            DebugLogger.LogWarning($"    Encountered an invalid patch type in component {comp.ComponentName}; skipping it.");
                             break;
                     }
                 }

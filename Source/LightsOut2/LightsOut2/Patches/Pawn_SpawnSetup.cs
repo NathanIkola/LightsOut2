@@ -3,6 +3,9 @@ using Verse;
 using Verse.AI;
 using LightsOut2.Common;
 using LightsOut2.ThingComps;
+using LightsOut2.Core;
+using LightsOut2.Core.ExtensionMethods;
+using LightsOut2.Core.StandbyComps;
 
 namespace LightsOut2.Patches
 {
@@ -33,7 +36,7 @@ namespace LightsOut2.Patches
             if (thing is null) return;
 
             // ensure the target has a StandbyComp
-            StandbyComp comp = Utils.GetStandbyComp(thing);
+            IStandbyComp comp = thing.GetStandbyComp();
             if (comp is null) return;
 
             // if it does have a standby comp ensure the finish action is accounted for

@@ -32,7 +32,7 @@ namespace LightsOut2.Patches
 
             bool startEnabled = true;
             bool isLight = !__instance.IsTable() && __instance.IsLight();
-            if (!isLight && !StandbyComp.ShouldStartEnabled(__instance))
+            if (!isLight && !__instance.ShouldStartEnabled())
                 startEnabled = false;
 
             if (isLight) PatchGlower(__instance);
