@@ -66,7 +66,8 @@ namespace LightsOut2.Core.StandbyComps
         /// A delegate for the boolean change events
         /// </summary>
         /// <param name="newValue">The new value of the boolean</param>
-        public delegate void OnBoolChangedHandler(bool newValue);
+        /// <param name="fromSettings">Whether or not this change is coming from settings</param>
+        public delegate void OnBoolChangedHandler(bool newValue, bool fromSettings);
 
         /// <summary>
         /// The event invoked when the standby status of a thing changes
@@ -77,9 +78,9 @@ namespace LightsOut2.Core.StandbyComps
         /// A method that allows derived classes to raise this event
         /// </summary>
         /// <param name="newValue">The new standby value</param>
-        protected void RaiseOnStandbyChanged(bool newValue)
+        protected void RaiseOnStandbyChanged(bool newValue, bool fromSettings)
         {
-            OnStandbyChanged?.Invoke(newValue);
+            OnStandbyChanged?.Invoke(newValue, fromSettings);
         }
     }
 }

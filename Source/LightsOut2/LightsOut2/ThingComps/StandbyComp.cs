@@ -59,7 +59,7 @@ namespace LightsOut2.ThingComps
                 if (!IsEnabled)
                     IsEnabled = true;
 
-                RaiseOnStandbyChanged(value);
+                RaiseOnStandbyChanged(value, false);
             }
         }
 
@@ -99,7 +99,7 @@ namespace LightsOut2.ThingComps
             IsInStandby = isInStandby;
             IsEnabled = isEnabled;
 
-            RaiseOnStandbyChanged(IsInStandby);
+            RaiseOnStandbyChanged(IsInStandby, true);
         }
 
         /// <summary>

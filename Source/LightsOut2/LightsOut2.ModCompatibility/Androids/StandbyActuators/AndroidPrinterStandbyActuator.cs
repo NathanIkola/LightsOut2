@@ -14,17 +14,17 @@ namespace LightsOut2.ModCompatibility.Androids.StandbyActuators
             if (s_failedToResolveCrafterStatus)
                 return false;
             
-            if (s_pawnCrafterStatus is null)
-                s_pawnCrafterStatus = IMCPC.GetMethod(thing.GetType(), "PawnCrafterStatus");
+            if (m_pawnCrafterStatus is null)
+                m_pawnCrafterStatus = IMCPC.GetMethod(thing.GetType(), "PawnCrafterStatus");
 
-            if (s_pawnCrafterStatus is null)
+            if (m_pawnCrafterStatus is null)
             {
                 DebugLogger.LogWarning("Failed to resolve PawnCrafterStatus for the Android Printer actuator");
                 s_failedToResolveCrafterStatus = true;
                 return false;
             }
 
-            int status = (int)s_pawnCrafterStatus.Invoke(thing.GetType(), null);
+            int status = (int)m_pawnCrafterStatus.Invoke(thing, null);
             return status != 2; // status of 2 is printing -- the only time it isn't in standby
         }
 
@@ -36,7 +36,7 @@ namespace LightsOut2.ModCompatibility.Androids.StandbyActuators
         /// <summary>
         /// The method used to inspect the pawn crafter status
         /// </summary>
-        private static MethodInfo s_pawnCrafterStatus = null;
+        private MethodInfo m_pawnCrafterStatus = null;
 
         /// <summary>
         /// Used as a flag to prevent repeated failed attempts to look up the crafter status

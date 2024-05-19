@@ -12,7 +12,10 @@ namespace LightsOut2.ModCompatibility.Androids
         {
             return new List<IModCompatibilityPatchComponent>() 
             {
-                new UpdateStandby(),
+                new Patch_Building_AndroidPrinter(),
+                new Patch_Building_CustomDroidCrafter(),
+                new Patch_Building_DroidCrafter(),
+                new Patch_Building_PawnCrafter(),
             };
         }
     }

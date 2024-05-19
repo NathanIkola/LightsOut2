@@ -1,17 +1,17 @@
-﻿using LightsOut2.Core.ExtensionMethods;
+﻿using System;
+using System.Collections.Generic;
+using LightsOut2.Core.ExtensionMethods;
 using LightsOut2.Core.ModCompatibility;
 using LightsOut2.Core.StandbyComps;
-using System;
-using System.Collections.Generic;
 using Verse;
 
 namespace LightsOut2.ModCompatibility.Androids
 {
-    public class UpdateStandby : IModCompatibilityPatchComponent
+    public class Patch_Building_PawnCrafter : IModCompatibilityPatchComponent
     {
-        public override string ComponentName => "Patch Android Printer to actuate standby";
-        
-        public override string TypeNameToPatch => "Building_AndroidPrinter";
+        public override string ComponentName => "Patch Pawn Crafter to actuate standby";
+
+        public override string TypeNameToPatch => "Building_PawnCrafter";
 
         public override bool TargetsMultipleTypes => false;
 
@@ -23,29 +23,29 @@ namespace LightsOut2.ModCompatibility.Androids
 
             patches.Add(new PatchInfo()
             {
-                method = GetMethod(type, "InitiatePawnCrafting"),
-                patch = GetMethod<UpdateStandby>(nameof(Postfix)),
+                methodName = "InitiatePawnCrafting",
+                patch = GetMethod<Patch_Building_AndroidPrinter>(nameof(Postfix)),
                 patchType = PatchType.Postfix,
             });
 
             patches.Add(new PatchInfo()
             {
-                method = GetMethod(type, "StartPrinting"),
-                patch = GetMethod<UpdateStandby>(nameof(Postfix)),
+                methodName = "StartPrinting",
+                patch = GetMethod<Patch_Building_AndroidPrinter>(nameof(Postfix)),
                 patchType = PatchType.Postfix,
             });
 
             patches.Add(new PatchInfo()
             {
-                method = GetMethod(type, "StopPawnCrafting"),
-                patch = GetMethod<UpdateStandby>(nameof(Postfix)),
+                methodName = "StopPawnCrafting",
+                patch = GetMethod<Patch_Building_AndroidPrinter>(nameof(Postfix)),
                 patchType = PatchType.Postfix,
             });
 
             patches.Add(new PatchInfo()
             {
-                method = GetMethod(type, "SpawnSetup"),
-                patch = GetMethod<UpdateStandby>(nameof(Postfix)),
+                methodName = "SpawnSetup",
+                patch = GetMethod<Patch_Building_AndroidPrinter>(nameof(Postfix)),
                 patchType = PatchType.Postfix,
             });
 

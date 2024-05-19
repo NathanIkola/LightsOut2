@@ -81,7 +81,8 @@ namespace LightsOut2.ThingComps
         {
             if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
             return base.CompInspectStringExtra() + "\n" +
-                $"Keep On: {KeepOn}";
+                $"Keep On: {KeepOn}\n" + 
+                $"StandbyDelayTicks: {StandbyDelayTicks}";
         }
 
         /// <summary>
@@ -107,16 +108,17 @@ namespace LightsOut2.ThingComps
         /// <param name="newValue">Whether or not it is being kept on</param>
         private void OnKeepOnChangedHandler(bool newValue)
         {
-            RaiseOnStandbyChanged(base.IsInStandby);
+            RaiseOnStandbyChanged(base.IsInStandby, false);
         }
 
         /// <summary>
         /// Handles invoking the glower actuator when standby changes
         /// </summary>
         /// <param name="newValue">Ignored</param>
-        private void OnStandbyChangedHandler(bool newValue)
+        /// <param name="fromSettings">Whether or not this change is from settings</param>
+        private void OnStandbyChangedHandler(bool newValue, bool fromSettings)
         {
-            if (newValue && StandbyDelayTicks == -1 && LightsOut2Mod.LightDelaySeconds > 0)
+            if (!fromSettings && newValue && StandbyDelayTicks == -1 && LightsOut2Mod.LightDelaySeconds > 0)
             {
                 StandbyDelayTicks = GenTicks.SecondsToTicks(LightsOut2Mod.LightDelaySeconds);
                 TickManager_DoSingleTick.OnTick += OnTickHandler;

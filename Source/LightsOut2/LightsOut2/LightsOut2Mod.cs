@@ -3,6 +3,7 @@ using UnityEngine;
 using Verse;
 using LightsOut2.Core;
 using LightsOut2.Core.ModCompatibility;
+using System.Reflection;
 
 namespace LightsOut2
 {
@@ -31,7 +32,8 @@ namespace LightsOut2
             // this also doesn't use the debug logger because it isn't a debug message and should always print
             Log.Message($"Initializing LightsOut 2 [{typeof(LightsOut2Mod).Assembly.GetName().Version}]");
             HarmonyInstance = new Harmony("LightsOut2");
-            HarmonyInstance.PatchAll();
+            foreach (Assembly asm in content.assemblies.loadedAssemblies)
+                HarmonyInstance.PatchAll(asm);
         }
 
         /// <summary>

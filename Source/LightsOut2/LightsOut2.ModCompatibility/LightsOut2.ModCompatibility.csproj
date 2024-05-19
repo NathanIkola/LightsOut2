@@ -43,8 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Androids\AndroidCompatibilityPatch.cs" />
+    <Compile Include="Androids\Patch_Building_CustomDroidCrafter.cs" />
+    <Compile Include="Androids\Patch_Building_DroidCrafter.cs" />
+    <Compile Include="Androids\Patch_Building_PawnCrafter.cs" />
+    <Compile Include="Androids\StandbyActuators\AndroidHibernationStandbyActuator.cs" />
     <Compile Include="Androids\StandbyActuators\AndroidPrinterStandbyActuator.cs" />
-    <Compile Include="Androids\UpdateStandby.cs" />
+    <Compile Include="Androids\Patch_Building_AndroidPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -61,7 +61,7 @@ namespace LightsOut2.Core.ModCompatibility
                     ++appliedPatches;
             }
             watch.Stop();
-            DebugLogger.LogInfo($"Found {patchCount} compatibility patche(s) in {watch.Elapsed.Seconds} seconds, applied {appliedPatches} patche(s)");
+            DebugLogger.LogInfo($"Found {patchCount} compatibility patch(es) in {watch.Elapsed.Seconds} seconds, applied {appliedPatches} patch(es)");
         }
 
         /// <summary>
@@ -147,14 +147,21 @@ namespace LightsOut2.Core.ModCompatibility
                         continue;
                     }
 
+                    MethodInfo methodToPatch = GetMethod(type, patch);
+                    if (methodToPatch is null)
+                    {
+                        string methodName = patch.methodName is null ? "" : $"'{patch.methodName}'";
+                        DebugLogger.LogWarning($"    Component matched type {type.AssemblyQualifiedName}, but failed to retrieve specified method {methodName}");
+                        continue;
+                    }
 
                     switch (patch.patchType)
                     {
                         case PatchType.Prefix:
-                            harmonyInstance.Patch(GetMethod(type, patch), new HarmonyMethod(patch.patch));
+                            harmonyInstance.Patch(methodToPatch, new HarmonyMethod(patch.patch));
                             break;
                         case PatchType.Postfix:
-                            harmonyInstance.Patch(GetMethod(type, patch), null, new HarmonyMethod(patch.patch));
+                            harmonyInstance.Patch(methodToPatch, null, new HarmonyMethod(patch.patch));
                             break;
                         default:
                             DebugLogger.LogWarning($"    Encountered an invalid patch type in component {comp.ComponentName}; skipping it.");
