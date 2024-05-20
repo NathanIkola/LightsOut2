@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Verse;
 using LightsOut2.Core.StandbyActuators;
+using Verse.AI;
 
 namespace LightsOut2.StandbyActuators
 {
@@ -12,6 +13,11 @@ namespace LightsOut2.StandbyActuators
     {
         public bool IsInStandby(ThingWithComps thing, Pawn pawn)
         {
+            // if the actuating pawn is still watching TV, it's not in standby
+            JobDriver driver = pawn?.jobs?.curDriver;
+            if (driver != null && !driver.ended) 
+                return false;
+            // otherwise check the pawns
             return !AnyPawnWatching(thing, pawn);
         }
 
@@ -38,7 +44,9 @@ namespace LightsOut2.StandbyActuators
             {
                 Pawn pawn = cell.GetFirstPawn(tv.Map);
                 if (pawn == pawnToIgnore) continue;
-                if (pawn?.CurJob?.targetA.Thing == tv)
+                JobDriver driver = pawn?.jobs?.curDriver;
+                // check that the pawn is currently engaged in a job, and is targeting the TV
+                if (driver != null && !driver.ended && pawn?.CurJob?.targetA.Thing == tv)
                     return true;
             }
 

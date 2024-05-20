@@ -14,7 +14,7 @@ namespace LightsOut2.Core.ExtensionMethods
         /// Retrieve the first StandbyComp encountered on the given <paramref name="thing"/>
         /// </summary>
         /// <param name="thing">The <see cref="ThingWithComps"/> to check</param>
-        /// <returns>The <see cref="StandbyComp"/> or derived class from thie <paramref name="thing"/></returns>
+        /// <returns>The <see cref="StandbyComp"/> or derived class from this <paramref name="thing"/></returns>
         public static IStandbyComp GetStandbyComp(this ThingWithComps thing)
         {
             if (thing.AllComps is null) return null;

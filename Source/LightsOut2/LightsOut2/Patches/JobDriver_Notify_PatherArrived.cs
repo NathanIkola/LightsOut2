@@ -30,7 +30,7 @@ namespace LightsOut2.Patches
             if (standbyComp is null) return;
 
             Pawn pawn = __instance.GetActor();
-            standbyComp.UpdateStandbyFromActuator(null);
+            standbyComp.UpdateStandbyFromActuator(pawn);
             if (!standbyComp.IsInStandby)
             {
                 __instance.AddFinishAction((JobCondition) =>

@@ -40,7 +40,7 @@ namespace LightsOut2.Patches
             if (comp is null) return;
 
             // if it does have a standby comp ensure the finish action is accounted for
-            comp.UpdateStandbyFromActuator(null);
+            comp.UpdateStandbyFromActuator(__instance);
             if (!comp.IsInStandby)
             {
                 driver.AddFinishAction((JobCondition) =>

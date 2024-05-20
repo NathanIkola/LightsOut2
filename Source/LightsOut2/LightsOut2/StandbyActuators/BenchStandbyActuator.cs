@@ -20,7 +20,7 @@ namespace LightsOut2.StandbyActuators
 
             // verify that the pawn is there for a job, not just in the cell
             Thing target = pawn.CurJob?.targetA.Thing;
-            if (target is null || target.InteractionCell != pawn.Position) 
+            if (target != thing)
                 return true;
 
             // if all of the above pass, then this shouldn't be in standby
@@ -29,7 +29,7 @@ namespace LightsOut2.StandbyActuators
 
         public bool ReadyToRun(ThingWithComps thing)
         {
-            return true;
+            return thing.Map?.regionAndRoomUpdater?.Enabled ?? false;
         }
     }
 }
