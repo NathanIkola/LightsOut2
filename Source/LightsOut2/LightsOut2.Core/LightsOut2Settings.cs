@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using LightsOut2.Core.ModCompatibility;
 using UnityEngine;
 using Verse;
 

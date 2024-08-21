@@ -21,7 +21,8 @@ namespace LightsOut2.Core.ModCompatibility
         /// </summary>
         static ModCompatibilityManager()
         {
-
+            LightsOut2Settings.OnSettingsRendered += ShowAllPatchSettings;
+            LightsOut2Settings.OnSettingsExposeData += ExposeAllPatchSettingsData;
         }
 
         /// <summary>
@@ -85,6 +86,7 @@ namespace LightsOut2.Core.ModCompatibility
             }
 
             DebugLogger.LogInfo($"Applying mod compatibility patch: {patch.CompatibilityPatchName}");
+            RegisterAppliedPatch(patch);
             patch.OnBeforePatchApplied();
             foreach (IModCompatibilityPatchComponent component in patch.GetComponents())
             {
@@ -211,5 +213,62 @@ namespace LightsOut2.Core.ModCompatibility
 
             return IModCompatibilityPatchComponent.GetMethod(type, patch.methodName);
         }
+
+        /// <summary>
+        /// Handles registering any patch that was applied so it can be referenced later
+        /// </summary>
+        /// <param name="patch">The patch to register</param>
+        private static void RegisterAppliedPatch(IModCompatibilityPatch patch)
+        {
+            // handle duplicate patch names (just in case)
+            string patchName = patch.CompatibilityPatchName;
+            int dupeCount = 0;
+            while (AppliedPatches.ContainsKey(patchName))
+                patchName = $"{patch.CompatibilityPatchName}{++dupeCount}";
+
+            AppliedPatches.Add(patchName, patch);
+        }
+
+        /// <summary>
+        /// Allows patches to show custom LightsOut settings
+        /// </summary>
+        /// <param name="listingStandard">The listing to modify</param>
+        private static void ShowAllPatchSettings(Listing_Standard listingStandard)
+        {
+            foreach (var kvp in AppliedPatches)
+            {
+                try
+                {
+                    kvp.Value.OnDrawPatchSettings(listingStandard);
+                }
+                catch (Exception e)
+                {
+                    DebugLogger.LogWarning($"Error drawing settings: {e.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Allows patches to save/load data
+        /// </summary>
+        private static void ExposeAllPatchSettingsData()
+        {
+            foreach(var kvp in AppliedPatches)
+            {
+                try
+                {
+                    kvp.Value.OnPatchSettingsExposeData();
+                }
+                catch (Exception e)
+                {
+                    DebugLogger.LogWarning($"Error drawing settings: {e.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// A dictionary of all of the patches that have been applied, keyed by name
+        /// </summary>
+        private static SortedDictionary<string, IModCompatibilityPatch> AppliedPatches { get; } = new SortedDictionary<string, IModCompatibilityPatch>();
     }
 }

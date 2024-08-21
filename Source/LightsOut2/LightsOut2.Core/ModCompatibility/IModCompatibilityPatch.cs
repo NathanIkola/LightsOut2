@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Verse;
 
 namespace LightsOut2.Core.ModCompatibility
 {
@@ -18,6 +19,18 @@ namespace LightsOut2.Core.ModCompatibility
         /// Called immediately after a patch is applied.
         /// </summary>
         public virtual void OnAfterPatchApplied() { }
+
+        /// <summary>
+        /// Called when drawing the settings window for the mod, allows patches
+        /// to add mod-specific settings to the window as needed
+        /// </summary>
+        /// <param name="listingStandard">The listing to add to</param>
+        public virtual void OnDrawPatchSettings(Listing_Standard listingStandard) { }
+
+        /// <summary>
+        /// Allows patches to save/store settings via the mod's ExposeData method
+        /// </summary>
+        public virtual void OnPatchSettingsExposeData() { }
 
         /// <summary>
         /// Returns a list of compatibility components to apply
