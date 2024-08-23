@@ -35,8 +35,6 @@ namespace LightsOut2.Patches
             Room newRoom = ___pawn.GetRoom();
             if (newRoom == __state) return;
 
-            DebugLogger.LogInfo($"Pawn {___pawn} changed rooms");
-
             if (Utils.IsRoomEmpty(__state, ___pawn)) 
                 RaiseOnRoomOccupancyChangedEvent(__state, false);
             if (Utils.IsRoomEmpty(newRoom, ___pawn))

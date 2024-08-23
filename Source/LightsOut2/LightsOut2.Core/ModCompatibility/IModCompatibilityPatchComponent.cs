@@ -96,6 +96,30 @@ namespace LightsOut2.Core.ModCompatibility
         }
 
         /// <summary>
+        /// Easier shortcut to getting the FieldInfo from a type
+        /// </summary>
+        /// <param name="type">The type to get the field from</param>
+        /// <param name="fieldName">The field to get</param>
+        /// <returns>A <see cref="FieldInfo"/> object for <paramref name="fieldName"/>, 
+        /// or <see langword="null"/> if it doesn't exist</returns>
+        public static FieldInfo GetField(Type type, string fieldName)
+        {
+            return type.GetField(fieldName, BindingFlags);
+        }
+
+        /// <summary>
+        /// Retrieves the get method from a property
+        /// </summary>
+        /// <param name="type">The type to get the method from</param>
+        /// <param name="propertyName">The property whose getter to get</param>
+        /// <returns>A <see cref="MethodInfo"/> object for <paramref name="propertyName"/>'s getter,
+        /// or <see langword="null"/> if it doesn't exist</returns>
+        public static MethodInfo GetGetMethod(Type type, string propertyName)
+        {
+            return type.GetProperty(propertyName, BindingFlags)?.GetGetMethod();
+        }
+
+        /// <summary>
         /// Called immediately before a component is applied.
         /// </summary>
         public virtual void OnBeforeComponentApplied() { }

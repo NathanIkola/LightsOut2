@@ -69,6 +69,11 @@
     <Compile Include="Androids\StandbyActuators\AndroidPrinterStandbyActuator.cs" />
     <Compile Include="Androids\Patch_Building_AndroidPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuestionableEthics\Patch_Building_OrganVat.cs" />
+    <Compile Include="QuestionableEthics\Patch_Building_PawnVatGrower.cs" />
+    <Compile Include="QuestionableEthics\Patch_Building_VatGrower.cs" />
+    <Compile Include="QuestionableEthics\QuestionableEthicsCompatibilityPatch.cs" />
+    <Compile Include="QuestionableEthics\StandbyActuators\VatStandbyActuator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LightsOut2.Core\LightsOut2.Core.csproj">

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Organ Vat -->
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Questionable Ethics Enhanced (Continued)</li>
+        </mods>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ThingDef[defName="QE_Building_OrganVat"]/comps</xpath>
+            <value>
+                <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                    <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+                    <standbyActuatorClass>LightsOut2.ModCompatibility.QuestionableEthics.StandbyActuators.VatStandbyActuator</standbyActuatorClass>
+                    <startEnabled>True</startEnabled>
+                </li>
+            </value>
+        </match>
+    </Operation>
+    
+    <!-- Organ Vat (old) -->
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Questionable Ethics Enhanced (Continued)</li>
+        </mods>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ThingDef[defName="QE_OrganVat"]/comps</xpath>
+            <value>
+                <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                    <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+                    <standbyActuatorClass>LightsOut2.ModCompatibility.QuestionableEthics.StandbyActuators.VatStandbyActuator</standbyActuatorClass>
+                    <startEnabled>True</startEnabled>
+                </li>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- Pawn Vat -->
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Questionable Ethics Enhanced (Continued)</li>
+        </mods>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ThingDef[defName="QE_PawnVat"]/comps</xpath>
+            <value>
+                <li Class="LightsOut2.CompProperties.CompProperties_Standby">
+                    <compClass>LightsOut2.ThingComps.StandbyComp</compClass>
+                    <standbyActuatorClass>LightsOut2.ModCompatibility.QuestionableEthics.StandbyActuators.VatStandbyActuator</standbyActuatorClass>
+                    <startEnabled>True</startEnabled>
+                </li>
+            </value>
+        </match>
+    </Operation>
+</Patch>

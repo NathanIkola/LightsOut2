@@ -84,6 +84,7 @@
     <Compile Include="Patches\Pawn_SpawnSetup.cs" />
     <Compile Include="Patches\RegionAndRoomUpdater_FloodAndSetRooms.cs" />
     <Compile Include="Patches\ThingDef_PostLoad.cs" />
+    <Compile Include="Patches\ThingWithComps_SpawnSetup.cs" />
     <Compile Include="Patches\Toils_LayDown_LayDown.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandbyActuators\BenchStandbyActuator.cs" />
