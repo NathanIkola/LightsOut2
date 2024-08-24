@@ -1,0 +1,20 @@
+﻿Supported:
+	Androids
+	ErinsJapaneseFurniture
+	ExtinguishRefuelables
+	Furnace
+	QuestionableEthics
+	VEWallLights
+	WallLights
+	SelfLitHydroponics
+	
+Unknown:
+	ColonyManager (not 1.5)
+	DubsBadHygiene
+	HelixienGas
+	MiningLight (not 1.5)
+	SOS2
+	
+Changes Required:
+	Biotech
+	Ideology

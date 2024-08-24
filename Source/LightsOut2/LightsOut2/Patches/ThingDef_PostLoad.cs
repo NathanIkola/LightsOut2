@@ -59,7 +59,9 @@ namespace LightsOut2.Patches
 
             DebugLogger.AssertFalse(glowerClass is null, $"Failed to retrieve glower class from def \"{def}\"", true);
             PropertyInfo shouldBeLitNow = GetShouldBeLitNowPropertyInfo(glowerClass);
-            DebugLogger.Assert(shouldBeLitNow.DeclaringType == shouldBeLitNow.ReflectedType, $"Class \"{glowerClass}\" does not define a ShouldBeLitNow property", true);
+            bool declaresShouldBeLitNow = shouldBeLitNow.DeclaringType == shouldBeLitNow.ReflectedType;
+            DebugLogger.Assert(declaresShouldBeLitNow, $"Class \"{glowerClass}\" does not define a ShouldBeLitNow property", true);
+            if (!declaresShouldBeLitNow) { return; }
 
             MethodInfo original = shouldBeLitNow.GetMethod;
             MethodInfo patch = typeof(ThingDef_PostLoad).GetMethod(nameof(ShouldBeLitNowPatch), Utils.BindingFlags);
