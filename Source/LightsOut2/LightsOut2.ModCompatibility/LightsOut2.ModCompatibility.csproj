@@ -68,6 +68,7 @@
     <Compile Include="Androids\StandbyActuators\AndroidHibernationStandbyActuator.cs" />
     <Compile Include="Androids\StandbyActuators\AndroidPrinterStandbyActuator.cs" />
     <Compile Include="Androids\Patch_Building_AndroidPrinter.cs" />
+    <Compile Include="DubsBadHygiene\StandbyComps\CeilingFanStandbyComp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestionableEthics\Patch_Building_OrganVat.cs" />
     <Compile Include="QuestionableEthics\Patch_Building_PawnVatGrower.cs" />
@@ -80,6 +81,10 @@
       <Project>{b9edd1a6-6bd9-49bd-866f-f2501d43dfb8}</Project>
       <Name>LightsOut2.Core</Name>
       <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\LightsOut2\LightsOut2.csproj">
+      <Project>{F230D112-3D81-4795-B63A-D2DBB1553F09}</Project>
+      <Name>LightsOut2</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

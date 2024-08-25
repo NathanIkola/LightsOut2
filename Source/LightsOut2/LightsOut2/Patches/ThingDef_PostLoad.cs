@@ -31,8 +31,9 @@ namespace LightsOut2.Patches
             if (standbyProps != null) return;
 
             bool startEnabled = true;
-            bool isLight = !__instance.IsTable() && __instance.IsLight();
-            if (!isLight && !__instance.ShouldStartEnabled())
+            bool isTable = __instance.IsTable();
+            bool isLight = !isTable && __instance.IsLight();
+            if (!isLight && !isTable)
                 startEnabled = false;
 
             if (isLight) PatchGlower(__instance);
@@ -78,14 +79,32 @@ namespace LightsOut2.Patches
         public static PropertyInfo GetShouldBeLitNowPropertyInfo(Type glowerClass)
         {
             // most common ones first
-            PropertyInfo prop = glowerClass.GetProperty("ShouldBeLitNow", Utils.BindingFlags)
-                ?? glowerClass.GetProperty("shouldBeLitNow", Utils.BindingFlags)
-                ?? glowerClass.GetProperty("_ShouldBeLitNow", Utils.BindingFlags);
+            PropertyInfo prop = TryGetDeclaredProperty("ShouldBeLitNow", glowerClass)
+                ?? TryGetDeclaredProperty("shouldBeLitNow", glowerClass)
+                ?? TryGetDeclaredProperty("_ShouldBeLitNow", glowerClass);
             if (prop != null) return prop;
 
             foreach (PropertyInfo propInfo in glowerClass.GetProperties(Utils.BindingFlags))
-                if (propInfo.Name.ToLower().Contains("shouldbelitnow")) return propInfo;
+                if (propInfo.Name.ToLower().Contains("shouldbelitnow") && prop.DeclaringType == prop.ReflectedType) 
+                    return propInfo;
             return null;
+        }
+
+        /// <summary>
+        /// Retrieves a declared property from the given type
+        /// </summary>
+        /// <param name="propertyName">The property to try to retrieve</param>
+        /// <param name="from">The type to retrieve the property from</param>
+        /// <returns>The PropertyInfo for the declared property, or null if one wasn't found</returns>
+        private static PropertyInfo TryGetDeclaredProperty(string propertyName, Type from)
+        {
+            if (from is null) 
+                return null;
+
+            PropertyInfo prop = from.GetProperty(propertyName, Utils.BindingFlags);
+            if (prop is null || prop.DeclaringType != prop.ReflectedType)
+                return null;
+            return prop;
         }
 
         /// <summary>

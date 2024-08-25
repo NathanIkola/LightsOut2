@@ -322,15 +322,6 @@ namespace LightsOut2.Common
         }
 
         /// <summary>
-        /// Determines if the comp should be enabled by default
-        /// </summary>
-        /// <param name="def">The ThingDef to inspect</param>
-        public static bool ShouldStartEnabled(this ThingDef def)
-        {
-            return def.IsTable();
-        }
-
-        /// <summary>
         /// A good list of <see cref="BindingFlags"/> to use to get most things
         /// </summary>
         public readonly static BindingFlags BindingFlags = BindingFlags.Public

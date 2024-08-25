@@ -1,4 +1,5 @@
 ﻿using LightsOut2.Core.StandbyActuators;
+using System.Collections.Generic;
 using Verse;
 
 namespace LightsOut2.Core.StandbyComps
@@ -34,19 +35,75 @@ namespace LightsOut2.Core.StandbyComps
         }
 
         /// <summary>
+        /// Adds some info to the comp inspect string if in dev mode and god mode
+        /// </summary>
+        /// <returns>A string with some extra info, or nothing</returns>
+        public override string CompInspectStringExtra()
+        {
+            if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
+            return $"Standby: {IsInStandby}\n" +
+                $"Enabled: {IsEnabled}\n" +
+                $"Rate: {Rate}";
+        }
+
+        /// <summary>
         /// The actuator used when turning this thing on or off
         /// </summary>
         public IStandbyActuator StandbyActuator { get; set; }
 
         /// <summary>
+        /// Backing field for IsInStandby
+        /// </summary>
+        private bool m_isInStandby = true;
+
+        /// <summary>
         /// Whether or not the owner of this comp is currently in standby
         /// </summary>
-        public abstract bool IsInStandby { get; set; }
+        public virtual bool IsInStandby 
+        {
+            get { return IsEnabled && m_isInStandby; }
+            set
+            {
+                if (m_isInStandby == value) return;
+                m_isInStandby = value;
+
+                // if we are toggling this, then it must be active
+                if (!IsEnabled)
+                    IsEnabled = true;
+
+                RaiseOnStandbyChanged(value, false);
+            }
+        }
 
         /// <summary>
         /// Whether or not this comp is even enabled
         /// </summary>
-        public abstract bool IsEnabled { get; set; }
+        public virtual bool IsEnabled  { get; set; }
+
+        /// <summary>
+        /// Saves the state of the comp
+        /// </summary>
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            bool isInStandby = IsInStandby;
+            bool isEnabled = IsEnabled;
+            Scribe_Values.Look(ref isInStandby, "IsInStandby", isInStandby);
+            Scribe_Values.Look(ref isEnabled, "IsEnabled", isEnabled);
+            IsInStandby = isInStandby;
+            IsEnabled = isEnabled;
+
+            RaiseOnStandbyChanged(IsInStandby, true);
+        }
+
+        /// <summary>
+        /// Retrieves a list of the gizmos to display for this comp
+        /// </summary>
+        /// <returns>A list of applicable gizmos to display</returns>
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            yield break;
+        }
 
         /// <summary>
         /// Calculates the rate to modify the power draw by

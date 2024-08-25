@@ -79,6 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandbyActuators\IStandbyActuator.cs" />
     <Compile Include="StandbyComps\IStandbyComp.cs" />
+    <Compile Include="StandbyComps\StandbyDisabledComp.cs" />
     <Compile Include="TickManager_DoSingleTick.cs" />
   </ItemGroup>
   <ItemGroup />
