@@ -7,13 +7,13 @@
 	VEWallLights
 	WallLights
 	SelfLitHydroponics
+	DubsBadHygiene
 	
 Unknown:
-	ColonyManager (not 1.5)
-	DubsBadHygiene
 	HelixienGas
-	MiningLight (not 1.5)
 	SOS2
+	ColonyManager (not 1.5)
+	MiningLight (not 1.5)
 	
 Changes Required:
 	Biotech
