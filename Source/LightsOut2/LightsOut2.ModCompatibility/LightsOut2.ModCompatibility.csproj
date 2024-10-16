@@ -75,6 +75,8 @@
     <Compile Include="QuestionableEthics\Patch_Building_VatGrower.cs" />
     <Compile Include="QuestionableEthics\QuestionableEthicsCompatibilityPatch.cs" />
     <Compile Include="QuestionableEthics\StandbyActuators\VatStandbyActuator.cs" />
+    <Compile Include="SOS2\Patch_ShipInteriorMod2_MoveShip.cs" />
+    <Compile Include="SOS2\SOS2CompatibilityPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LightsOut2.Core\LightsOut2.Core.csproj">

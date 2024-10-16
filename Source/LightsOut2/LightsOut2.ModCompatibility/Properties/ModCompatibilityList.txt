@@ -8,10 +8,10 @@
 	WallLights
 	SelfLitHydroponics
 	DubsBadHygiene
+	SOS2
 	
 Unknown:
 	HelixienGas
-	SOS2
 	ColonyManager (not 1.5)
 	MiningLight (not 1.5)
 	
