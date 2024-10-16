@@ -62,17 +62,24 @@ namespace LightsOut2.Core.StandbyComps
         public virtual bool IsInStandby 
         {
             get { return IsEnabled && m_isInStandby; }
-            set
-            {
-                if (m_isInStandby == value) return;
-                m_isInStandby = value;
+            set { SetIsInStandby(value, false); }
+        }
 
-                // if we are toggling this, then it must be active
-                if (!IsEnabled)
-                    IsEnabled = true;
+        /// <summary>
+        /// A setter for the IsInStandby property
+        /// </summary>
+        /// <param name="value">The new value to set</param>
+        /// <param name="fromSettings">Whether or not this change is from settings (as opposed to from gameplay)</param>
+        public virtual void SetIsInStandby(bool value, bool fromSettings)
+        {
+            if (m_isInStandby == value) return;
+            m_isInStandby = value;
 
-                RaiseOnStandbyChanged(value, false);
-            }
+            // if we are toggling this, then it must be active
+            if (!IsEnabled)
+                IsEnabled = true;
+
+            RaiseOnStandbyChanged(value, fromSettings);
         }
 
         /// <summary>

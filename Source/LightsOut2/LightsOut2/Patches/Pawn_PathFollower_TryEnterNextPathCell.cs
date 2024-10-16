@@ -60,9 +60,10 @@ namespace LightsOut2.Patches
         /// </summary>
         /// <param name="room">The <see cref="Room"/> whose occupancy changed</param>
         /// <param name="hasOccupants">Whether or not the room has occupants</param>
-        public static void RaiseOnRoomOccupancyChangedEvent(Room room, bool hasOccupants)
+        /// <param name="respectTimeout">Whether or not to repsect the timeout setting</param>
+        public static void RaiseOnRoomOccupancyChangedEvent(Room room, bool hasOccupants, bool respectTimeout = true)
         {
-            OnRoomOccupancyChanged?.Invoke(room, hasOccupants);
+            OnRoomOccupancyChanged?.Invoke(room, hasOccupants, respectTimeout);
         }
 
         /// <summary>
@@ -70,7 +71,8 @@ namespace LightsOut2.Patches
         /// </summary>
         /// <param name="room">The <see cref="Room"/> whose occupancy status changed</param>
         /// <param name="hasOccupants">Whether or not this room is occupied</param>
-        public delegate void RoomOccupancyChangedHandler(Room room, bool hasOccupants);
+        /// <param name="respectTimeout">WHether or not to respect the timeout setting</param>
+        public delegate void RoomOccupancyChangedHandler(Room room, bool hasOccupants, bool respectTimeout);
 
         /// <summary>
         /// The event raised whenever the occupancy status of a room changes

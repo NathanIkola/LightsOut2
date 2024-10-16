@@ -25,10 +25,7 @@ namespace LightsOut2.ThingComps
         {
             IsEnabled = true;
             base.Initialize(props);
-            OnStandbyChanged += OnStandbyChangedHandler;
-            Pawn_PathFollower_TryEnterNextPathCell.OnRoomOccupancyChanged += OnRoomOccupancyChangedHandler; ;
             KeepOnGizmo = new KeepOnGizmo();
-            KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
             GlowerComp = parent.GetGlower();
             DebugLogger.Assert(GlowerComp != null, "Couldn't find glower for light", true);
             if (props is CompProperties_Standby standbyProps)
@@ -37,31 +34,62 @@ namespace LightsOut2.ThingComps
                 GlowerActuator = Activator.CreateInstance(actuatorType) as IGlowerActuator;
                 DebugLogger.Assert(GlowerActuator != null, $"Failed to create glower actuator of type: {actuatorType}", true);
             }
-            // subscribe immediately to turn off any just-spawned lights
-            TickManager_DoSingleTick.OnTick += OnTickHandler;
+
+            DoSetup();
         }
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
             base.PostDestroy(mode, previousMap);
-            Cleanup();
+            DoCleanup();
         }
 
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
-            Cleanup();
+            DoCleanup();
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            DoSetup();
+        }
+
+        /// <summary>
+        /// Does any necessary setup when this comp is being initialized or respawned
+        /// </summary>
+        private void DoSetup()
+        {
+            if (IsSetUp) 
+                return;
+
+            OnStandbyChanged += OnStandbyChangedHandler;
+            Pawn_PathFollower_TryEnterNextPathCell.OnRoomOccupancyChanged += OnRoomOccupancyChangedHandler;
+            KeepOnGizmo.OnKeepOnChanged += OnKeepOnChangedHandler;
+            if (StandbyDelayTicks >= 0)
+                TickManager_DoSingleTick.OnTick += OnTickHandler;
+            IsSetUp = true;
+
+            // now initialize the lit state as needed
+            Room room = parent?.GetLightRoom();
+            bool hasOccupants = !Utils.IsRoomEmpty(room, null);
+            OnRoomOccupancyChangedHandler(room, hasOccupants, false);
         }
 
         /// <summary>
         /// A tag that performs necessary cleanup when this comp is being retired
         /// </summary>
-        private void Cleanup()
+        private void DoCleanup()
         {
+            if (!IsSetUp)
+                return;
+
             OnStandbyChanged -= OnStandbyChangedHandler;
             Pawn_PathFollower_TryEnterNextPathCell.OnRoomOccupancyChanged -= OnRoomOccupancyChangedHandler;
             KeepOnGizmo.OnKeepOnChanged -= OnKeepOnChangedHandler;
             TickManager_DoSingleTick.OnTick -= OnTickHandler;
+            IsSetUp = false;
         }
 
         /// <summary>
@@ -82,7 +110,8 @@ namespace LightsOut2.ThingComps
             if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
             return base.CompInspectStringExtra() + "\n" +
                 $"Keep On: {KeepOn}\n" + 
-                $"StandbyDelayTicks: {StandbyDelayTicks}";
+                $"StandbyDelayTicks: {StandbyDelayTicks}\n" +
+                $"Outside: {parent?.GetRoom()?.OutdoorsForWork}";
         }
 
         /// <summary>
@@ -108,7 +137,7 @@ namespace LightsOut2.ThingComps
         /// <param name="newValue">Whether or not it is being kept on</param>
         private void OnKeepOnChangedHandler(bool newValue)
         {
-            RaiseOnStandbyChanged(base.IsInStandby, false);
+            RaiseOnStandbyChanged(base.IsInStandby, true);
         }
 
         /// <summary>
@@ -132,10 +161,11 @@ namespace LightsOut2.ThingComps
         /// </summary>
         /// <param name="room">The room that has an occupancy change</param>
         /// <param name="isOccupied">Whether or not the room is occupied</param>
-        private void OnRoomOccupancyChangedHandler(Room room, bool isOccupied)
+        /// <param name="respectTimeout">Whether or not to respect the delay timeout setting</param>
+        private void OnRoomOccupancyChangedHandler(Room room, bool isOccupied, bool respectTimeout)
         {
-            if (parent.GetLightRoom() == room)
-                IsInStandby = !isOccupied;
+            if (room is null || parent.GetLightRoom() == room)
+                SetIsInStandby(!isOccupied, !respectTimeout);
         }
 
         /// <summary>
@@ -191,5 +221,10 @@ namespace LightsOut2.ThingComps
         /// The number of ticks remaining before the light can be put into standby
         /// </summary>
         protected int StandbyDelayTicks { get; set; } = 1;
+
+        /// <summary>
+        /// Whether or not setup has run for this comp
+        /// </summary>
+        protected bool IsSetUp { get; set; } = false;
     }
 }

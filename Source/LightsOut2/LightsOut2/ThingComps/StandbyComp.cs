@@ -21,9 +21,7 @@ namespace LightsOut2.ThingComps
             if (props is CompProperties_Standby standbyProps)
             {
                 IsEnabled = standbyProps.startEnabled;
-                Type standbyActuatorType = standbyProps.standbyActuatorClass;
-                if (standbyActuatorType is null)
-                    standbyActuatorType = typeof(BenchStandbyActuator);
+                Type standbyActuatorType = standbyProps.standbyActuatorClass ?? typeof(BenchStandbyActuator);
                 StandbyActuator = Activator.CreateInstance(standbyActuatorType) as IStandbyActuator;
             }
         }
