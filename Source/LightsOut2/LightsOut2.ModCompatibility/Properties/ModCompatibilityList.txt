@@ -9,9 +9,9 @@
 	SelfLitHydroponics
 	DubsBadHygiene
 	SOS2
+	HelixienGas
 	
 Unknown:
-	HelixienGas
 	ColonyManager (not 1.5)
 	MiningLight (not 1.5)
 	

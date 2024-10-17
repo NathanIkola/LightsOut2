@@ -108,10 +108,13 @@ namespace LightsOut2.ThingComps
         public override string CompInspectStringExtra()
         {
             if (!DebugSettings.ShowDevGizmos) return base.CompInspectStringExtra();
+            Room room = parent?.GetLightRoom();
+            string outdoors = (room is null) ? "(null)" : room.OutdoorsForWork.ToString();
+
             return base.CompInspectStringExtra() + "\n" +
                 $"Keep On: {KeepOn}\n" + 
                 $"StandbyDelayTicks: {StandbyDelayTicks}\n" +
-                $"Outside: {parent?.GetRoom()?.OutdoorsForWork}";
+                $"Outside: {outdoors}";
         }
 
         /// <summary>
