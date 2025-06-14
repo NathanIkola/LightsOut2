@@ -3,7 +3,7 @@ using jl08lib.Settings.IO;
 using System;
 using Verse;
 
-namespace jl08lib.Settings
+namespace jl08lib.Settings.Exposed
 {
     public class ExposedBooleanSetting : ExposedSettingBase
     {

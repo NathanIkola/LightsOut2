@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using Verse;
 
-namespace jl08lib.Settings
+namespace jl08lib.Settings.Exposed
 {
     public abstract class ExposedSettingBase
     {
@@ -12,6 +12,11 @@ namespace jl08lib.Settings
         /// The key used for this specific setting
         /// </summary>
         public readonly string Name;
+
+        /// <summary>
+        /// The name of the member this setting corresponds to on the target type
+        /// </summary>
+        public readonly string MemberName;
 
         /// <summary>
         /// Instantiates the exposed setting base object
@@ -22,6 +27,7 @@ namespace jl08lib.Settings
         public ExposedSettingBase(Type type, string fieldOrPropName, string settingKey)
         {
             Name = settingKey;
+            MemberName = fieldOrPropName;
 
             if (type.GetField(fieldOrPropName, Flags) is FieldInfo field)
             {

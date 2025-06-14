@@ -1,4 +1,5 @@
-﻿using System;
+﻿using jl08lib.Settings.Exposed;
+using System;
 
 namespace jl08lib.Settings.Attributes
 {

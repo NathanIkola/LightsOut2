@@ -1,21 +1,33 @@
 ﻿using jl08lib.Logging;
+using jl08lib.Settings.Exposed;
 using jl08lib.Settings.IO;
 using jl08lib.Settings.Management;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
 namespace jl08lib.Settings
 {
+    /// <summary>
+    /// A base class for mod settings
+    /// </summary>
     public class ModSettingsBase : ModSettings
     {
+        /// <summary>
+        /// Instantiates the mod settings base
+        /// </summary>
         public ModSettingsBase()
         {
             StaticSettingEvents.OnLoadStaticSettings += ExposeStaticSettings;
+        }
+
+        /// <summary>
+        /// Instantiates the mod settings with an overridden scribe
+        /// </summary>
+        /// <param name="overrideScribe">The scribe to use as an override</param>
+        public ModSettingsBase(SettingScribeBase overrideScribe)
+        {
+            _overrideScribe = overrideScribe;
         }
 
         public override void ExposeData()
@@ -36,6 +48,11 @@ namespace jl08lib.Settings
         /// The package ID of this mod
         /// </summary>
         public string ModPackageId => Mod.Content.PackageId.ToLower();
+
+        /// <summary>
+        /// Gets the setting scribe to use
+        /// </summary>
+        public SettingScribeBase SettingScribe => _overrideScribe ?? new XMLSettingScribe(Mod.Content, "StaticSettings");
 
         /// <summary>
         /// Drawsthe settings menu
@@ -62,14 +79,21 @@ namespace jl08lib.Settings
         {
             List<ExposedSettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
             Logger?.LogDebug($"Found {exposedSettings?.Count ?? 0} settings");
-            using (SettingScribeBase scribe = new XMLSettingScribe(Mod.Content, "StaticSettings"))
+
+            SettingScribeBase scribe = SettingScribe;
+            foreach (ExposedSettingBase setting in exposedSettings)
             {
-                foreach (ExposedSettingBase setting in exposedSettings)
-                {
-                    setting?.ExposeData(scribe, Logger);
-                    Logger?.LogDebug($"{setting.Name}: {setting.Get<bool>()}");
-                }
+                setting?.ExposeData(scribe, Logger);
+                Logger?.LogDebug($"{setting.Name}: {setting.Get<bool>()}");
             }
+            // do not dispose of the override scribe since it has global scope
+            if (scribe != _overrideScribe) { scribe.Dispose(); }
         }
+
+        /// <summary>
+        /// The scribe to use instead of creating one
+        /// </summary>
+        /// <remarks>This should only really be used for unit testing</remarks>
+        private readonly SettingScribeBase _overrideScribe;
     }
 }
