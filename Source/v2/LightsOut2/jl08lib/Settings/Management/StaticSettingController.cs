@@ -23,6 +23,11 @@ namespace jl08lib.Settings.Management
         {
             LoggerBase logger = new VerseLogger("jl08lib");
             Instance = new SettingController(logger);
+
+            using (var section = logger.OpenSection("Exposing discovered settings", LogLevel.Trace))
+            {
+                StaticSettingEvents.InvokeLoadStaticSettings(logger);
+            }
         }
 
         /// <summary>
@@ -32,7 +37,7 @@ namespace jl08lib.Settings.Management
         /// <returns>The list of settings to show for this mod</returns>
         public static List<ExposedSettingBase> GetSettings(string modPackageId)
         {
-            return Instance.GetSettings(modPackageId);
+            return Instance?.GetSettings(modPackageId);
         }
     }
 }

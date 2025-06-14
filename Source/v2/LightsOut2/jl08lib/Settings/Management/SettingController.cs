@@ -28,11 +28,6 @@ namespace jl08lib.Settings.Management
                     AddSetting(setting.Item1.ModPackageId, setting.Item2);
                 }
             }
-
-            using (var section = _logger.OpenSection("Exposing discovered settings", LogLevel.Trace))
-            {
-                StaticSettingEvents.InvokeLoadStaticSettings(_logger);
-            }
         }
 
         /// <summary>

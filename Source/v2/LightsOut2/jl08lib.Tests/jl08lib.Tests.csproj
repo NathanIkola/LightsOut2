@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyVersion>2025.6.14.13</AssemblyVersion>
-    <FileVersion>2025.6.14.13</FileVersion>
+    <AssemblyVersion>2025.6.14.15</AssemblyVersion>
+    <FileVersion>2025.6.14.15</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
