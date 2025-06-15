@@ -52,7 +52,9 @@ namespace jl08lib.Settings.Exposed
         /// <summary>
         /// Expose the setting with the specified type
         /// </summary>
-        protected void ExposeData<TSettingType>(SettingScribeBase scribe)
+        /// <param name="scribe">The scribe to use</param>
+        /// <param name="defaultValue">The default value to use</param>
+        protected void ExposeData<TSettingType>(SettingScribeBase scribe, TSettingType defaultValue)
         {
             TSettingType settingValue = Get<TSettingType>();
             string key = $"ExposedSetting.{Name}".Replace(" ", string.Empty);

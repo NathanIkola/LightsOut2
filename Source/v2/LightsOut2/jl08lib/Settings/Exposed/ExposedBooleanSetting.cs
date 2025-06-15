@@ -1,4 +1,5 @@
 ﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes;
 using jl08lib.Settings.IO;
 using System;
 using Verse;
@@ -7,11 +8,12 @@ namespace jl08lib.Settings.Exposed
 {
     public class ExposedBooleanSetting : ExposedSettingBase
     {
-        public ExposedBooleanSetting(Type type, string fieldOrPropName, string settingKey, string label, string tooltip)
-            : base(type, fieldOrPropName, settingKey)
+        public ExposedBooleanSetting(Type type, string fieldOrPropName, BooleanSettingAttribute attribute)
+            : base(type, fieldOrPropName, attribute.SettingKey)
         {
-            _label = label;
-            _tooltip = tooltip;
+            _label = attribute.Label;
+            _tooltip = attribute.Tooltip;
+            _defaultValue = attribute.DefaultValue;
         }
 
         public override void DrawSetting(Listing_Standard settingListing)
@@ -23,7 +25,7 @@ namespace jl08lib.Settings.Exposed
 
         public override void ExposeData(SettingScribeBase scribe, LoggerBase _logger)
         {
-            ExposeData<bool>(scribe);
+            ExposeData<bool>(scribe, _defaultValue);
         }
 
         /// <summary>
@@ -35,5 +37,10 @@ namespace jl08lib.Settings.Exposed
         /// The tooltip to show when hovering over this setting
         /// </summary>
         private readonly string _tooltip;
+
+        /// <summary>
+        /// The default value for this setting
+        /// </summary>
+        private readonly bool _defaultValue;
     }
 }

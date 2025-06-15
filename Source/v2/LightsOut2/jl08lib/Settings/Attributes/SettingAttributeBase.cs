@@ -1,19 +1,21 @@
-﻿using jl08lib.Settings.Exposed;
+﻿using jl08lib.Settings.Attributes.Data;
+using jl08lib.Settings.Exposed;
 using System;
 
 namespace jl08lib.Settings.Attributes
 {
+    /// <summary>
+    /// The base attribute to use for settings
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public abstract class ExposeSettingAttribute : Attribute
+    public abstract class SettingAttributeBase : Attribute, ISettingAttributeData
     {
-        /// <summary>
-        /// The package ID for the mod (same as the packageId node in About.xml)
-        /// </summary>
+        public string Label { get; set; }
+
+        public string Tooltip { get; set; }
+
         public string ModPackageId { get; set; }
 
-        /// <summary>
-        /// The key for this setting
-        /// </summary>
         public string SettingKey { get; set; }
 
         /// <summary>
@@ -22,6 +24,6 @@ namespace jl08lib.Settings.Attributes
         /// <param name="type">The type that this setting is declared on</param>
         /// <param name="fieldOrPropName">The name of the field/property that holds the setting value</param>
         /// <returns>Retrieves the settings for this attribute</returns>
-        public abstract ExposedSettingBase GetSettingBase(Type type, string fieldOrPropName);
+        public abstract ExposedSettingBase GetExposedSetting(Type type, string fieldOrPropName);
     }
 }

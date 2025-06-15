@@ -22,7 +22,7 @@ namespace jl08lib.Tests.Settings
                 typeof(BooleanSettingAttribute),
             };
 
-            List<Tuple<ExposeSettingAttribute, ExposedSettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes).ToList();
+            List<Tuple<SettingAttributeBase, ExposedSettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes).ToList();
 
             int numSettingsExpected = 2;
             int numSettingsFound = settings.Count;
@@ -33,7 +33,7 @@ namespace jl08lib.Tests.Settings
                 nameof(BooleanSettings.BooleanFieldSetting),
                 nameof(BooleanSettings.BooleanPropertySetting),
             };
-            foreach(Tuple<ExposeSettingAttribute, ExposedSettingBase> setting in settings)
+            foreach(Tuple<SettingAttributeBase, ExposedSettingBase> setting in settings)
             {
                 string memberName = setting.Item2.MemberName;
                 bool isExpectedMember = expectedMembers.Contains(memberName);
@@ -50,8 +50,12 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void ExposedBooleanSetting_ExposeData_GetsField()
         {
-
-            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), "field", "", "");
+            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            {
+                ModPackageId = "Test",
+                SettingKey = "field",
+            };
+            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), attr);
 
             BooleanSettings.BooleanFieldSetting = false;
             bool expectedValue = BooleanSettings.BooleanFieldSetting;
@@ -70,8 +74,12 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void ExposedBooleanSetting_ExposeData_GetsProperty()
         {
-
-            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), "prop", "", "");
+            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            {
+                ModPackageId = "Test",
+                SettingKey = "prop",
+            };
+            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), attr);
 
             BooleanSettings.BooleanPropertySetting = false;
             bool expectedValue = BooleanSettings.BooleanPropertySetting;
@@ -90,8 +98,12 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void ExposedBooleanSetting_ExposeData_SetsField()
         {
-
-            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), "field", "", "");
+            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            {
+                ModPackageId = "Test",
+                SettingKey = "field",
+            };
+            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), attr);
 
             BooleanSettings.BooleanFieldSetting = false;
             bool expectedValue = true;
@@ -106,8 +118,12 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void ExposedBooleanSetting_ExposeData_SetsProperty()
         {
-
-            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), "prop", "", "");
+            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            {
+                ModPackageId = "Test",
+                SettingKey = "prop",
+            };
+            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), attr);
 
             BooleanSettings.BooleanPropertySetting = false;
             bool expectedValue = true;
@@ -117,7 +133,6 @@ namespace jl08lib.Tests.Settings
         }
     }
 
-    #region bool
     /// <summary>
     /// A class that has boolean settings set up for testing
     /// </summary>
@@ -145,5 +160,4 @@ namespace jl08lib.Tests.Settings
         /// </summary>
         public static bool BooleanPropertyNonSetting { get; set; } = true;
     }
-    #endregion
 }

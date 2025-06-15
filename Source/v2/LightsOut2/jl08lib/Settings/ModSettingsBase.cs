@@ -78,13 +78,11 @@ namespace jl08lib.Settings
         private void ExposeStaticSettings()
         {
             List<ExposedSettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
-            Logger?.LogDebug($"Found {exposedSettings?.Count ?? 0} settings");
 
             SettingScribeBase scribe = SettingScribe;
             foreach (ExposedSettingBase setting in exposedSettings)
             {
                 setting?.ExposeData(scribe, Logger);
-                Logger?.LogDebug($"{setting.Name}: {setting.Get<bool>()}");
             }
             // do not dispose of the override scribe since it has global scope
             if (scribe != _overrideScribe) { scribe.Dispose(); }

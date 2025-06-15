@@ -1,5 +1,6 @@
 ﻿using jl08lib.Logging;
 using jl08lib.Settings.Attributes;
+using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace jl08lib.Settings.Management
 
             using (var section = _logger.OpenSection("Searching for auto-expose settings", LogLevel.Trace))
             {
-                foreach (Tuple<ExposeSettingAttribute, ExposedSettingBase> setting in LocateAllSettings())
+                foreach (Tuple<SettingAttributeBase, ExposedSettingBase> setting in LocateAllSettings())
                 {
                     AddSetting(setting.Item1.ModPackageId, setting.Item2);
                 }
@@ -48,7 +49,7 @@ namespace jl08lib.Settings.Management
         /// <summary>
         /// Looks at all loaded mods to find any attributed settings
         /// </summary>
-        internal static IEnumerable<Tuple<ExposeSettingAttribute, ExposedSettingBase>> LocateAllSettings()
+        internal static IEnumerable<Tuple<SettingAttributeBase, ExposedSettingBase>> LocateAllSettings()
         {
             // get the list of attributes to search for on types
             List<Type> attributeTypes = AttributeTypes();
@@ -58,7 +59,7 @@ namespace jl08lib.Settings.Management
                 {
                     foreach (Type type in asm.GetTypes())
                     {
-                        foreach (Tuple<ExposeSettingAttribute, ExposedSettingBase> setting in LocateAllSettingsOnType(type, attributeTypes))
+                        foreach (Tuple<SettingAttributeBase, ExposedSettingBase> setting in LocateAllSettingsOnType(type, attributeTypes))
                         {
                             yield return setting;
                         }
@@ -76,7 +77,7 @@ namespace jl08lib.Settings.Management
         internal static List<Type> AttributeTypes()
         {
             Assembly asm = typeof(StaticSettingController).Assembly;
-            Type baseAttribute = typeof(ExposeSettingAttribute);
+            Type baseAttribute = typeof(SettingAttributeBase);
             List<Type> attributes = new List<Type>();
             foreach (Type type in asm.GetTypes())
             {
@@ -92,17 +93,17 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="type">The type to load the settings from</param>
         /// <param name="attributeTypes">The list of attribute types to search for</param>
-        internal static IEnumerable<Tuple<ExposeSettingAttribute, ExposedSettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes)
+        internal static IEnumerable<Tuple<SettingAttributeBase, ExposedSettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes)
         {
             // first look at each field
             foreach (FieldInfo fieldInfo in type.GetFields())
             {
                 foreach (Type attributeType in attributeTypes)
                 {
-                    if (fieldInfo.GetCustomAttribute(attributeType) is ExposeSettingAttribute settingAttr)
+                    if (fieldInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        ExposedSettingBase settingbase = settingAttr.GetSettingBase(type, fieldInfo.Name);
-                        yield return new Tuple<ExposeSettingAttribute, ExposedSettingBase>(settingAttr, settingbase);
+                        ExposedSettingBase settingbase = settingAttr.GetExposedSetting(type, fieldInfo.Name);
+                        yield return new Tuple<SettingAttributeBase, ExposedSettingBase>(settingAttr, settingbase);
                         break;
                     }
                 }
@@ -113,10 +114,10 @@ namespace jl08lib.Settings.Management
             {
                 foreach (Type attributeType in attributeTypes)
                 {
-                    if (propertyInfo.GetCustomAttribute(attributeType) is ExposeSettingAttribute settingAttr)
+                    if (propertyInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        ExposedSettingBase settingBase = settingAttr.GetSettingBase(type, propertyInfo.Name);
-                        yield return new Tuple<ExposeSettingAttribute, ExposedSettingBase>(settingAttr, settingBase);
+                        ExposedSettingBase settingBase = settingAttr.GetExposedSetting(type, propertyInfo.Name);
+                        yield return new Tuple<SettingAttributeBase, ExposedSettingBase>(settingAttr, settingBase);
                         break;
                     }
                 }
