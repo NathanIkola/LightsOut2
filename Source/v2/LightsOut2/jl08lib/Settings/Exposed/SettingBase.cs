@@ -60,11 +60,12 @@ namespace jl08lib.Settings.Exposed
         /// </summary>
         /// <param name="scribe">The scribe to use</param>
         /// <param name="defaultValue">The default value to use</param>
-        protected void ExposeData<TSettingType>(SettingScribeBase scribe, TSettingType defaultValue)
+        /// <param name="forceSave">Pass true to force saving this setting even if it matches the default</param>
+        protected void ExposeData<TSettingType>(SettingScribeBase scribe, TSettingType defaultValue, bool forceSave = false)
         {
             TSettingType settingValue = Get<TSettingType>();
             string key = $"ExposedSetting.{Name}".Replace(" ", string.Empty);
-            scribe.Look(ref settingValue, key, defaultValue, true);
+            scribe.Look(ref settingValue, key, defaultValue, forceSave);
             Set(settingValue);
         }
 
