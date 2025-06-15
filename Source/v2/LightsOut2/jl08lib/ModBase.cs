@@ -1,5 +1,7 @@
-﻿using jl08lib.Logging;
+﻿using HarmonyLib;
+using jl08lib.Logging;
 using jl08lib.Settings;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 
@@ -27,6 +29,13 @@ namespace jl08lib
         {
             Logger = logger;
             Log.Message($"Initializing {content.Name}");
+
+            // do Harmony patching
+            Harmony = new Harmony(content.Name);
+            foreach (Assembly asm in content.assemblies.loadedAssemblies)
+            {
+                Harmony.PatchAll(asm);
+            }
         }
 
         /// <summary>
@@ -61,5 +70,10 @@ namespace jl08lib
         /// The logger to use for this mod
         /// </summary>
         public LoggerBase Logger { get; }
+
+        /// <summary>
+        /// The Harmony instance used for this mod
+        /// </summary>
+        public Harmony Harmony { get; }
     }
 }

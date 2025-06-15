@@ -134,19 +134,19 @@ namespace jl08lib.Settings.Exposed
             MethodInfo method = delegateType.GetMethod(delegateMethodName, Flags);
             if (method is null)
             {
-                logger?.LogError($"Error retrieving setting delegate for {settingName}: could not find method '{delegateMethodName}' on type '{delegateType}'");
+                logger?.Error($"Error retrieving setting delegate for {settingName}: could not find method '{delegateMethodName}' on type '{delegateType}'");
                 return null; // default to showing the setting if we can't find the method
             }
 
             // verify it has the right signature
             if (method.ReturnType != typeof(bool))
             {
-                logger?.LogError($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' has a return type of '{method.ReturnType}' but should return 'bool'");
+                logger?.Error($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' has a return type of '{method.ReturnType}' but should return 'bool'");
                 return null;
             }
             else if (method.GetParameters().Length != 0)
             {
-                logger?.LogError($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' must not take any parameters");
+                logger?.Error($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' must not take any parameters");
                 return null;
             }
 

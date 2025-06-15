@@ -27,8 +27,8 @@ namespace jl08lib.Settings.Exposed
 
         public override void ExposeData(SettingScribeBase scribe, LoggerBase logger)
         {
-            logger.LogTrace($"Exposing boolean setting with key {Name}");
             ExposeData(scribe, _defaultValue);
+            logger.Trace($"Exposing boolean setting with key {Name} (value: {Get<bool>()})");
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Trace level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogTrace(string message)
+        public virtual void Trace(string message)
         {
             Log(message, LogLevel.Trace, false);
         }
@@ -61,7 +61,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Debug level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogDebug(string message)
+        public virtual void Debug(string message)
         {
             Log(message, LogLevel.Debug, false);
         }
@@ -70,7 +70,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Information level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogInformation(string message)
+        public virtual void Information(string message)
         {
             Log(message, LogLevel.Information, false);
         }
@@ -79,7 +79,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Warning level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogWarning(string message)
+        public virtual void Warning(string message)
         {
             Log(message, LogLevel.Warning, false);
         }
@@ -89,7 +89,7 @@ namespace jl08lib.Logging
         /// </summary>
         /// <param name="message">The message to log</param>
         /// <param name="onlyOnce">Whether or not the message should be logged only once</param>
-        public virtual void LogWarning(string message, bool onlyOnce)
+        public virtual void Warning(string message, bool onlyOnce)
         {
             Log(message, LogLevel.Warning, onlyOnce);
         }
@@ -98,7 +98,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Error level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogError(string message)
+        public virtual void Error(string message)
         {
             Log(message, LogLevel.Error, false);
         }
@@ -108,7 +108,7 @@ namespace jl08lib.Logging
         /// </summary>
         /// <param name="message">The message to log</param>
         /// <param name="onlyOnce">Whether or not the message should be logged only once</param>
-        public virtual void LogError(string message, bool onlyOnce)
+        public virtual void Error(string message, bool onlyOnce)
         {
             Log(message, LogLevel.Error, onlyOnce);
         }
@@ -117,7 +117,7 @@ namespace jl08lib.Logging
         /// Logs a message with the Critical level
         /// </summary>
         /// <param name="message">The message to log</param>
-        public virtual void LogCritical(string message)
+        public virtual void Critical(string message)
         {
             Log(message, LogLevel.Critical, false);
         }
@@ -132,7 +132,7 @@ namespace jl08lib.Logging
         public bool Assert(bool expr, string message, bool onlyOnce = false)
         {
             if (expr) { return true; }
-            LogError($"Assertion failed: {message}", onlyOnce);
+            Error($"Assertion failed: {message}", onlyOnce);
             return false;
         }
 

@@ -40,11 +40,11 @@ namespace jl08lib.Settings.Exposed
                 Set(_curValue);
             }
 
-            logger.LogTrace($"Exposing integer setting with key {Name}");
             ExposeData(scribe, _defaultValue);
+            _curValue = Get<int>();
+            logger.Trace($"Exposing integer setting with key {Name} (value: {_curValue})");
             // clear out the buffer so it gets refreshed on the next load
             _buffer = null;
-            _curValue = Get<int>();
         }
 
         /// <summary>

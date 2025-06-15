@@ -79,6 +79,8 @@ namespace jl08lib.Logging
         {
             switch (logLevel)
             {
+                case LogLevel.Trace:
+                    return $"<color=grey>{LogLevelPrefix(logLevel)}</color>";
                 case LogLevel.Debug:
                     return $"<color=orange>{LogLevelPrefix(logLevel)}</color>";
                 case LogLevel.None:
