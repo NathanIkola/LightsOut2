@@ -16,12 +16,14 @@ namespace jl08lib.Settings.Management
     {
         /// <summary>
         /// Initializes the setting controller, locating all static settings that can be loaded
+        /// <paramref name="logger">The logger to use</paramref>
         /// </summary>
-        public SettingController()
+        public SettingController(LoggerBase logger)
         {
             _settings = new Dictionary<string, List<SettingBase>>();
+            _logger = logger;
 
-            foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettings())
+            foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettings(_logger))
             {
                 AddSetting(setting.Item1.ModPackageId, setting.Item2);
             }
@@ -45,7 +47,7 @@ namespace jl08lib.Settings.Management
         /// <summary>
         /// Looks at all loaded mods to find any attributed settings
         /// </summary>
-        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettings()
+        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettings(LoggerBase logger)
         {
             // get the list of attributes to search for on types
             List<Type> attributeTypes = AttributeTypes();
@@ -55,7 +57,7 @@ namespace jl08lib.Settings.Management
                 {
                     foreach (Type type in asm.GetTypes())
                     {
-                        foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettingsOnType(type, attributeTypes))
+                        foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettingsOnType(type, attributeTypes, logger))
                         {
                             yield return setting;
                         }
@@ -89,7 +91,8 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="type">The type to load the settings from</param>
         /// <param name="attributeTypes">The list of attribute types to search for</param>
-        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes)
+        /// <param name="logger">The logger to use for errors</param>
+        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes, LoggerBase logger)
         {
             // first look at each field
             foreach (FieldInfo fieldInfo in type.GetFields())
@@ -98,7 +101,7 @@ namespace jl08lib.Settings.Management
                 {
                     if (fieldInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        SettingBase settingbase = settingAttr.GetSetting(type, fieldInfo.Name);
+                        SettingBase settingbase = settingAttr.GetSetting(type, fieldInfo.Name, logger);
                         yield return new Tuple<SettingAttributeBase, SettingBase>(settingAttr, settingbase);
                         break;
                     }
@@ -112,7 +115,7 @@ namespace jl08lib.Settings.Management
                 {
                     if (propertyInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        SettingBase settingBase = settingAttr.GetSetting(type, propertyInfo.Name);
+                        SettingBase settingBase = settingAttr.GetSetting(type, propertyInfo.Name, logger);
                         yield return new Tuple<SettingAttributeBase, SettingBase>(settingAttr, settingBase);
                         break;
                     }
@@ -141,5 +144,10 @@ namespace jl08lib.Settings.Management
         /// The dictionary of settings keyed by the mod packageId
         /// </summary>
         private readonly Dictionary<string, List<SettingBase>> _settings;
+
+        /// <summary>
+        /// The logger to use for errors and warnings
+        /// </summary>
+        private readonly LoggerBase _logger;
     }
 }

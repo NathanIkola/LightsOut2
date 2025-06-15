@@ -1,6 +1,8 @@
-﻿using jl08lib.Settings.Attributes;
+﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes;
 using jl08lib.Settings.Exposed;
 using jl08lib.Settings.Management;
+using jl08lib.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -22,8 +24,8 @@ namespace jl08lib.Tests.Settings
             {
                 typeof(BooleanSettingAttribute),
             };
-
-            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes).ToList();
+            LoggerBase logger = new MockLogger();
+            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes, logger).ToList();
 
             int numSettingsExpected = 2;
             int numSettingsFound = settings.Count;
@@ -55,7 +57,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr, logger);
 
             BooleanSettings.FieldSetting = false;
             bool expectedValue = BooleanSettings.FieldSetting;
@@ -78,7 +81,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "prop",
             };
-            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr, logger);
 
             BooleanSettings.PropertySetting = false;
             bool expectedValue = BooleanSettings.PropertySetting;
@@ -101,7 +105,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr, logger);
 
             BooleanSettings.FieldSetting = false;
             bool expectedValue = true;
@@ -120,7 +125,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "prop",
             };
-            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr, logger);
 
             BooleanSettings.PropertySetting = false;
             bool expectedValue = true;
@@ -142,8 +148,9 @@ namespace jl08lib.Tests.Settings
                 DefaultValue = expectedValue,
             };
 
+            LoggerBase logger = new MockLogger();
             BooleanSettings.PropertySetting = false; // Set to a non-default value
-            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr, logger);
 
             bool actualValue = prop.Get<bool>();
             Assert.AreEqual(expectedValue, actualValue, "The setting should get set to the default value on initial load");

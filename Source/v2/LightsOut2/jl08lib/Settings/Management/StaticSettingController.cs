@@ -1,4 +1,5 @@
-﻿using jl08lib.Settings.Exposed;
+﻿using jl08lib.Logging;
+using jl08lib.Settings.Exposed;
 using System.Collections.Generic;
 using Verse;
 
@@ -20,7 +21,8 @@ namespace jl08lib.Settings.Management
         /// </summary>
         static StaticSettingController()
         {
-            Instance = new SettingController();
+            LoggerBase logger = new VerseLogger("jl08lib");
+            Instance = new SettingController(logger);
             StaticSettingEvents.InvokeLoadStaticSettings();
         }
 

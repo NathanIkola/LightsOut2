@@ -1,4 +1,5 @@
-﻿using jl08lib.Settings.Attributes.Data;
+﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using jl08lib.Translation;
 using System;
@@ -25,9 +26,9 @@ namespace jl08lib.Settings.Attributes
         /// </summary>
         public float MaxValue { get; set; } = float.MaxValue;
 
-        public override SettingBase GetSetting(Type type, string memberName)
+        public override SettingBase GetSetting(Type type, string memberName, LoggerBase logger)
         {
-            return new FloatSetting(type, memberName, this);
+            return new FloatSetting(type, memberName, this, logger);
         }
     }
 }

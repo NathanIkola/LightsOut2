@@ -1,8 +1,8 @@
-﻿using jl08lib.Settings.Attributes.Data;
+﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using jl08lib.Translation;
 using System;
-using Verse;
 
 namespace jl08lib.Settings.Attributes
 {
@@ -40,6 +40,10 @@ namespace jl08lib.Settings.Attributes
 
         public bool TranslateStrings { get; set; }
 
+        public Type ShowInSettingsDelegateType { get; set; }
+
+        public string ShowInSettingsDelegateName { get; set; }
+
         /// <summary>
         /// A localized label for display
         /// </summary>
@@ -55,8 +59,9 @@ namespace jl08lib.Settings.Attributes
         /// </summary>
         /// <param name="type">The type that this setting is declared on</param>
         /// <param name="memberName">The name of the field/property that holds the setting value</param>
+        /// <param name="logger">The logger to use for errors</param>
         /// <returns>Retrieves the settings for this attribute</returns>
-        public abstract SettingBase GetSetting(Type type, string memberName);
+        public abstract SettingBase GetSetting(Type type, string memberName, LoggerBase logger);
 
         /// <summary>
         /// Translates the given string using the translator

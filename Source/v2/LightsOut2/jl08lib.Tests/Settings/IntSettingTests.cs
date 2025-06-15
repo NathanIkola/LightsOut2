@@ -24,7 +24,8 @@ namespace jl08lib.Tests.Settings
                 typeof(IntSettingAttribute),
             };
 
-            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(IntSettings), attributeTypes).ToList();
+            LoggerBase logger = new MockLogger();
+            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(IntSettings), attributeTypes, logger).ToList();
 
             int numSettingsExpected = 2;
             int numSettingsFound = settings.Count;
@@ -56,7 +57,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            IntSetting field = new IntSetting(typeof(IntSettings), nameof(IntSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            IntSetting field = new IntSetting(typeof(IntSettings), nameof(IntSettings.FieldSetting), attr, logger);
 
             IntSettings.FieldSetting = 3; // Set the field to a known value
             int expectedValue = IntSettings.FieldSetting;
@@ -79,7 +81,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "property",
             };
-            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr, logger);
 
             IntSettings.PropertySetting = 42; // Set the property to a known value
             int expectedValue = IntSettings.PropertySetting;
@@ -102,7 +105,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            IntSetting field = new IntSetting(typeof(IntSettings), nameof(IntSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            IntSetting field = new IntSetting(typeof(IntSettings), nameof(IntSettings.FieldSetting), attr, logger);
 
             IntSettings.FieldSetting = 10;
             int expectedValue = 20;
@@ -121,7 +125,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "property",
             };
-            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr, logger);
 
             IntSettings.PropertySetting = 10;
             int expectedValue = 20;
@@ -144,7 +149,7 @@ namespace jl08lib.Tests.Settings
                 MinValue = 9,
                 DefaultValue = 10,
             };
-            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr);
+            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr, logger);
 
             int expectedValue = 10; // Default value
             property.Set(expectedValue); // Set the default value
@@ -171,7 +176,7 @@ namespace jl08lib.Tests.Settings
                 MaxValue = 9,
                 DefaultValue = 8,
             };
-            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr);
+            IntSetting property = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr, logger);
             int expectedValue = 8; // Default value
             property.Set(expectedValue); // Set the default value
             property._curValue = 10; // Set input to a value above the maximum
@@ -194,8 +199,9 @@ namespace jl08lib.Tests.Settings
                 DefaultValue = expectedValue,
             };
 
+            LoggerBase logger = new MockLogger();
             IntSettings.PropertySetting = 99;
-            IntSetting prop = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr);
+            IntSetting prop = new IntSetting(typeof(IntSettings), nameof(IntSettings.PropertySetting), attr, logger);
 
             int actualValue = prop.Get<int>();
             Assert.AreEqual(expectedValue, actualValue, "The setting should get set to the default value on initial load");

@@ -9,8 +9,8 @@ namespace jl08lib.Settings.Exposed
 {
     public class IntSetting : SettingBase
     {
-        public IntSetting(Type type, string memberName, IntSettingAttribute attribute)
-            : base(type, memberName, attribute)
+        public IntSetting(Type type, string memberName, IntSettingAttribute attribute, LoggerBase logger)
+            : base(type, memberName, attribute, logger)
         {
             _label = attribute.LabelLocalized;
             _tooltip = attribute.TooltipLocalized;
@@ -20,7 +20,7 @@ namespace jl08lib.Settings.Exposed
             _maxValue = attribute.MaxValue;
         }
 
-        public override void DrawSetting(Listing_Standard settingListing)
+        protected override void DrawSettingInner(Listing_Standard settingListing)
         {
             // initialize the buffer
             if (_buffer is null)

@@ -1,5 +1,6 @@
 ﻿using jl08lib.Logging;
 using jl08lib.Settings.Attributes;
+using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.IO;
 using System;
 using System.Reflection;
@@ -23,18 +24,22 @@ namespace jl08lib.Settings.Exposed
         /// Instantiates the exposed setting base object
         /// </summary>
         /// <param name="type">The type that has the setting being exposed</param>
-        /// <param name="fieldOrPropName">The name of the property on the given type that holds the setting</param>
+        /// <param name="memberName">The name of the property on the given type that holds the setting</param>
         /// <param name="attribute">The attribute initializing this setting</param>
-        public SettingBase(Type type, string fieldOrPropName, SettingAttributeBase attribute)
+        /// <param name="logger">The logger to use for errors</param>
+        public SettingBase(Type type, string memberName, SettingAttributeBase attribute, LoggerBase logger)
         {
-            Name = string.IsNullOrWhiteSpace(attribute.SettingKey) ? fieldOrPropName : attribute.SettingKey;
-            MemberName = fieldOrPropName;
+            Name = string.IsNullOrWhiteSpace(attribute.SettingKey) ? memberName : attribute.SettingKey;
+            MemberName = memberName;
+            // fall back to the type that the attribute is on if the delegate type is not specified
+            Type delegateType = attribute.ShowInSettingsDelegateType ?? type;
+            _showInSettingsDelegate = GetShowInSettingsMenuDelegate(Name, delegateType, attribute.ShowInSettingsDelegateName, logger);
 
-            if (type.GetField(fieldOrPropName, Flags) is FieldInfo field)
+            if (type.GetField(memberName, Flags) is FieldInfo field)
             {
                 _field = field;
             }
-            else if (type.GetProperty(fieldOrPropName, Flags) is PropertyInfo property)
+            else if (type.GetProperty(memberName, Flags) is PropertyInfo property)
             {
                 _property = property;
             }
@@ -67,7 +72,19 @@ namespace jl08lib.Settings.Exposed
         /// Renders the setting in the settings menu
         /// </summary>
         /// <param name="settingListing">The listing to add it to</param>
-        public abstract void DrawSetting(Listing_Standard settingListing);
+        public void DrawSetting(Listing_Standard settingListing)
+        {
+            if (_showInSettingsDelegate?.Invoke() ?? true)
+            {
+                DrawSettingInner(settingListing);
+            }
+        }
+
+        /// <summary>
+        /// Renders the setting in the settings menu
+        /// </summary>
+        /// <param name="settingListing">The listing to add it to</param>
+        protected abstract void DrawSettingInner(Listing_Standard settingListing);
 
         /// <summary>
         /// Retrieves the value of the field or property
@@ -98,6 +115,50 @@ namespace jl08lib.Settings.Exposed
         }
 
         /// <summary>
+        /// Retrieves the delegate that determines if this setting should be shown in the settings menu
+        /// </summary>
+        /// <param name="settingName">The name of the setting getting the delegate for</param>
+        /// <param name="delegateType">The type that has the delegate method</param>
+        /// <param name="delegateMethodName">The name of the method</param>
+        /// <param name="logger">A logger to use in the event of errors</param>
+        /// <returns>A delegate to use to determine if the setting should show</returns>
+        internal static ShowInSettingsMenuDelegate GetShowInSettingsMenuDelegate(string settingName, Type delegateType, string delegateMethodName, LoggerBase logger)
+        {
+            bool typeIsNull = delegateType is null;
+            bool methodNameIsNull = string.IsNullOrWhiteSpace(delegateMethodName);
+
+            // didn't specify a type or method name, so return a delegate that always shows the setting
+            if (typeIsNull || methodNameIsNull) { return null; }
+            // otherwise, try to get the method and create a delegate for it
+            MethodInfo method = delegateType.GetMethod(delegateMethodName, Flags);
+            if (method is null)
+            {
+                logger?.LogError($"Error retrieving setting delegate for {settingName}: could not find method '{delegateMethodName}' on type '{delegateType}'");
+                return null; // default to showing the setting if we can't find the method
+            }
+
+            // verify it has the right signature
+            if (method.ReturnType != typeof(bool))
+            {
+                logger?.LogError($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' has a return type of '{method.ReturnType}' but should return 'bool'");
+                return null;
+            }
+            else if (method.GetParameters().Length != 0)
+            {
+                logger?.LogError($"Error retrieving setting delegate for {settingName}: method '{delegateMethodName}' on type '{delegateType}' must not take any parameters");
+                return null;
+            }
+
+            // return the delegate
+            return () => (bool)method.Invoke(null, null);
+        }
+
+        /// <summary>
+        /// The delegate that determines if this setting should be shown in the settings menu
+        /// </summary>
+        private readonly ShowInSettingsMenuDelegate _showInSettingsDelegate;
+
+        /// <summary>
         /// The field to get/set
         /// </summary>
         private readonly FieldInfo _field;
@@ -116,5 +177,11 @@ namespace jl08lib.Settings.Exposed
         private const BindingFlags Flags = BindingFlags.Public
             | BindingFlags.Static
             | BindingFlags.NonPublic;
+
+        /// <summary>
+        /// The delegate type for showing in the settings menu
+        /// </summary>
+        /// <returns>True if the setting should show, false otherwise</returns>
+        public delegate bool ShowInSettingsMenuDelegate();
     }
 }

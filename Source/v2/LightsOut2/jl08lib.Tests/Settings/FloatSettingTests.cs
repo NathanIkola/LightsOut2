@@ -24,7 +24,8 @@ namespace jl08lib.Tests.Settings
                 typeof(FloatSettingAttribute),
             };
 
-            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(FloatSettings), attributeTypes).ToList();
+            LoggerBase logger = new MockLogger();
+            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(FloatSettings), attributeTypes, logger).ToList();
 
             int numSettingsExpected = 2;
             int numSettingsFound = settings.Count;
@@ -56,7 +57,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr, logger);
 
             FloatSettings.FieldSetting = 3.14f; // Set the field to a known value
             float expectedValue = FloatSettings.FieldSetting;
@@ -78,7 +80,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "property",
             };
-            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr, logger);
 
             FloatSettings.PropertySetting = 3.14f; // Set the property to a known value
             float expectedValue = FloatSettings.PropertySetting;
@@ -101,7 +104,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "field",
             };
-            FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr);
+            LoggerBase logger = new MockLogger();
+            FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr, logger);
 
             FloatSettings.FieldSetting = 3.14f;
             float expectedValue = 2.71f;
@@ -120,7 +124,8 @@ namespace jl08lib.Tests.Settings
             {
                 SettingKey = "property",
             };
-            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
+            LoggerBase logger = new MockLogger();
+            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr, logger);
 
             FloatSettings.PropertySetting = 3.14f;
             float expectedValue = 2.71f;
@@ -143,7 +148,7 @@ namespace jl08lib.Tests.Settings
                 MinValue = 9.0f,
                 DefaultValue = 10.0f,
             };
-            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
+            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr, logger);
 
             float expectedValue = 10.0f; // Default value
             property.Set(expectedValue); // Set the default value
@@ -170,7 +175,7 @@ namespace jl08lib.Tests.Settings
                 MaxValue = 9.0f,
                 DefaultValue = 8.0f,
             };
-            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
+            FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr, logger);
             float expectedValue = 8.0f; // Default value
             property.Set(expectedValue); // Set the default value
             property._curValue = 10.0f; // Set input to a value above the maximum
@@ -193,8 +198,9 @@ namespace jl08lib.Tests.Settings
                 DefaultValue = expectedValue,
             };
 
+            LoggerBase logger = new MockLogger();
             FloatSettings.PropertySetting = 9.0f;
-            FloatSetting prop = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
+            FloatSetting prop = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr, logger);
 
             float actualValue = prop.Get<float>();
             Assert.AreEqual(expectedValue, actualValue, "The setting should get set to the default value on initial load");

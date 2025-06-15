@@ -1,4 +1,5 @@
-﻿using jl08lib.Settings.Attributes.Data;
+﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using jl08lib.Translation;
 using System;
@@ -15,9 +16,9 @@ namespace jl08lib.Settings.Attributes
 
         public bool DefaultValue { get; set; }
 
-        public override SettingBase GetSetting(Type type, string memberName)
+        public override SettingBase GetSetting(Type type, string memberName, LoggerBase logger)
         {
-            return new BooleanSetting(type, memberName, this);
+            return new BooleanSetting(type, memberName, this, logger);
         }
     }
 }

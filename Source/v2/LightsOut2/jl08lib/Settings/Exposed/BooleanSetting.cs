@@ -9,8 +9,8 @@ namespace jl08lib.Settings.Exposed
 {
     public class BooleanSetting : SettingBase
     {
-        public BooleanSetting(Type type, string memberName, BooleanSettingAttribute attribute)
-            : base(type, memberName, attribute)
+        public BooleanSetting(Type type, string memberName, BooleanSettingAttribute attribute, LoggerBase logger)
+            : base(type, memberName, attribute, logger)
         {
             _label = attribute.LabelLocalized;
             _tooltip = attribute.TooltipLocalized;
@@ -18,7 +18,7 @@ namespace jl08lib.Settings.Exposed
             Set(_defaultValue);
         }
 
-        public override void DrawSetting(Listing_Standard settingListing)
+        protected override void DrawSettingInner(Listing_Standard settingListing)
         {
             bool value = Get<bool>();
             settingListing.CheckboxLabeled(_label, ref value, _tooltip);
