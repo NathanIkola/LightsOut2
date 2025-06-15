@@ -6,6 +6,9 @@ namespace jl08lib.Settings.Attributes
 {
     public class FloatSettingAttribute : SettingAttributeBase, IDefaultableSettingAttributeData<float>
     {
+        public FloatSettingAttribute(string modPackageId)
+            : base(modPackageId) { }
+
         public float DefaultValue { get; set; }
 
         /// <summary>

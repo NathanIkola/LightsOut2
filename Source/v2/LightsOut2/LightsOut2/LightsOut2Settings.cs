@@ -14,26 +14,50 @@ namespace LightsOut2
         /// </summary>
         private const string PackageId = "juanlopez2008.lightsout2";
 
-        [BooleanSetting(
-            ModPackageId = PackageId, 
-            Label = "My field", 
-            Tooltip = "My field tooltip",
-            SettingKey = "MySetting1")]
-        public static bool MySetting1;
+        /// <summary>
+        /// Whether or not to turn off lights in empty rooms
+        /// </summary>
+        [BooleanSetting(PackageId,
+            DefaultValue = true,
+            Label = "Turn off lights in empty rooms",
+            Tooltip = "If enabled, lights in empty rooms will be turned off to save power")]
+        public static bool FlickLights;
 
-        [BooleanSetting(
-            ModPackageId = PackageId, 
-            Label = "My property", 
-            Tooltip = "My property tooltip", 
-            SettingKey = "MySetting2")]
-        public static bool MySetting2 { get; set; }
+        /// <summary>
+        /// The coefficient (in percent) of power devices use in standby mode
+        /// </summary>
+        /// <remarks>
+        /// This does not affect lights, which always use 0% when in standby
+        /// </remarks>
+        public static int StandbyCoefficientPercent = 0;
 
-        [FloatSetting(
-            ModPackageId = PackageId,
-            Label = "This is a float (DO NOT DO MORE THAN 100)",
-            SettingKey = "MyFloat",
-            DefaultValue = 4.7f,
-            MaxValue = 100f)]
-        public static float MyFloatSetting { get; set; }
+        /// <summary>
+        /// The coefficient (in percent) of power devices use when active
+        /// </summary>
+        /// <remarks>
+        /// This does not affect lights, which always use 100% when active
+        /// </remarks>
+        public static int ActiveCoefficientPercent = 100;
+
+        /// <summary>
+        /// Whether or not to keep lights on when pawns are sleeping
+        /// </summary>
+        [BooleanSetting(PackageId,
+            DefaultValue = false,
+            Label = "Keep lights on when pawns are sleeping",
+            Tooltip = "If enabled, lights will stay on when all pawns in the room are sleeping")]
+        public static bool NightLights;
+
+        // handle debug logging settings somehow
+
+        /// <summary>
+        /// The amount of time (in seconds) to wait before turning off lights
+        /// </summary>
+        [FloatSetting(PackageId,
+            DefaultValue = 1.5f,
+            MinValue = 0f,
+            Label = "Seconds to delay turning off lights",
+            Tooltip = "The number of seconds to wait before turning off the lights (to combat rapid flickering at higher game speeds)")]
+        public static float LightDelaySeconds;
     }
 }

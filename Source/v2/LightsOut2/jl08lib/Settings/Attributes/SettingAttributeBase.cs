@@ -1,6 +1,7 @@
 ﻿using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using System;
+using Verse;
 
 namespace jl08lib.Settings.Attributes
 {
@@ -10,6 +11,15 @@ namespace jl08lib.Settings.Attributes
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public abstract class SettingAttributeBase : Attribute, ISettingAttributeData
     {
+        /// <summary>
+        /// Constructs a new setting attribute
+        /// </summary>
+        /// <param name="modPackageId">The package ID of the mod</param>
+        public SettingAttributeBase(string modPackageId)
+        {
+            ModPackageId = modPackageId;
+        }
+
         public string Label { get; set; }
 
         public string Tooltip { get; set; }
@@ -17,6 +27,22 @@ namespace jl08lib.Settings.Attributes
         public string ModPackageId { get; set; }
 
         public string SettingKey { get; set; }
+
+        public bool TranslateStrings { get; set; } = true;
+
+        /// <summary>
+        /// Returns the appropriate string for the input, translating it if necessary
+        /// </summary>
+        /// <param name="input">The string to retrieve</param>
+        /// <returns>The string, translated if necessary</returns>
+        public string GetString(string input)
+        {
+            if (TranslateStrings)
+            {
+                return input.Translate();
+            }
+            return input;
+        }
 
         /// <summary>
         /// Retrieves the setting type

@@ -50,9 +50,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void BooleanSetting_ExposeData_GetsField()
         {
-            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            BooleanSettingAttribute attr = new BooleanSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "field",
             };
             BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
@@ -74,9 +73,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void BooleanSetting_ExposeData_GetsProperty()
         {
-            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            BooleanSettingAttribute attr = new BooleanSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "prop",
             };
             BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
@@ -98,9 +96,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void BooleanSetting_ExposeData_SetsField()
         {
-            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            BooleanSettingAttribute attr = new BooleanSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "field",
             };
             BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
@@ -118,9 +115,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void BooleanSetting_ExposeData_SetsProperty()
         {
-            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            BooleanSettingAttribute attr = new BooleanSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "prop",
             };
             BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
@@ -139,9 +135,8 @@ namespace jl08lib.Tests.Settings
         public void BooleanSetting_RespectsDefault()
         {
             bool expectedValue = true; // Default value for the setting
-            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            BooleanSettingAttribute attr = new BooleanSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "prop",
                 DefaultValue = expectedValue,
             };
@@ -162,7 +157,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A field which should be a setting
         /// </summary>
-        [BooleanSetting]
+        [BooleanSetting("Test")]
         public static bool FieldSetting;
 
         /// <summary>
@@ -173,7 +168,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A property which should be a setting
         /// </summary>
-        [BooleanSetting]
+        [BooleanSetting("Test")]
         public static bool PropertySetting { get; set; }
 
         /// <summary>

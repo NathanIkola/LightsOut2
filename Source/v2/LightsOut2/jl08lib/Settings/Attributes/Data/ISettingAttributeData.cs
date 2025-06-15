@@ -24,5 +24,10 @@
         /// The tooltip to show when hovering over this setting
         /// </summary>
         string Tooltip { get; set; }
+
+        /// <summary>
+        /// Whether or not to translate the strings for this setting
+        /// </summary>
+        bool TranslateStrings { get; set; }
     }
 }

@@ -53,9 +53,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void FloatSetting_ExposeData_GetsFields()
         {
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "field",
             };
             FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr);
@@ -76,9 +75,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void FloatSetting_ExposeData_GetsProperties()
         {
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "property",
             };
             FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
@@ -100,9 +98,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void FloatSetting_SetValue_SetsField()
         {
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "field",
             };
             FloatSetting field = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.FieldSetting), attr);
@@ -120,9 +117,8 @@ namespace jl08lib.Tests.Settings
         [TestMethod]
         public void FloatSetting_SetValue_SetsProperty()
         {
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "property",
             };
             FloatSetting property = new FloatSetting(typeof(FloatSettings), nameof(FloatSettings.PropertySetting), attr);
@@ -142,9 +138,8 @@ namespace jl08lib.Tests.Settings
         {
             MockSettingScribe scribe = new MockSettingScribe();
             LoggerBase logger = new MockLogger();
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "property",
                 MinValue = 9.0f,
                 DefaultValue = 10.0f,
@@ -170,9 +165,8 @@ namespace jl08lib.Tests.Settings
         {
             MockSettingScribe scribe = new MockSettingScribe();
             LoggerBase logger = new MockLogger();
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "property",
                 MaxValue = 9.0f,
                 DefaultValue = 8.0f,
@@ -194,9 +188,8 @@ namespace jl08lib.Tests.Settings
         public void FloatSetting_RespectsDefault()
         {
             float expectedValue = 3.14f;
-            FloatSettingAttribute attr = new FloatSettingAttribute()
+            FloatSettingAttribute attr = new FloatSettingAttribute("Test")
             {
-                ModPackageId = "Test",
                 SettingKey = "prop",
                 DefaultValue = expectedValue,
             };
@@ -217,7 +210,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A field which should be a setting
         /// </summary>
-        [FloatSetting]
+        [FloatSetting("Test")]
         public static float FieldSetting;
 
         /// <summary>
@@ -228,7 +221,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A property which should be a setting
         /// </summary>
-        [FloatSetting]
+        [FloatSetting("Test")]
         public static float PropertySetting { get; set; }
 
         /// <summary>

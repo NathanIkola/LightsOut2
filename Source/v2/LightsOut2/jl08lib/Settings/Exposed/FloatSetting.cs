@@ -1,17 +1,21 @@
 ﻿using jl08lib.Logging;
 using jl08lib.Settings.Attributes;
+using jl08lib.Settings.Extensions;
 using jl08lib.Settings.IO;
 using System;
+using System.Runtime.InteropServices;
+using UnityEngine;
 using Verse;
 
 namespace jl08lib.Settings.Exposed
 {
     public class FloatSetting : SettingBase
     {
-        public FloatSetting(Type type, string fieldOrPropName, FloatSettingAttribute attribute)
-            : base(type, fieldOrPropName, attribute)
+        public FloatSetting(Type type, string memberName, FloatSettingAttribute attribute)
+            : base(type, memberName, attribute)
         {
-            _label = attribute.Label;
+            _label = attribute.GetString(attribute.Label);
+            _tooltip = attribute.GetString(attribute.Tooltip);
             _defaultValue = attribute.DefaultValue;
             Set(_defaultValue);
             _minValue = attribute.MinValue;
@@ -26,9 +30,11 @@ namespace jl08lib.Settings.Exposed
                 _curValue = Get<float>();
                 _buffer = _curValue.ToString();
             }
-
-            settingListing.TextFieldNumericLabeled(_label, ref _curValue, ref _buffer);
+            
+            settingListing.TextFieldNumericLabelled(_label, ref _curValue, ref _buffer, _tooltip);
         }
+
+        
 
         public override void ExposeData(SettingScribeBase scribe, LoggerBase logger)
         {
@@ -68,6 +74,11 @@ namespace jl08lib.Settings.Exposed
         /// The label to use when drawing the setting
         /// </summary>
         private readonly string _label;
+
+        /// <summary>
+        /// The tooltip to show when hovering over this setting
+        /// </summary>
+        private readonly string _tooltip;
 
         /// <summary>
         /// The default value for this setting

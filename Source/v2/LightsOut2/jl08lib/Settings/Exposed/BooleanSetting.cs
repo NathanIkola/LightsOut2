@@ -8,11 +8,11 @@ namespace jl08lib.Settings.Exposed
 {
     public class BooleanSetting : SettingBase
     {
-        public BooleanSetting(Type type, string fieldOrPropName, BooleanSettingAttribute attribute)
-            : base(type, fieldOrPropName, attribute)
+        public BooleanSetting(Type type, string memberName, BooleanSettingAttribute attribute)
+            : base(type, memberName, attribute)
         {
-            _label = attribute.Label;
-            _tooltip = attribute.Tooltip;
+            _label = attribute.GetString(attribute.Label);
+            _tooltip = attribute.GetString(attribute.Tooltip);
             _defaultValue = attribute.DefaultValue;
             Set(_defaultValue);
         }

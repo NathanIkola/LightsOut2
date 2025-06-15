@@ -27,7 +27,7 @@ namespace jl08lib.Settings.Exposed
         /// <param name="attribute">The attribute initializing this setting</param>
         public SettingBase(Type type, string fieldOrPropName, SettingAttributeBase attribute)
         {
-            Name = attribute.SettingKey;
+            Name = string.IsNullOrWhiteSpace(attribute.SettingKey) ? fieldOrPropName : attribute.SettingKey;
             MemberName = fieldOrPropName;
 
             if (type.GetField(fieldOrPropName, Flags) is FieldInfo field)
