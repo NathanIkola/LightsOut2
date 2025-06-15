@@ -26,6 +26,23 @@ namespace jl08lib.Tests.Mocks
             }
         }
 
+        public override void Look<TSettingType>(ref TSettingType value, string settingKey, TSettingType defaultValue = default, bool forceSave = false)
+        {
+            if (SimulateSaving)
+            {
+                Save(value, settingKey, defaultValue, forceSave);
+            }
+            else
+            {
+                value = Load(settingKey, defaultValue);
+            }
+        }
+
+        /// <summary>
+        /// Whether or not to simulate saving settings
+        /// </summary>
+        public bool SimulateSaving { get; set; } = false;
+
         /// <summary>
         /// The dictionary to store the settings values in
         /// </summary>

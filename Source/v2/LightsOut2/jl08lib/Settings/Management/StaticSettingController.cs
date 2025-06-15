@@ -35,7 +35,7 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="modPackageId">The packageId of the mod that should show the setting</param>
         /// <returns>The list of settings to show for this mod</returns>
-        public static List<ExposedSettingBase> GetSettings(string modPackageId)
+        public static List<SettingBase> GetSettings(string modPackageId)
         {
             return Instance?.GetSettings(modPackageId);
         }

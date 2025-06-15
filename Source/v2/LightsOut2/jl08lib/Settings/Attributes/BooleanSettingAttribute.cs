@@ -4,13 +4,13 @@ using System;
 
 namespace jl08lib.Settings.Attributes
 {
-    public class BooleanSettingAttribute : SettingAttributeBase, IDefaultableSettingAttributeDate<bool>
+    public class BooleanSettingAttribute : SettingAttributeBase, IDefaultableSettingAttributeData<bool>
     {
         public bool DefaultValue { get; set; }
 
-        public override ExposedSettingBase GetExposedSetting(Type type, string fieldOrPropName)
+        public override SettingBase GetSetting(Type type, string memberName)
         {
-            return new ExposedBooleanSetting(type, fieldOrPropName, this);
+            return new BooleanSetting(type, memberName, this);
         }
     }
 }

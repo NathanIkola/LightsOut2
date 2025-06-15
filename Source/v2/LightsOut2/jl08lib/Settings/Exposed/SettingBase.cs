@@ -1,4 +1,5 @@
 ﻿using jl08lib.Logging;
+using jl08lib.Settings.Attributes;
 using jl08lib.Settings.IO;
 using System;
 using System.Reflection;
@@ -6,7 +7,7 @@ using Verse;
 
 namespace jl08lib.Settings.Exposed
 {
-    public abstract class ExposedSettingBase
+    public abstract class SettingBase
     {
         /// <summary>
         /// The key used for this specific setting
@@ -23,10 +24,10 @@ namespace jl08lib.Settings.Exposed
         /// </summary>
         /// <param name="type">The type that has the setting being exposed</param>
         /// <param name="fieldOrPropName">The name of the property on the given type that holds the setting</param>
-        /// <param name="settingKey">The key for this setting</param>
-        public ExposedSettingBase(Type type, string fieldOrPropName, string settingKey)
+        /// <param name="attribute">The attribute initializing this setting</param>
+        public SettingBase(Type type, string fieldOrPropName, SettingAttributeBase attribute)
         {
-            Name = settingKey;
+            Name = attribute.SettingKey;
             MemberName = fieldOrPropName;
 
             if (type.GetField(fieldOrPropName, Flags) is FieldInfo field)

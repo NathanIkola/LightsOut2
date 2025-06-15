@@ -27,5 +27,13 @@ namespace LightsOut2
             Tooltip = "My property tooltip", 
             SettingKey = "MySetting2")]
         public static bool MySetting2 { get; set; }
+
+        [FloatSetting(
+            ModPackageId = PackageId,
+            Label = "This is a float (DO NOT DO MORE THAN 100)",
+            SettingKey = "MyFloat",
+            DefaultValue = 4.7f,
+            MaxValue = 100f)]
+        public static float MyFloatSetting { get; set; }
     }
 }

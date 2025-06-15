@@ -19,12 +19,12 @@ namespace jl08lib.Settings.Management
         /// </summary>
         public SettingController(LoggerBase logger)
         {
-            _settings = new Dictionary<string, List<ExposedSettingBase>>();
+            _settings = new Dictionary<string, List<SettingBase>>();
             _logger = logger;
 
             using (var section = _logger.OpenSection("Searching for auto-expose settings", LogLevel.Trace))
             {
-                foreach (Tuple<SettingAttributeBase, ExposedSettingBase> setting in LocateAllSettings())
+                foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettings())
                 {
                     AddSetting(setting.Item1.ModPackageId, setting.Item2);
                 }
@@ -36,11 +36,11 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="modPackageId">The packageId of the mod that should show the setting</param>
         /// <returns>The list of settings to show for this mod</returns>
-        public List<ExposedSettingBase> GetSettings(string modPackageId)
+        public List<SettingBase> GetSettings(string modPackageId)
         {
             if (!_settings.ContainsKey(modPackageId))
             {
-                return new List<ExposedSettingBase>();
+                return new List<SettingBase>();
             }
             return _settings[modPackageId];
         }
@@ -49,7 +49,7 @@ namespace jl08lib.Settings.Management
         /// <summary>
         /// Looks at all loaded mods to find any attributed settings
         /// </summary>
-        internal static IEnumerable<Tuple<SettingAttributeBase, ExposedSettingBase>> LocateAllSettings()
+        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettings()
         {
             // get the list of attributes to search for on types
             List<Type> attributeTypes = AttributeTypes();
@@ -59,7 +59,7 @@ namespace jl08lib.Settings.Management
                 {
                     foreach (Type type in asm.GetTypes())
                     {
-                        foreach (Tuple<SettingAttributeBase, ExposedSettingBase> setting in LocateAllSettingsOnType(type, attributeTypes))
+                        foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettingsOnType(type, attributeTypes))
                         {
                             yield return setting;
                         }
@@ -76,7 +76,7 @@ namespace jl08lib.Settings.Management
         /// <returns>The list of attributes to check for</returns>
         internal static List<Type> AttributeTypes()
         {
-            Assembly asm = typeof(StaticSettingController).Assembly;
+            Assembly asm = typeof(SettingController).Assembly;
             Type baseAttribute = typeof(SettingAttributeBase);
             List<Type> attributes = new List<Type>();
             foreach (Type type in asm.GetTypes())
@@ -93,7 +93,7 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="type">The type to load the settings from</param>
         /// <param name="attributeTypes">The list of attribute types to search for</param>
-        internal static IEnumerable<Tuple<SettingAttributeBase, ExposedSettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes)
+        internal static IEnumerable<Tuple<SettingAttributeBase, SettingBase>> LocateAllSettingsOnType(Type type, List<Type> attributeTypes)
         {
             // first look at each field
             foreach (FieldInfo fieldInfo in type.GetFields())
@@ -102,8 +102,8 @@ namespace jl08lib.Settings.Management
                 {
                     if (fieldInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        ExposedSettingBase settingbase = settingAttr.GetExposedSetting(type, fieldInfo.Name);
-                        yield return new Tuple<SettingAttributeBase, ExposedSettingBase>(settingAttr, settingbase);
+                        SettingBase settingbase = settingAttr.GetSetting(type, fieldInfo.Name);
+                        yield return new Tuple<SettingAttributeBase, SettingBase>(settingAttr, settingbase);
                         break;
                     }
                 }
@@ -116,8 +116,8 @@ namespace jl08lib.Settings.Management
                 {
                     if (propertyInfo.GetCustomAttribute(attributeType) is SettingAttributeBase settingAttr)
                     {
-                        ExposedSettingBase settingBase = settingAttr.GetExposedSetting(type, propertyInfo.Name);
-                        yield return new Tuple<SettingAttributeBase, ExposedSettingBase>(settingAttr, settingBase);
+                        SettingBase settingBase = settingAttr.GetSetting(type, propertyInfo.Name);
+                        yield return new Tuple<SettingAttributeBase, SettingBase>(settingAttr, settingBase);
                         break;
                     }
                 }
@@ -131,12 +131,12 @@ namespace jl08lib.Settings.Management
         /// </summary>
         /// <param name="modPackageId">The packageId of the mod that the setting should be shown for</param>
         /// <param name="setting">The setting to show</param>
-        private void AddSetting(string modPackageId, ExposedSettingBase setting)
+        private void AddSetting(string modPackageId, SettingBase setting)
         {
             _logger.LogTrace($"Found setting '{setting.Name}' for mod '{modPackageId}'");
             if (!_settings.ContainsKey(modPackageId))
             {
-                _settings.Add(modPackageId, new List<ExposedSettingBase>());
+                _settings.Add(modPackageId, new List<SettingBase>());
             }
             _settings[modPackageId].Add(setting);
         }
@@ -145,7 +145,7 @@ namespace jl08lib.Settings.Management
         /// <summary>
         /// The dictionary of settings keyed by the mod packageId
         /// </summary>
-        private readonly Dictionary<string, List<ExposedSettingBase>> _settings;
+        private readonly Dictionary<string, List<SettingBase>> _settings;
 
         /// <summary>
         /// The logger to use when logging

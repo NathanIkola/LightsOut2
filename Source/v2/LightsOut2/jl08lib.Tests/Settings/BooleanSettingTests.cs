@@ -22,7 +22,7 @@ namespace jl08lib.Tests.Settings
                 typeof(BooleanSettingAttribute),
             };
 
-            List<Tuple<SettingAttributeBase, ExposedSettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes).ToList();
+            List<Tuple<SettingAttributeBase, SettingBase>> settings = SettingController.LocateAllSettingsOnType(typeof(BooleanSettings), attributeTypes).ToList();
 
             int numSettingsExpected = 2;
             int numSettingsFound = settings.Count;
@@ -30,10 +30,10 @@ namespace jl08lib.Tests.Settings
 
             List<string> expectedMembers = new List<string>()
             {
-                nameof(BooleanSettings.BooleanFieldSetting),
-                nameof(BooleanSettings.BooleanPropertySetting),
+                nameof(BooleanSettings.FieldSetting),
+                nameof(BooleanSettings.PropertySetting),
             };
-            foreach(Tuple<SettingAttributeBase, ExposedSettingBase> setting in settings)
+            foreach(Tuple<SettingAttributeBase, SettingBase> setting in settings)
             {
                 string memberName = setting.Item2.MemberName;
                 bool isExpectedMember = expectedMembers.Contains(memberName);
@@ -48,22 +48,22 @@ namespace jl08lib.Tests.Settings
         /// Ensures that the value retrieved from the setting entry matches the underlying field
         /// </summary>
         [TestMethod]
-        public void ExposedBooleanSetting_ExposeData_GetsField()
+        public void BooleanSetting_ExposeData_GetsField()
         {
             BooleanSettingAttribute attr = new BooleanSettingAttribute()
             {
                 ModPackageId = "Test",
                 SettingKey = "field",
             };
-            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), attr);
+            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
 
-            BooleanSettings.BooleanFieldSetting = false;
-            bool expectedValue = BooleanSettings.BooleanFieldSetting;
+            BooleanSettings.FieldSetting = false;
+            bool expectedValue = BooleanSettings.FieldSetting;
             bool actual = field.Get<bool>();
             Assert.AreEqual(expectedValue, actual, "Retrieved the correct value from the static");
 
-            BooleanSettings.BooleanFieldSetting = true;
-            expectedValue = BooleanSettings.BooleanFieldSetting;
+            BooleanSettings.FieldSetting = true;
+            expectedValue = BooleanSettings.FieldSetting;
             actual = field.Get<bool>();
             Assert.AreEqual(expectedValue, actual, "Retrieved the correct value from the static after update");
         }
@@ -72,22 +72,22 @@ namespace jl08lib.Tests.Settings
         /// Ensures that the value retrieved from the setting entry matches the underlying property
         /// </summary>
         [TestMethod]
-        public void ExposedBooleanSetting_ExposeData_GetsProperty()
+        public void BooleanSetting_ExposeData_GetsProperty()
         {
             BooleanSettingAttribute attr = new BooleanSettingAttribute()
             {
                 ModPackageId = "Test",
                 SettingKey = "prop",
             };
-            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), attr);
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
 
-            BooleanSettings.BooleanPropertySetting = false;
-            bool expectedValue = BooleanSettings.BooleanPropertySetting;
+            BooleanSettings.PropertySetting = false;
+            bool expectedValue = BooleanSettings.PropertySetting;
             bool actual = prop.Get<bool>();
             Assert.AreEqual(expectedValue, actual, "Retrieved the correct value from the static");
 
-            BooleanSettings.BooleanPropertySetting = true;
-            expectedValue = BooleanSettings.BooleanPropertySetting;
+            BooleanSettings.PropertySetting = true;
+            expectedValue = BooleanSettings.PropertySetting;
             actual = prop.Get<bool>();
             Assert.AreEqual(expectedValue, actual, "Retrieved the correct value from the static after update");
         }
@@ -96,19 +96,19 @@ namespace jl08lib.Tests.Settings
         /// Ensures that updating the setting entry actually updates the underlying field
         /// </summary>
         [TestMethod]
-        public void ExposedBooleanSetting_ExposeData_SetsField()
+        public void BooleanSetting_ExposeData_SetsField()
         {
             BooleanSettingAttribute attr = new BooleanSettingAttribute()
             {
                 ModPackageId = "Test",
                 SettingKey = "field",
             };
-            ExposedBooleanSetting field = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanFieldSetting), attr);
+            BooleanSetting field = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.FieldSetting), attr);
 
-            BooleanSettings.BooleanFieldSetting = false;
+            BooleanSettings.FieldSetting = false;
             bool expectedValue = true;
             field.Set(expectedValue);
-            bool actual = BooleanSettings.BooleanFieldSetting;
+            bool actual = BooleanSettings.FieldSetting;
             Assert.AreEqual(expectedValue, actual, "Updated the value in the static");
         }
 
@@ -116,20 +116,41 @@ namespace jl08lib.Tests.Settings
         /// Ensures that updating the setting entry actually updates the underlying property
         /// </summary>
         [TestMethod]
-        public void ExposedBooleanSetting_ExposeData_SetsProperty()
+        public void BooleanSetting_ExposeData_SetsProperty()
         {
             BooleanSettingAttribute attr = new BooleanSettingAttribute()
             {
                 ModPackageId = "Test",
                 SettingKey = "prop",
             };
-            ExposedBooleanSetting prop = new ExposedBooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.BooleanPropertySetting), attr);
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
 
-            BooleanSettings.BooleanPropertySetting = false;
+            BooleanSettings.PropertySetting = false;
             bool expectedValue = true;
             prop.Set(expectedValue);
-            bool actual = BooleanSettings.BooleanPropertySetting;
+            bool actual = BooleanSettings.PropertySetting;
             Assert.AreEqual(expectedValue, actual, "Updated the value in the static");
+        }
+
+        /// <summary>
+        /// Verifies that the default value is set when the setting is first loaded
+        /// </summary>
+        [TestMethod]
+        public void BooleanSetting_RespectsDefault()
+        {
+            bool expectedValue = true; // Default value for the setting
+            BooleanSettingAttribute attr = new BooleanSettingAttribute()
+            {
+                ModPackageId = "Test",
+                SettingKey = "prop",
+                DefaultValue = expectedValue,
+            };
+
+            BooleanSettings.PropertySetting = false; // Set to a non-default value
+            BooleanSetting prop = new BooleanSetting(typeof(BooleanSettings), nameof(BooleanSettings.PropertySetting), attr);
+
+            bool actualValue = prop.Get<bool>();
+            Assert.AreEqual(expectedValue, actualValue, "The setting should get set to the default value on initial load");
         }
     }
 
@@ -142,22 +163,22 @@ namespace jl08lib.Tests.Settings
         /// A field which should be a setting
         /// </summary>
         [BooleanSetting]
-        public static bool BooleanFieldSetting = true;
+        public static bool FieldSetting;
 
         /// <summary>
         /// A field which should not be a setting
         /// </summary>
-        public static bool BooleanFieldNonSetting = true;
+        public static bool FieldNonSetting;
 
         /// <summary>
         /// A property which should be a setting
         /// </summary>
         [BooleanSetting]
-        public static bool BooleanPropertySetting { get; set; } = true;
+        public static bool PropertySetting { get; set; }
 
         /// <summary>
         /// A property which should not be a setting
         /// </summary>
-        public static bool BooleanPropertyNonSetting { get; set; } = true;
+        public static bool PropertyNonSetting { get; set; }
     }
 }

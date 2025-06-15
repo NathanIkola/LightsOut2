@@ -4,7 +4,7 @@
     /// An interface for attribute data which should provide a default value
     /// </summary>
     /// <typeparam name="TSettingType">The type of setting</typeparam>
-    public interface IDefaultableSettingAttributeDate<TSettingType> : ISettingAttributeData
+    public interface IDefaultableSettingAttributeData<TSettingType> : ISettingAttributeData
     {
         /// <summary>
         /// The default value of the setting

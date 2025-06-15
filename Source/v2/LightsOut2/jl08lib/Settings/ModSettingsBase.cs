@@ -63,8 +63,8 @@ namespace jl08lib.Settings
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
 
-            List<ExposedSettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
-            foreach (ExposedSettingBase setting in exposedSettings)
+            List<SettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
+            foreach (SettingBase setting in exposedSettings)
             {
                 setting?.DrawSetting(listing);
             }
@@ -77,10 +77,10 @@ namespace jl08lib.Settings
         /// </summary>
         private void ExposeStaticSettings()
         {
-            List<ExposedSettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
+            List<SettingBase> exposedSettings = StaticSettingController.GetSettings(ModPackageId);
 
             SettingScribeBase scribe = SettingScribe;
-            foreach (ExposedSettingBase setting in exposedSettings)
+            foreach (SettingBase setting in exposedSettings)
             {
                 setting?.ExposeData(scribe, Logger);
             }

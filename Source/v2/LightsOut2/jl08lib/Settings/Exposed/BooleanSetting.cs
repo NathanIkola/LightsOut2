@@ -6,14 +6,15 @@ using Verse;
 
 namespace jl08lib.Settings.Exposed
 {
-    public class ExposedBooleanSetting : ExposedSettingBase
+    public class BooleanSetting : SettingBase
     {
-        public ExposedBooleanSetting(Type type, string fieldOrPropName, BooleanSettingAttribute attribute)
-            : base(type, fieldOrPropName, attribute.SettingKey)
+        public BooleanSetting(Type type, string fieldOrPropName, BooleanSettingAttribute attribute)
+            : base(type, fieldOrPropName, attribute)
         {
             _label = attribute.Label;
             _tooltip = attribute.Tooltip;
             _defaultValue = attribute.DefaultValue;
+            Set(_defaultValue);
         }
 
         public override void DrawSetting(Listing_Standard settingListing)
@@ -25,7 +26,7 @@ namespace jl08lib.Settings.Exposed
 
         public override void ExposeData(SettingScribeBase scribe, LoggerBase _logger)
         {
-            ExposeData<bool>(scribe, _defaultValue);
+            ExposeData(scribe, _defaultValue);
         }
 
         /// <summary>

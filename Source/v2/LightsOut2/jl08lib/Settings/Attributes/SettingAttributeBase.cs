@@ -22,8 +22,8 @@ namespace jl08lib.Settings.Attributes
         /// Retrieves the setting type
         /// </summary>
         /// <param name="type">The type that this setting is declared on</param>
-        /// <param name="fieldOrPropName">The name of the field/property that holds the setting value</param>
+        /// <param name="memberName">The name of the field/property that holds the setting value</param>
         /// <returns>Retrieves the settings for this attribute</returns>
-        public abstract ExposedSettingBase GetExposedSetting(Type type, string fieldOrPropName);
+        public abstract SettingBase GetSetting(Type type, string memberName);
     }
 }
