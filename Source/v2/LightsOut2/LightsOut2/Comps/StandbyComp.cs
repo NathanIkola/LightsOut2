@@ -88,7 +88,7 @@ namespace LightsOut2.Comps
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.Append($"Standby: {_inStandby}");
+            sb.AppendLine($"Standby: {_inStandby}");
             sb.AppendLine($"Multiplier: {_currentMultiplier}");
 
             foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
@@ -100,7 +100,7 @@ namespace LightsOut2.Comps
                 }
             }
 
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         /// <summary>

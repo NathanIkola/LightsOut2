@@ -16,6 +16,11 @@ namespace LightsOut2.StandbyInfluencers
         /// </summary>
         public override bool WantsToBeInStandby => _roomEmpty;
 
+        public override string DebugInspectString()
+        {
+            return $"Room empty: {_roomEmpty}";
+        }
+
         /// <summary>
         /// Whether the room that this light is in is currently empty
         /// </summary>
