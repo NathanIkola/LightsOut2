@@ -15,6 +15,11 @@ namespace LightsOut2.Comps.Properties
         public bool isLight = false;
 
         /// <summary>
+        /// If true, this will prevent the comp from delaying standby mode
+        /// </summary>
+        public bool noDelay = false;
+
+        /// <summary>
         /// The list of standby influencers to use
         /// </summary>
         public List<Type> standbyInfluencers = new List<Type>();

@@ -18,6 +18,14 @@ namespace LightsOut2.Comps
         public bool InStandby => _inStandby;
 
         /// <summary>
+        /// Whether or not this comp desires to be in standby
+        /// </summary>
+        /// <remarks>
+        /// This may not match InStandby because the standby may be delayed
+        /// </remarks>
+        public bool DesiresStandby => _desiresStandby;
+
+        /// <summary>
         /// The current multiplier for this comp based on the standby state
         /// </summary>
         public float CurrentMultiplier => _currentMultiplier;
@@ -109,17 +117,46 @@ namespace LightsOut2.Comps
         public override void CompTick()
         {
             base.CompTick();
-            // update this every tick so we can reuse it throughout this tick
-            // without recalculating it every time
-            _inStandby = ShouldBeInStandby();
+
+            // update the desired standby state
+            bool previouslyDesiredStandby = _desiresStandby;
+            _desiresStandby = WantsToBeInStandby();
+
+            // if we're in standby and no longer want to be, then exit standby mode
+            if (_inStandby && !_desiresStandby)
+            {
+                _inStandby = false;
+                _ticksUntilStandby = 0;
+            }
+            // otherwise, if we want to go into standby but aren't currently
+            else if (_desiresStandby && !_inStandby)
+            {
+                // count down a tick until standby
+                // do this before setting the standby state so that we don't immediately subtract a tick
+                if (_ticksUntilStandby > 0) { _ticksUntilStandby -= 1; }
+
+                // if this is the tick we started wanting standby, then begin the transition
+                if (!previouslyDesiredStandby) { BeginStandbyTransition(); }
+
+                // detect when standby is ready to be enabled
+                // this happens after the transition in case a user sets the delay to 0
+                if (_ticksUntilStandby <= 0) { _inStandby = true; }
+            }
+
             _currentMultiplier = ResourceDrawMultiplier();
+        }
+
+        public override void ReceiveCompSignal(string signal)
+        {
+            base.ReceiveCompSignal(signal);
+            LightsOut2Mod.StaticLogger.LogTrace($"Thing {parent} received comp signal: {signal}");
         }
 
         /// <summary>
         /// Determines whether this comp is in standby mode
         /// </summary>
         /// <returns>Whether or not this comp should be in standby</returns>
-        public bool ShouldBeInStandby()
+        public bool WantsToBeInStandby()
         {
             // if any of the influencers are active then we are not in standby mode
             if (_standbyInfluencers.Any(influencer => influencer.IsActive))
@@ -154,9 +191,26 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
+        /// Starts transitioning to standby mode
+        /// </summary>
+        private void BeginStandbyTransition()
+        {
+            // lights need to respect the delay setting
+            if (UsesDelayOff)
+            {
+                _ticksUntilStandby = GenTicks.SecondsToTicks(LightsOut2Settings.LightDelaySeconds);
+            }
+        }
+
+        /// <summary>
         /// Quick cast to the properties for this comp
         /// </summary>
         private CompProperties_Standby StandbyProps => props as CompProperties_Standby;
+
+        /// <summary>
+        /// Whether or not this comp should delay turning off
+        /// </summary>
+        private bool UsesDelayOff => !StandbyProps.noDelay && StandbyProps.isLight;
 
         /// <summary>
         /// Whether or not this thing is currently in standby mode
@@ -164,13 +218,23 @@ namespace LightsOut2.Comps
         private bool _inStandby = false;
 
         /// <summary>
+        /// Whether or not this thing desires to be in standby mode
+        /// </summary>
+        private bool _desiresStandby = false;
+
+        /// <summary>
         /// The current rate multiplier for this comp
         /// </summary>
         private float _currentMultiplier = 0f;
 
         /// <summary>
+        /// The number of ticks until this thing will be in standby mode
+        /// </summary>
+        private int _ticksUntilStandby = 0;
+
+        /// <summary>
         /// The list of influencers that will determine if this thing is in standby mode
         /// </summary>
-        private List<StandbyInfluencerBase> _standbyInfluencers = new List<StandbyInfluencerBase>();
+        private readonly List<StandbyInfluencerBase> _standbyInfluencers = new List<StandbyInfluencerBase>();
     }
 }

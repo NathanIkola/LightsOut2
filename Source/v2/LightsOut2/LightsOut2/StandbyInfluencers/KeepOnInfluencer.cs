@@ -41,6 +41,6 @@ namespace LightsOut2.StandbyInfluencers
         /// <summary>
         /// The gizmo that allows the user to toggle the "keep on" mode for this light
         /// </summary>
-        private KeepOnGizmo _keepOnGizmo = new KeepOnGizmo();
+        private readonly KeepOnGizmo _keepOnGizmo = new KeepOnGizmo();
     }
 }
