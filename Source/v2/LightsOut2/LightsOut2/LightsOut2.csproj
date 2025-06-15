@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyVersion>2025.6.15.59</AssemblyVersion>
-    <FileVersion>2025.6.15.59</FileVersion>
+    <AssemblyVersion>2025.6.15.87</AssemblyVersion>
+    <FileVersion>2025.6.15.87</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@ namespace LightsOut2.StandbyInfluencers
     /// <summary>
     /// Influencer that reacts to whether the room is empty or not
     /// </summary>
-    internal class EmptyRoomInfluencer : StandbyInfluencerBase
+    public sealed class EmptyRoomInfluencer : StandbyInfluencerBase
     {
         public EmptyRoomInfluencer(ThingWithComps parent)
             : base(parent) { }

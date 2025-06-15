@@ -49,7 +49,7 @@ namespace LightsOut2.Comps
                     }
                     else
                     {
-                        LightsOut2Mod.StaticLogger.LogError($"Tried to add a standby influencer of type '{influencerType}' but it does not inherit from StandbyInfluencerBase");
+                        LightsOut2Mod.StaticLogger.Error($"Tried to add a standby influencer of type '{influencerType}' but it does not inherit from StandbyInfluencerBase");
                     }
                 }
             }
@@ -149,7 +149,7 @@ namespace LightsOut2.Comps
         public override void ReceiveCompSignal(string signal)
         {
             base.ReceiveCompSignal(signal);
-            LightsOut2Mod.StaticLogger.LogTrace($"Thing {parent} received comp signal: {signal}");
+            LightsOut2Mod.StaticLogger.Trace($"Thing {parent} received comp signal: {signal}");
         }
 
         /// <summary>

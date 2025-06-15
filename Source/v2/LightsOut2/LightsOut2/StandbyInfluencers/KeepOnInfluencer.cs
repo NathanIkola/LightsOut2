@@ -8,7 +8,7 @@ namespace LightsOut2.StandbyInfluencers
     /// <summary>
     /// An influencer that allows the user to keep the light on
     /// </summary>
-    public class KeepOnInfluencer : StandbyInfluencerBase
+    public sealed class KeepOnInfluencer : StandbyInfluencerBase
     {
         public KeepOnInfluencer(ThingWithComps parent)
             : base(parent) { }
