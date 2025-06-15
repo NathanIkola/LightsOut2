@@ -2,6 +2,7 @@
 using jl08lib.Settings.Attributes;
 using jl08lib.Settings.IO;
 using System;
+using UnityEngine;
 using Verse;
 
 namespace jl08lib.Settings.Exposed
@@ -24,8 +25,9 @@ namespace jl08lib.Settings.Exposed
             Set(value);
         }
 
-        public override void ExposeData(SettingScribeBase scribe, LoggerBase _logger)
+        public override void ExposeData(SettingScribeBase scribe, LoggerBase logger)
         {
+            logger.LogTrace($"Exposing boolean setting with key {Name}");
             ExposeData(scribe, _defaultValue);
         }
 

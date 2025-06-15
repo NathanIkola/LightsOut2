@@ -38,7 +38,7 @@ namespace LightsOut2
             MaxValue = 100,
             Label = "Standby energy draw rate (%)",
             Tooltip = "The energy draw (in percent) that buildings should have when in standby")]
-        public static int StandbyCoefficientPercent = 0;
+        public static int StandbyCoefficientPercent;
 
         /// <summary>
         /// The coefficient (in percent) of power devices use when active
@@ -51,9 +51,7 @@ namespace LightsOut2
             MinValue = 100,
             Label = "Active energy draw rate (%)",
             Tooltip = "The energy draw (in percent) that buildings should have when in use")]
-        public static int ActiveCoefficientPercent = 100;
-
-        // handle debug logging settings somehow
+        public static int ActiveCoefficientPercent;
 
         /// <summary>
         /// The amount of time (in seconds) to wait before turning off lights
@@ -64,6 +62,14 @@ namespace LightsOut2
             Label = "Seconds to delay turning off lights",
             Tooltip = "The number of seconds to wait before turning off the lights (to combat rapid flickering at higher game speeds)")]
         public static float LightDelaySeconds;
+
+        [IntSetting(PackageId,
+            DefaultValue = 3,
+            MinValue = 0,
+            MaxValue = 6,
+            Label = "Log message minimum severity",
+            Tooltip = "Only logs messages with the specified severity or higher. 0-Tracing, 1-Debug, 2-Info, 3-Warning, 4-Error, 5-Critical, 6-None")]
+        public static int MinimumLogLevel;
 
         /// <summary>
         /// The mod's package ID

@@ -17,17 +17,13 @@ namespace jl08lib.Settings.Management
         /// <summary>
         /// Initializes the setting controller, locating all static settings that can be loaded
         /// </summary>
-        public SettingController(LoggerBase logger)
+        public SettingController()
         {
             _settings = new Dictionary<string, List<SettingBase>>();
-            _logger = logger;
 
-            using (var section = _logger.OpenSection("Searching for auto-expose settings", LogLevel.Trace))
+            foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettings())
             {
-                foreach (Tuple<SettingAttributeBase, SettingBase> setting in LocateAllSettings())
-                {
-                    AddSetting(setting.Item1.ModPackageId, setting.Item2);
-                }
+                AddSetting(setting.Item1.ModPackageId, setting.Item2);
             }
         }
 
@@ -133,7 +129,6 @@ namespace jl08lib.Settings.Management
         /// <param name="setting">The setting to show</param>
         private void AddSetting(string modPackageId, SettingBase setting)
         {
-            _logger.LogTrace($"Found setting '{setting.Name}' for mod '{modPackageId}'");
             if (!_settings.ContainsKey(modPackageId))
             {
                 _settings.Add(modPackageId, new List<SettingBase>());
@@ -146,10 +141,5 @@ namespace jl08lib.Settings.Management
         /// The dictionary of settings keyed by the mod packageId
         /// </summary>
         private readonly Dictionary<string, List<SettingBase>> _settings;
-
-        /// <summary>
-        /// The logger to use when logging
-        /// </summary>
-        private readonly LoggerBase _logger;
     }
 }
