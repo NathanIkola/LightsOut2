@@ -11,8 +11,8 @@ namespace jl08lib.Settings.Exposed
         public BooleanSetting(Type type, string memberName, BooleanSettingAttribute attribute)
             : base(type, memberName, attribute)
         {
-            _label = attribute.GetString(attribute.Label);
-            _tooltip = attribute.GetString(attribute.Tooltip);
+            _label = attribute.LabelLocalized;
+            _tooltip = attribute.TooltipLocalized;
             _defaultValue = attribute.DefaultValue;
             Set(_defaultValue);
         }

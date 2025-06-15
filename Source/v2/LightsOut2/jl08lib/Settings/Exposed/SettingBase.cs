@@ -59,7 +59,7 @@ namespace jl08lib.Settings.Exposed
         {
             TSettingType settingValue = Get<TSettingType>();
             string key = $"ExposedSetting.{Name}".Replace(" ", string.Empty);
-            scribe.Look(ref settingValue, key, settingValue, true);
+            scribe.Look(ref settingValue, key, defaultValue, true);
             Set(settingValue);
         }
 
@@ -93,14 +93,8 @@ namespace jl08lib.Settings.Exposed
         /// <param name="value">The value to set</param>
         internal void Set<TSettingType>(TSettingType value)
         {
-            if (_field != null)
-            {
-                _field.SetValue(null, value);
-            }
-            else if (_property != null)
-            {
-                _property.SetValue(null, value);
-            }
+            _field?.SetValue(null, value);
+            _property?.SetValue(null, value);
         }
 
         /// <summary>

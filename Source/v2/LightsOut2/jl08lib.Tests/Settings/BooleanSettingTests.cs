@@ -9,6 +9,7 @@ using System.Linq;
 namespace jl08lib.Tests.Settings
 {
     [TestClass]
+    [DeploymentItem(@"Assembly-CSharp.dll")]
     public class BooleanSettingTests
     {
         /// <summary>

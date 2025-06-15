@@ -7,9 +7,9 @@ using Verse;
 
 namespace jl08lib.Settings.Exposed
 {
-    public class FloatSetting : SettingBase
+    public class IntSetting : SettingBase
     {
-        public FloatSetting(Type type, string memberName, FloatSettingAttribute attribute)
+        public IntSetting(Type type, string memberName, IntSettingAttribute attribute)
             : base(type, memberName, attribute)
         {
             _label = attribute.LabelLocalized;
@@ -25,10 +25,10 @@ namespace jl08lib.Settings.Exposed
             // initialize the buffer
             if (_buffer is null)
             {
-                _curValue = Get<float>();
+                _curValue = Get<int>();
                 _buffer = _curValue.ToString();
             }
-            
+
             settingListing.TextFieldNumericLabelled(_label, ref _curValue, ref _buffer, _tooltip);
         }
 
@@ -43,7 +43,7 @@ namespace jl08lib.Settings.Exposed
             ExposeData(scribe, _defaultValue);
             // clear out the buffer so it gets refreshed on the next load
             _buffer = null;
-            _curValue = Get<float>();
+            _curValue = Get<int>();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace jl08lib.Settings.Exposed
         /// </summary>
         /// <param name="input">The input to check</param>
         /// <returns>Whether or not the given input is valid</returns>
-        private bool IsValid(float input)
+        private bool IsValid(int input)
         {
             return input >= _minValue && input <= _maxValue;
         }
@@ -64,7 +64,7 @@ namespace jl08lib.Settings.Exposed
         /// <summary>
         /// The current value for the input field
         /// </summary>
-        internal float _curValue;
+        internal int _curValue;
 
         /// <summary>
         /// The label to use when drawing the setting
@@ -79,16 +79,16 @@ namespace jl08lib.Settings.Exposed
         /// <summary>
         /// The default value for this setting
         /// </summary>
-        private readonly float _defaultValue;
+        private readonly int _defaultValue;
 
         /// <summary>
         /// The minimum value for this setting
         /// </summary>
-        private readonly float _minValue;
+        private readonly int _minValue;
 
         /// <summary>
         /// The maximum value for this setting
         /// </summary>
-        private readonly float _maxValue;
+        private readonly int _maxValue;
     }
 }
