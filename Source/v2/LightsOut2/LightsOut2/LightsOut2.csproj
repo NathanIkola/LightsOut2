@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyVersion>2025.6.15.53</AssemblyVersion>
-    <FileVersion>2025.6.15.53</FileVersion>
+    <AssemblyVersion>2025.6.15.55</AssemblyVersion>
+    <FileVersion>2025.6.15.55</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\jl08lib\jl08lib.csproj" />
+    <ProjectReference Include="..\LightsOut2.Core\LightsOut2.Core.csproj" />
   </ItemGroup>
 
 </Project>

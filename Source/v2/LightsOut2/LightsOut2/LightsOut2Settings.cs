@@ -41,6 +41,11 @@ namespace LightsOut2
         public static int StandbyCoefficientPercent;
 
         /// <summary>
+        /// The coefficienc (in decimal) of power devices use in standby mode
+        /// </summary>
+        public static float StandbyCoefficientDecimal => StandbyCoefficientPercent / 100f;
+
+        /// <summary>
         /// The coefficient (in percent) of power devices use when active
         /// </summary>
         /// <remarks>
@@ -52,6 +57,11 @@ namespace LightsOut2
             Label = "Active energy draw rate (%)",
             Tooltip = "The energy draw (in percent) that buildings should have when in use")]
         public static int ActiveCoefficientPercent;
+
+        /// <summary>
+        /// The coefficient (in decimal) of power devices use when active
+        /// </summary>
+        public static float ActiveCoefficientDecimal => ActiveCoefficientPercent / 100f;
 
         /// <summary>
         /// The amount of time (in seconds) to wait before turning off lights
@@ -70,6 +80,16 @@ namespace LightsOut2
             Label = "Log message minimum severity",
             Tooltip = "Only logs messages with the specified severity or higher. 0-Tracing, 1-Debug, 2-Info, 3-Warning, 4-Error, 5-Critical, 6-None")]
         public static int MinimumLogLevel;
+
+        /// <summary>
+        /// The minimum percentage that a building must draw
+        /// </summary>
+        public const float MinDrawCoefficientPercent = 0.1f;
+
+        /// <summary>
+        /// The minimum decimal value that a building must draw
+        /// </summary>
+        public const float MinDrawCoefficientDecimal = MinDrawCoefficientPercent / 100f;
 
         /// <summary>
         /// The mod's package ID

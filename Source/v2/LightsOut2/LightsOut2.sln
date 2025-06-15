@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "jl08lib", "jl08lib\jl08lib.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jl08lib.Tests", "jl08lib.Tests\jl08lib.Tests.csproj", "{2EFC686B-090A-4DE8-A454-1CABE6952A0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut2.Core", "LightsOut2.Core\LightsOut2.Core.csproj", "{A90F8BA3-FF8E-4D78-9776-FEAB15393399}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2EFC686B-090A-4DE8-A454-1CABE6952A0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EFC686B-090A-4DE8-A454-1CABE6952A0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EFC686B-090A-4DE8-A454-1CABE6952A0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A90F8BA3-FF8E-4D78-9776-FEAB15393399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A90F8BA3-FF8E-4D78-9776-FEAB15393399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A90F8BA3-FF8E-4D78-9776-FEAB15393399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A90F8BA3-FF8E-4D78-9776-FEAB15393399}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

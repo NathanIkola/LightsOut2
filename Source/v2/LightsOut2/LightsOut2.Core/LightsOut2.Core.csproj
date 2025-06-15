@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyVersion>2025.6.15.1</AssemblyVersion>
+    <FileVersion>2025.6.15.1</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\jl08lib\jl08lib.csproj" />
+  </ItemGroup>
+
+</Project>

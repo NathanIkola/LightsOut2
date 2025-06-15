@@ -1,4 +1,5 @@
 ﻿using jl08lib;
+using jl08lib.Logging;
 using LightsOut2.Logging;
 using Verse;
 
@@ -13,6 +14,11 @@ namespace LightsOut2
         /// Retrieves an instance of this mod from the game
         /// </summary>
         public static LightsOut2Mod Instance => LoadedModManager.GetMod<LightsOut2Mod>();
+
+        /// <summary>
+        /// A static logger for the mod instance
+        /// </summary>
+        public static LoggerBase StaticLogger => Instance.Logger;
 
         /// <summary>
         /// Initializes the mod
