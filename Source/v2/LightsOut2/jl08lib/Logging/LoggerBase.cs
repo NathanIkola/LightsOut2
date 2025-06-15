@@ -129,11 +129,32 @@ namespace jl08lib.Logging
         /// <param name="message">The message to log if truth is false explaining what failed</param>
         /// <param name="onlyOnce">Whether or not to only log this once</param>
         /// <returns>The value of expr</returns>
-        public bool Assert(bool expr, string message, bool onlyOnce)
+        public bool Assert(bool expr, string message, bool onlyOnce = false)
         {
             if (expr) { return true; }
             LogError($"Assertion failed: {message}", onlyOnce);
             return false;
+        }
+
+        /// <summary>
+        /// Asserts that the given object is not null
+        /// </summary>
+        /// <param name="obj">The object to check for null</param>
+        /// <param name="objName">The name of the object being checked</param>
+        /// <param name="onlyOnce">Whether or not to only log this once</param>
+        /// <returns>True if the object is NOT null, false if the object is null</returns>
+        public bool AssertNonNull<TObjType>(TObjType obj, string objName = null, bool onlyOnce = false)
+        {
+            if (obj != null) { return true; }
+
+            // verify that we have a name to log
+            if (string.IsNullOrWhiteSpace(objName))
+            {
+                objName = typeof(TObjType).Name;
+            }
+
+            string message = $"{objName} was null";
+            return Assert(false, message, onlyOnce);
         }
 
         /// <summary>
