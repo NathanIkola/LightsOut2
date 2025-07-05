@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Vanilla Autodoor -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[@ParentName="BasePawn"]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <isLight>False</isLight>
+                <standbyInfluencers>
+                    <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
+                    <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
+                </standbyInfluencers>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+            </li>
+            <li>
+                <compClass>LightsOut2.Comps.RoomTrackerComp</compClass>
+            </li>
+        </value>
+    </Operation>
+</Patch>
