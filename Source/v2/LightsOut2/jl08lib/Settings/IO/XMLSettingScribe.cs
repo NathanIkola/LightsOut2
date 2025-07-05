@@ -6,6 +6,8 @@ namespace jl08lib.Settings.IO
 {
     public class XMLSettingScribe : SettingScribeBase
     {
+        public override bool Saving => Scribe.mode == LoadSaveMode.Saving;
+
         /// <summary>
         /// Creates a setting scribe to interact with the settings
         /// </summary>

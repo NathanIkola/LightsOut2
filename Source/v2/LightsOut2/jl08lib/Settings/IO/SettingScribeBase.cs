@@ -1,5 +1,4 @@
 ﻿using System;
-using Verse;
 
 namespace jl08lib.Settings.IO
 {
@@ -33,7 +32,7 @@ namespace jl08lib.Settings.IO
         /// <summary>
         /// Whether or not Scribe is in save mode
         /// </summary>
-        protected static bool Saving => Scribe.mode == LoadSaveMode.Saving;
+        public abstract bool Saving { get; }
 
         /// <summary>
         /// Saves the setting to the document

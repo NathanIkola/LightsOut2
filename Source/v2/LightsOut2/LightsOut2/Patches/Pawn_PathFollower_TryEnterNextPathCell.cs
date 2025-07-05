@@ -8,7 +8,7 @@ namespace LightsOut2.Patches
     /// <summary>
     /// A class used to detect when a pawn changes rooms
     /// </summary>
-    [HarmonyPatch(typeof(Pawn_PathFollower), "TryEnterNextPathCell")]
+    //[HarmonyPatch(typeof(Pawn_PathFollower), "TryEnterNextPathCell")]
     public class Pawn_PathFollower_TryEnterNextPathCell
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace LightsOut2.Patches
             Room currRoom = ___pawn.GetRoom();
             if (currRoom != __state)
             {
-                RoomTrackerGameComp.Instance.UpdateRoom(___pawn, currRoom, __state);
+                RoomOccupancyTrackerGameComp.Instance.UpdateRoom(___pawn, currRoom, __state);
             }
         }
     }

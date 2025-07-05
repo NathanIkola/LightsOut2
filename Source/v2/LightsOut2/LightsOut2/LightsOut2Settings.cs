@@ -26,6 +26,15 @@ namespace LightsOut2
             Tooltip = "If enabled, lights will stay on when all pawns in the room are sleeping")]
         public static bool NightLights;
 
+        [IntSetting(PackageId,
+            DefaultValue = 30,
+            MinValue = 1,
+            MaxValue = 60,
+            Label = "Ticks between room checks",
+            Tooltip = "The number of ticks that the game will wait before checking if a Pawn has changed rooms. A higher number is better for performance, but may make it take longer for the game to realize that a Pawn has changed rooms",
+            ShowInSettingsDelegateName = nameof(FlickingLightsEnabled))]
+        public static int TicksBetweenRoomChecks;
+
         /// <summary>
         /// Whether or not animals should be flicking lights
         /// </summary>
@@ -33,7 +42,8 @@ namespace LightsOut2
             DefaultValue = false,
             Label = "Allow animals to turn on lights",
             Tooltip = "If enabled, animals will be treated like normal pawns when activating lights",
-            ShowInSettingsDelegateName = nameof(FlickingLightsEnabled))]
+            ShowInSettingsDelegateName = nameof(FlickingLightsEnabled),
+            OnSettingChangedDelegateName = nameof(MarkAllRoomsDirty))]
         public static bool AnimalsFlickLights;
 
         /// <summary>
@@ -136,7 +146,7 @@ namespace LightsOut2
         /// <returns>True if light flicking is enabled, false otherwise</returns>
         public static bool FlickingLightsEnabled()
         {
-            return FlickLights;
+            return FlickLights || !NightLights;
         }
 
         /// <summary>
@@ -146,6 +156,14 @@ namespace LightsOut2
         public static bool IntegrityChecksEnabled()
         {
             return EnableIntegrityChecks;
+        }
+
+        /// <summary>
+        /// Marks all rooms as dirty so they get reevaluated
+        /// </summary>
+        public static void MarkAllRoomsDirty()
+        {
+            LightsOut2Mod.StaticLogger.Trace("Marking all rooms dirty");
         }
     }
 }

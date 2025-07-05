@@ -44,5 +44,15 @@ namespace jl08lib.Settings.Attributes.Data
         /// This should be a static method that takes no parameters and returns a bool
         /// </remarks>
         string ShowInSettingsDelegateName { get; set; }
+
+        /// <summary>
+        /// The type that holds the delegate to call when the setting's value is changed
+        /// </summary>
+        Type OnSettingChangedDelegateType { get; set; }
+
+        /// <summary>
+        /// The name of a method called when the setting's value is changed
+        /// </summary>
+        string OnSettingChangedDelegateName { get; set; }
     }
 }

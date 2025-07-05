@@ -5,6 +5,8 @@ namespace jl08lib.Tests.Mocks
 {
     internal class MockSettingScribe : SettingScribeBase
     {
+        public override bool Saving => SimulateSaving;
+
         protected override TSettingType Load<TSettingType>(string settingKey, TSettingType defaultValue)
         {
             if (_settingStore.ContainsKey(settingKey))
