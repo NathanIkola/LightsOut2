@@ -7,15 +7,11 @@ using Verse;
 
 namespace jl08lib.Settings.Exposed
 {
-    public class FloatSetting : SettingBase
+    public class FloatSetting : SettingBase<float>
     {
         public FloatSetting(Type type, string memberName, FloatSettingAttribute attribute, LoggerBase logger)
-            : base(type, memberName, attribute, logger)
+            : base(type, memberName, attribute, logger, attribute.DefaultValue)
         {
-            _label = attribute.LabelLocalized;
-            _tooltip = attribute.TooltipLocalized;
-            _defaultValue = attribute.DefaultValue;
-            Set(_defaultValue);
             _minValue = attribute.MinValue;
             _maxValue = attribute.MaxValue;
         }
@@ -66,21 +62,6 @@ namespace jl08lib.Settings.Exposed
         /// The current value for the input field
         /// </summary>
         internal float _curValue;
-
-        /// <summary>
-        /// The label to use when drawing the setting
-        /// </summary>
-        private readonly string _label;
-
-        /// <summary>
-        /// The tooltip to show when hovering over this setting
-        /// </summary>
-        private readonly string _tooltip;
-
-        /// <summary>
-        /// The default value for this setting
-        /// </summary>
-        private readonly float _defaultValue;
 
         /// <summary>
         /// The minimum value for this setting

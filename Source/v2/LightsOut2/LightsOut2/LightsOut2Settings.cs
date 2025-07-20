@@ -14,7 +14,8 @@ namespace LightsOut2
         [BooleanSetting(PackageId,
             DefaultValue = true,
             Label = "Turn off lights in empty rooms",
-            Tooltip = "If enabled, lights in empty rooms will be turned off to save power")]
+            Tooltip = "If enabled, lights in empty rooms will be turned off to save power",
+            OnSettingChangedDelegateName = nameof(MarkAllRoomsDirty))]
         public static bool FlickLights;
 
         /// <summary>
@@ -23,7 +24,8 @@ namespace LightsOut2
         [BooleanSetting(PackageId,
             DefaultValue = false,
             Label = "Keep lights on when pawns are sleeping",
-            Tooltip = "If enabled, lights will stay on when all pawns in the room are sleeping")]
+            Tooltip = "If enabled, lights will stay on when all pawns in the room are sleeping",
+            OnSettingChangedDelegateName = nameof(MarkAllRoomsDirty))]
         public static bool NightLights;
 
         [IntSetting(PackageId,

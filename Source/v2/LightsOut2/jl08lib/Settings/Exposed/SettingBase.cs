@@ -30,6 +30,9 @@ namespace jl08lib.Settings.Exposed
         {
             Name = string.IsNullOrWhiteSpace(attribute.SettingKey) ? memberName : attribute.SettingKey;
             MemberName = memberName;
+            _label = attribute.LabelLocalized;
+            _tooltip = attribute.TooltipLocalized;
+
             // fall back to the type that the attribute is on if the delegate type is not specified
             Type delegateType = attribute.ShowInSettingsDelegateType ?? type;
             _showInSettingsDelegate = GetShowInSettingsMenuDelegate(Name, delegateType, attribute.ShowInSettingsDelegateName, logger);
@@ -194,6 +197,16 @@ namespace jl08lib.Settings.Exposed
         }
 
         /// <summary>
+        /// The label to use when drawing the setting
+        /// </summary>
+        protected readonly string _label;
+
+        /// <summary>
+        /// The tooltip to show when hovering over this setting
+        /// </summary>
+        protected readonly string _tooltip;
+
+        /// <summary>
         /// The delegate that determines if this setting should be shown in the settings menu
         /// </summary>
         private readonly ShowInSettingsMenuDelegate _showInSettingsDelegate;
@@ -263,9 +276,10 @@ namespace jl08lib.Settings.Exposed
         {
             ExposeData(scribe, _defaultValue);
             // if we are saving the value and it was changed, invoke the change delegate
-            if (scribe.Saving && !Get().Equals(_startingValue))
+            if (scribe.Saving && !Get().Equals(_lastSavedValue))
             {
-                _startingValue = Get();
+                // the value changed, so set it to be refreshed the next time the setting is drawn
+                _lastSavedValueLoaded = false;
                 _onSettingChangedDelegate?.Invoke();
             }
             logger.Trace($"Exposing {typeof(TSettingType).Name} setting with key {Name} (value: {Get<TSettingType>()}");
@@ -273,9 +287,9 @@ namespace jl08lib.Settings.Exposed
 
         protected override void DrawSettingInner(Listing_Standard settingListing)
         {
-            if (_loadedStartingValue) { return; }
-            _loadedStartingValue = true;
-            _startingValue = Get();
+            if (_lastSavedValueLoaded) { return; }
+            _lastSavedValueLoaded = true;
+            _lastSavedValue = Get();
         }
 
         /// <summary>
@@ -292,11 +306,11 @@ namespace jl08lib.Settings.Exposed
         /// <summary>
         /// The value that this was when the setting was first loaded
         /// </summary>
-        protected TSettingType _startingValue;
+        protected TSettingType _lastSavedValue;
 
         /// <summary>
-        /// Whether or not the starting value has already been set
+        /// Whether or not the last saved value has been loaded
         /// </summary>
-        private bool _loadedStartingValue;
+        private bool _lastSavedValueLoaded = false;
     }
 }
