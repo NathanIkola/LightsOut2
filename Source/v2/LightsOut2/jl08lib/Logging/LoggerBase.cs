@@ -1,4 +1,5 @@
-﻿using System;
+﻿using jl08lib.Settings.Attributes;
+using System;
 
 namespace jl08lib.Logging
 {
@@ -10,36 +11,43 @@ namespace jl08lib.Logging
         /// <summary>
         /// The most detailed messages
         /// </summary>
+        [EnumOption(Caption = "Spam", Description = "Logs verbose messages about what the mod is doing. This option will bloat your logs, so you likely shouldn't choose this unless you're asked to.")]
         Trace = 0,
 
         /// <summary>
         /// For debugging and development
         /// </summary>
+        [EnumOption(Caption = "Debugging", Description = "Logs messages that may help when debugging.")]
         Debug = 1,
 
         /// <summary>
         /// General mod flow
         /// </summary>
+        [EnumOption(Caption = "Information", Description = "Logs messages with details about the successful completion of important events.")]
         Information = 2,
 
         /// <summary>
         /// Abnormal or unexpected events
         /// </summary>
+        [EnumOption(Caption = "Warnings", Description = "Logs message with details about abnormal or unexpected events.")]
         Warning = 3,
 
         /// <summary>
         /// For errors and exceptions that cannot be handled within one operation
         /// </summary>
+        [EnumOption(Caption = "Errors", Description = "Logs messages with details about issues that could not be handled gracefully.")]
         Error = 4,
 
         /// <summary>
         /// For failures that require immediate attention
         /// </summary>
+        [EnumOption(Caption = "Critical Errors", Description = "Logs messages about issues that put the game into an unrecoverable state.")]
         Critical = 5,
 
         /// <summary>
         /// Specifies that no messages should be written
         /// </summary>
+        [EnumOption(Caption = "Disabled", Description = "No messages will be logged after the mod initializes.")]
         None = 6,
     }
 

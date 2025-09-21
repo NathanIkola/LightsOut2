@@ -12,7 +12,7 @@ namespace LightsOut2.Logging
 
         protected override void Log(string message, LogLevel logLevel, bool onlyOnce)
         {
-            if ((int)logLevel >= LightsOut2Settings.MinimumLogLevel)
+            if (logLevel >= LightsOut2Settings.MinimumLogLevel)
             {
                 base.Log(message, logLevel, onlyOnce);
             }

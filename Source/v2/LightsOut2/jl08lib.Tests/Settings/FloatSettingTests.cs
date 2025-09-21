@@ -70,6 +70,7 @@ namespace jl08lib.Tests.Settings
             actual = field.Get<float>();
             Assert.AreEqual(expectedValue, actual, "Retrieved the updated value from the static field");
         }
+
         /// <summary>
         /// Verifies that the float setting exposes data correctly for properties
         /// </summary>

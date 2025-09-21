@@ -1,4 +1,5 @@
-﻿using jl08lib.Settings;
+﻿using jl08lib.Logging;
+using jl08lib.Settings;
 using jl08lib.Settings.Attributes;
 
 namespace LightsOut2
@@ -99,13 +100,11 @@ namespace LightsOut2
         /// <summary>
         /// The minimum log level to show in the logs
         /// </summary>
-        [IntSetting(PackageId,
-            DefaultValue = 3,
-            MinValue = 0,
-            MaxValue = 6,
-            Label = "Log message minimum severity",
-            Tooltip = "Only logs messages with the specified severity or higher. 0-Tracing, 1-Debug, 2-Info, 3-Warning, 4-Error, 5-Critical, 6-None")]
-        public static int MinimumLogLevel;
+        [EnumSetting(PackageId,
+            DefaultValue = (int)LogLevel.Warning,
+            Label = "Minimum log message severity",
+            Tooltip = "Only logs messages if they are at or above the specified severity level. Defaults to Warning.")]
+        public static LogLevel MinimumLogLevel;
 
         /// <summary>
         /// Whether or not the mod should perform internal integrity checking

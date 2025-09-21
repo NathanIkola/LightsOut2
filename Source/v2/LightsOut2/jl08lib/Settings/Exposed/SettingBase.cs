@@ -232,7 +232,7 @@ namespace jl08lib.Settings.Exposed
         /// <remarks>
         /// Only considers static fields/properties
         /// </remarks>
-        private const BindingFlags Flags = BindingFlags.Public
+        protected const BindingFlags Flags = BindingFlags.Public
             | BindingFlags.Static
             | BindingFlags.NonPublic;
 
