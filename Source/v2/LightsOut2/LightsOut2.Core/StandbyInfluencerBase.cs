@@ -25,12 +25,17 @@ namespace LightsOut2.Core
         /// <summary>
         /// Whether this influencer is currently active
         /// </summary>
-        public bool IsActive => !WantsToBeInStandby;
+        public bool BuildingIsActive => !WantsToBeInStandby;
 
         /// <summary>
         /// Allows the influencer to perform any saving/loading operations
         /// </summary>
         public virtual void ExposeData() { }
+
+        /// <summary>
+        /// Allows the influencer to perform any tickwise logic that is necessary
+        /// </summary>
+        public virtual void Tick() { }
 
         /// <summary>
         /// Retrieves the list of gizmos to display for this influencer

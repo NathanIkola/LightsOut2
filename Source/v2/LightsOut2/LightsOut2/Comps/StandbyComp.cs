@@ -1,5 +1,6 @@
 ﻿using LightsOut2.Comps.Properties;
 using LightsOut2.Core;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -52,6 +53,9 @@ namespace LightsOut2.Comps
                         LightsOut2Mod.StaticLogger.Error($"Tried to add a standby influencer of type '{influencerType}' but it does not inherit from StandbyInfluencerBase");
                     }
                 }
+
+                // subscribe to the global ticker instance
+                LightsOut2Mod.StaticTicker.OnTick += Tick;
             }
         }
 
@@ -96,37 +100,74 @@ namespace LightsOut2.Comps
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Standby: {_inStandby}");
-            sb.AppendLine($"Multiplier: {_currentMultiplier}");
+            sb.AppendLine("LightsOut2");
+            sb.AppendLine($"  Standby: {InStandby}");
+            sb.AppendLine($"  Desires standby: {DesiresStandby}");
+            sb.AppendLine($"  Multiplier: {CurrentMultiplier*100f}%");
+            sb.AppendLine($"  Is light: {StandbyProps.isLight}");
+            sb.AppendLine($"  Delays shutoff: {UsesDelayOff}");
 
             foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
             {
-                string debugString = influencer.DebugInspectString();
+                string debugString = influencer.DebugInspectString().Trim();
                 if (!string.IsNullOrWhiteSpace(debugString))
                 {
-                    sb.AppendLine(debugString);
+                    sb.AppendLine($"  {debugString}");
                 }
             }
 
             return sb.ToString().Trim();
         }
 
+        public override void ReceiveCompSignal(string signal)
+        {
+            base.ReceiveCompSignal(signal);
+            LightsOut2Mod.StaticLogger.Trace($"Thing {parent} received comp signal: {signal}");
+        }
+
+        public override void PostDestroy(DestroyMode mode, Map previousMap)
+        {
+            base.PostDestroy(mode, previousMap);
+            UnregisterTick();
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            UnregisterTick();
+        }
+
         /// <summary>
         /// Update the state once per tick
         /// </summary>
-        public override void CompTick()
+        /// <remarks>
+        /// We can't rely on the CompTick to fire since some buildings are not
+        /// registered to be tickers, so we have to make our own ticker
+        /// </remarks>
+        public void Tick()
         {
-            base.CompTick();
+            // stop ticking if it's no longer valid to do so
+            if (!IsValidToTick())
+            {
+                UnregisterTick();
+                return;
+            }
+
+            // tick our influencers first so we use their updated states to determine standby
+            TickStandbyInfluencers();
 
             // update the desired standby state
             bool previouslyDesiredStandby = _desiresStandby;
             _desiresStandby = WantsToBeInStandby();
 
+            // this is the most likely case, so rule it out first
+            if (_inStandby == _desiresStandby) { return; }
             // if we're in standby and no longer want to be, then exit standby mode
-            if (_inStandby && !_desiresStandby)
+            else if (_inStandby && !_desiresStandby)
             {
                 _inStandby = false;
                 _ticksUntilStandby = 0;
+                UpdatePowerDraw();
             }
             // otherwise, if we want to go into standby but aren't currently
             else if (_desiresStandby && !_inStandby)
@@ -140,16 +181,12 @@ namespace LightsOut2.Comps
 
                 // detect when standby is ready to be enabled
                 // this happens after the transition in case a user sets the delay to 0
-                if (_ticksUntilStandby <= 0) { _inStandby = true; }
+                if (_ticksUntilStandby <= 0) 
+                { 
+                    _inStandby = true;
+                    UpdatePowerDraw();
+                }
             }
-
-            _currentMultiplier = ResourceDrawMultiplier();
-        }
-
-        public override void ReceiveCompSignal(string signal)
-        {
-            base.ReceiveCompSignal(signal);
-            LightsOut2Mod.StaticLogger.Trace($"Thing {parent} received comp signal: {signal}");
         }
 
         /// <summary>
@@ -159,7 +196,7 @@ namespace LightsOut2.Comps
         public bool WantsToBeInStandby()
         {
             // if any of the influencers are active then we are not in standby mode
-            if (_standbyInfluencers.Any(influencer => influencer.IsActive))
+            if (_standbyInfluencers.Any(influencer => influencer.BuildingIsActive))
             {
                 return false;
             }
@@ -167,9 +204,9 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
-        /// Gets the rate 
+        /// Gets the coefficient that should be applied to the power draw baed on the current state
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The coefficient based on the current state</returns>
         public float ResourceDrawMultiplier()
         {
             if (StandbyProps.isLight)
@@ -178,16 +215,13 @@ namespace LightsOut2.Comps
                 // and 100% when active, no matter what the settings say
                 return _inStandby ? 0f : 1f;
             }
-            else
-            {
-                return _inStandby
-                    // in standby mode, use the standby coefficient , but ensure it is at least the minimum value
+            return _inStandby
+                    // in standby mode, use the standby coefficient, but ensure it is at least the minimum value
                     ? Math.Max(
-                        LightsOut2Settings.StandbyCoefficientDecimal, 
-                        LightsOut2Settings.MinDrawCoefficientDecimal) 
+                        LightsOut2Settings.StandbyCoefficientDecimal,
+                        LightsOut2Settings.MinDrawCoefficientDecimal)
                     // otherwise use the active coefficient
                     : LightsOut2Settings.ActiveCoefficientDecimal;
-            }
         }
 
         /// <summary>
@@ -199,6 +233,60 @@ namespace LightsOut2.Comps
             if (UsesDelayOff)
             {
                 _ticksUntilStandby = GenTicks.SecondsToTicks(LightsOut2Settings.LightDelaySeconds);
+            }
+        }
+
+        /// <summary>
+        /// Updates the power draw rate on this comp and also the associated power trader
+        /// </summary>
+        private void UpdatePowerDraw()
+        {
+            _currentMultiplier = ResourceDrawMultiplier();
+            CompPowerTrader powerTrader = PowerTrader;
+            if (powerTrader != null)
+            {
+                // reset it to its default power draw
+                powerTrader.SetUpPowerVars();
+                // then apply our multiplier so the power trader naturally pulls the correct amount without patching it
+                // we want to avoid the patch on PowerOutput because it runs every tick for every single Thing with a CompPowerTrader,
+                // which is A LOT of them in a normal colony
+                powerTrader.powerOutputInt *= CurrentMultiplier;
+            }
+        }
+
+        /// <summary>
+        /// Verifies that this comp should still be ticking
+        /// </summary>
+        /// <returns>True if this comp should still tick, false otherwise</returns>
+        private bool IsValidToTick()
+        {
+            // if the parent is still spawned, then we're good to go
+            if (parent.Spawned) { return true; }
+
+            // only bother logging this if we are looking at integrity checks
+            if (LightsOut2Settings.EnableIntegrityChecks)
+            {
+                LightsOut2Mod.StaticLogger.Warning($"ThingComp with def '{parent.def.defName}' did not unregister from the static ticker before despawning");
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Unregisters the tick action for this instance
+        /// </summary>
+        private void UnregisterTick()
+        {
+            LightsOut2Mod.StaticTicker.OnTick -= Tick;
+        }
+
+        /// <summary>
+        /// Ticks all standby influencers
+        /// </summary>
+        private void TickStandbyInfluencers()
+        {
+            foreach (StandbyInfluencerBase influencer in _standbyInfluencers)
+            {
+                influencer.Tick();
             }
         }
 
@@ -231,6 +319,26 @@ namespace LightsOut2.Comps
         /// The number of ticks until this thing will be in standby mode
         /// </summary>
         private int _ticksUntilStandby = 0;
+
+        /// <summary>
+        /// The power trader to affect when in/out of standby mode in lieu of a patch on PowerOutput
+        /// </summary>
+        private CompPowerTrader _powerTrader = null;
+
+        /// <summary>
+        /// Gets the power trader from the cache, or looks it up if it hasn't been cached yet
+        /// </summary>
+        private CompPowerTrader PowerTrader
+        {
+            get
+            {
+                // we already looked it up, so get the cached power trader
+                if (_powerTrader != null) { return _powerTrader; }
+                // otherwise look it up the first time it's needed and cache it for the next calls
+                _powerTrader = parent.TryGetComp<CompPowerTrader>();
+                return _powerTrader;
+            }
+        }
 
         /// <summary>
         /// The list of influencers that will determine if this thing is in standby mode

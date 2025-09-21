@@ -74,7 +74,7 @@ namespace LightsOut2
         /// This does not affect lights, which always use 100% when active
         /// </remarks>
         [IntSetting(PackageId,
-            DefaultValue = 0,
+            DefaultValue = 100,
             MinValue = 100,
             Label = "Active energy draw rate (%)",
             Tooltip = "The energy draw (in percent) that buildings should have when in use")]

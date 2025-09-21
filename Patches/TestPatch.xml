@@ -1,20 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Patch>
-    <!-- Vanilla Autodoor -->
+    <!-- Pawns -->
     <Operation Class="PatchOperationAdd">
         <xpath>Defs/ThingDef[@ParentName="BasePawn"]/comps</xpath>
         <value>
-            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
-                <isLight>False</isLight>
-                <standbyInfluencers>
-                    <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
-                    <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
-                </standbyInfluencers>
-                <compClass>LightsOut2.Comps.StandbyComp</compClass>
-            </li>
             <li>
                 <compClass>LightsOut2.Comps.RoomTrackerComp</compClass>
             </li>
         </value>
+    </Operation>
+
+    <!-- Buildings -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ThingDef[@Name="BuildingBase"]/comps</xpath>
+        <!-- No other mod has added the comps node to BuildingBase, add it here -->
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ThingDef[@Name="BuildingBase"]</xpath>
+            <value>
+                <comps>
+                    <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                        <isLight>False</isLight>
+                        <standbyInfluencers>
+                            <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
+                            <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
+                        </standbyInfluencers>
+                        <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                    </li>
+                </comps>
+            </value>
+        </nomatch>
+        <!-- Another mod already added the comps node, so add our comp without overwriting their changes -->
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ThingDef[@Name="BuildingBase"]/comps</xpath>
+            <value>
+                <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                        <isLight>False</isLight>
+                        <standbyInfluencers>
+                            <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
+                            <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
+                        </standbyInfluencers>
+                        <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                    </li>
+            </value>
+        </match>
     </Operation>
 </Patch>
