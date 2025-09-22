@@ -11,7 +11,7 @@ namespace LightsOut2.Comps
     /// <summary>
     /// The comp used to determine if a thing is in standby mode
     /// </summary>
-    public sealed class StandbyComp : ThingComp
+    public sealed class StandbyComp : ThingComp, IDisposable
     {
         /// <summary>
         /// Whether or not this comp is currently in standby mode
@@ -46,6 +46,7 @@ namespace LightsOut2.Comps
                     if (influencerType.IsSubclassOf(typeof(StandbyInfluencerBase)))
                     {
                         StandbyInfluencerBase influencer = (StandbyInfluencerBase)Activator.CreateInstance(influencerType, new object[] { parent });
+                        influencer.Initialize();
                         _standbyInfluencers.Add(influencer);
                     }
                     else
@@ -54,8 +55,7 @@ namespace LightsOut2.Comps
                     }
                 }
 
-                // subscribe to the global ticker instance
-                LightsOut2Mod.StaticTicker.OnTick += Tick;
+                RegisterTick();
             }
         }
 
@@ -128,13 +128,25 @@ namespace LightsOut2.Comps
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
             base.PostDestroy(mode, previousMap);
-            UnregisterTick();
+            Dispose();
         }
 
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
+            Dispose();
+        }
+
+        /// <summary>
+        /// Cleans up any outstanding dependencies of this comp or the influencers
+        /// </summary>
+        public void Dispose()
+        {
             UnregisterTick();
+            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            {
+                influencer.Dispose();
+            }
         }
 
         /// <summary>
@@ -149,7 +161,7 @@ namespace LightsOut2.Comps
             // stop ticking if it's no longer valid to do so
             if (!IsValidToTick())
             {
-                UnregisterTick();
+                Dispose();
                 return;
             }
 
@@ -269,6 +281,14 @@ namespace LightsOut2.Comps
                 LightsOut2Mod.StaticLogger.Warning($"ThingComp with def '{parent.def.defName}' did not unregister from the static ticker before despawning");
             }
             return false;
+        }
+
+        /// <summary>
+        /// Registers this comp to receive ticking events from the static ticker instance
+        /// </summary>
+        private void RegisterTick()
+        {
+            LightsOut2Mod.StaticTicker.OnTick += Tick;
         }
 
         /// <summary>

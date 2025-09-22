@@ -104,6 +104,18 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
+        /// Retrieves the last known occupancy status for the room
+        /// </summary>
+        /// <param name="room">The room to get the status for</param>
+        /// <param name="lastStatus">The last known status</param>
+        /// <returns>True if the status was found, false if no status existed</returns>
+        public bool TryGetLastOccupancyStatus(Room room, out bool lastStatus)
+        {
+            if (!_roomOccupancy.TryGetValue(room, out lastStatus)) { return false; }
+            return true;
+        }
+
+        /// <summary>
         /// Marks the room as dirty so that it gets evaluated next tick
         /// </summary>
         /// <param name="room">The room to mark as dirty</param>
@@ -124,7 +136,7 @@ namespace LightsOut2.Comps
             if (room is null) { return; }
 
             // if this room wasn't previously in the cache or the occupancy changed
-            if (!_roomOccupancy.TryGetValue(room, out bool wasOccupied) || isOccupied != wasOccupied)
+            if (!TryGetLastOccupancyStatus(room, out bool wasOccupied) || isOccupied != wasOccupied)
             {
                 OnOccupancyChanged?.Invoke(room, isOccupied);
             }

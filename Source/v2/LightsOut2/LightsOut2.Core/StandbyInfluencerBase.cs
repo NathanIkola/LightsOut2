@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Verse;
 
 namespace LightsOut2.Core
@@ -6,7 +7,7 @@ namespace LightsOut2.Core
     /// <summary>
     /// An interface for objects that influence the standby state
     /// </summary>
-    public abstract class StandbyInfluencerBase : IExposable
+    public abstract class StandbyInfluencerBase : IExposable, IDisposable
     {
         /// <summary>
         /// Instantiates a new standby influencer with the given parent
@@ -16,6 +17,11 @@ namespace LightsOut2.Core
         {
             _parent = parent;
         }
+
+        /// <summary>
+        /// Allows the influencer to have some setup code
+        /// </summary>
+        public virtual void Initialize() { }
 
         /// <summary>
         /// Whether this influencer wishes to be in standby mode
@@ -36,6 +42,11 @@ namespace LightsOut2.Core
         /// Allows the influencer to perform any tickwise logic that is necessary
         /// </summary>
         public virtual void Tick() { }
+
+        /// <summary>
+        /// Allows the influencer to clean up any data when being disposed of
+        /// </summary>
+        public virtual void Dispose() { }
 
         /// <summary>
         /// Retrieves the list of gizmos to display for this influencer
