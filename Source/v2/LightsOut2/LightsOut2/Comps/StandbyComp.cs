@@ -11,7 +11,7 @@ namespace LightsOut2.Comps
     /// <summary>
     /// The comp used to determine if a thing is in standby mode
     /// </summary>
-    public sealed class StandbyComp : ThingComp, IDisposable
+    public sealed class StandbyComp : TickingCompBase
     {
         /// <summary>
         /// Whether or not this comp is currently in standby mode
@@ -54,8 +54,6 @@ namespace LightsOut2.Comps
                         LightsOut2Mod.StaticLogger.Error($"Tried to add a standby influencer of type '{influencerType}' but it does not inherit from StandbyInfluencerBase");
                     }
                 }
-
-                RegisterTick();
             }
         }
 
@@ -125,24 +123,12 @@ namespace LightsOut2.Comps
             LightsOut2Mod.StaticLogger.Trace($"Thing {parent} received comp signal: {signal}");
         }
 
-        public override void PostDestroy(DestroyMode mode, Map previousMap)
-        {
-            base.PostDestroy(mode, previousMap);
-            Dispose();
-        }
-
-        public override void PostDeSpawn(Map map)
-        {
-            base.PostDeSpawn(map);
-            Dispose();
-        }
-
         /// <summary>
         /// Cleans up any outstanding dependencies of this comp or the influencers
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
-            UnregisterTick();
+            base.Dispose();
             foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
             {
                 influencer.Dispose();
@@ -156,15 +142,8 @@ namespace LightsOut2.Comps
         /// We can't rely on the CompTick to fire since some buildings are not
         /// registered to be tickers, so we have to make our own ticker
         /// </remarks>
-        public void Tick()
+        protected override void Tick()
         {
-            // stop ticking if it's no longer valid to do so
-            if (!IsValidToTick())
-            {
-                Dispose();
-                return;
-            }
-
             // tick our influencers first so we use their updated states to determine standby
             TickStandbyInfluencers();
 
@@ -264,39 +243,6 @@ namespace LightsOut2.Comps
                 // which is A LOT of them in a normal colony
                 powerTrader.powerOutputInt *= CurrentMultiplier;
             }
-        }
-
-        /// <summary>
-        /// Verifies that this comp should still be ticking
-        /// </summary>
-        /// <returns>True if this comp should still tick, false otherwise</returns>
-        private bool IsValidToTick()
-        {
-            // if the parent is still spawned, then we're good to go
-            if (parent.Spawned) { return true; }
-
-            // only bother logging this if we are looking at integrity checks
-            if (LightsOut2Settings.EnableIntegrityChecks)
-            {
-                LightsOut2Mod.StaticLogger.Warning($"ThingComp with def '{parent.def.defName}' did not unregister from the static ticker before despawning");
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Registers this comp to receive ticking events from the static ticker instance
-        /// </summary>
-        private void RegisterTick()
-        {
-            LightsOut2Mod.StaticTicker.OnTick += Tick;
-        }
-
-        /// <summary>
-        /// Unregisters the tick action for this instance
-        /// </summary>
-        private void UnregisterTick()
-        {
-            LightsOut2Mod.StaticTicker.OnTick -= Tick;
         }
 
         /// <summary>

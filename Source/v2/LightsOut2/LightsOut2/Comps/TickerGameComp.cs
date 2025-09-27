@@ -1,19 +1,21 @@
-﻿using HarmonyLib;
-using Verse;
+﻿using Verse;
 
-namespace LightsOut2.Patches
+namespace LightsOut2.Comps
 {
     /// <summary>
-    /// A class that ensures that ticking behavior happens regularly
+    /// A class that handles the ticking needs
     /// </summary>
-    [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
-    public class TickManager_DoSingleTick
+    public sealed class TickerGameComp : GameComponent
     {
         /// <summary>
-        /// Invokes the ticker on every tick
+        /// Constructor required by the game to initialize the component
         /// </summary>
-        public static void Postfix()
+        /// <param name="_">The game this is being initialized for</param>
+        public TickerGameComp(Game _) { }
+
+        public override void GameComponentTick()
         {
+            base.GameComponentTick();
             LightsOut2Mod.StaticTicker.InvokeTick();
         }
     }

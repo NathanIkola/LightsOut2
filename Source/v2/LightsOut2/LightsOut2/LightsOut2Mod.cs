@@ -1,7 +1,7 @@
 ﻿using jl08lib;
 using jl08lib.Logging;
+using LightsOut2.Comps;
 using LightsOut2.Logging;
-using LightsOut2.Patches;
 using Verse;
 
 namespace LightsOut2

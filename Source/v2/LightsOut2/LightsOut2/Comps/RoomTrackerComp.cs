@@ -5,11 +5,10 @@ namespace LightsOut2.Comps
     /// <summary>
     /// A comp which detects room changes on a Thing
     /// </summary>
-    public sealed class RoomTrackerComp : ThingComp
+    public sealed class RoomTrackerComp : TickingCompBase
     {
-        public override void CompTick()
+        protected override void Tick()
         {
-            base.CompTick();
             // have not reached the tick counter yet, ignore it
             if (++_tickCounter < LightsOut2Settings.TicksBetweenRoomChecks) { return; }
             // we reached the tick counter, so reset it for the next tick

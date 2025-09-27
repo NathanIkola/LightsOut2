@@ -85,6 +85,11 @@ namespace LightsOut2.Comps
         {
             base.GameComponentUpdate();
             EvaluateDirtyRooms();
+
+            if (ShouldRunIntegrityChecks())
+            {
+                PerformIntegrityChecks();
+            }
         }
 
         /// <summary>
@@ -116,12 +121,50 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
+        /// Determines whether or not integrity checks should run this frame
+        /// </summary>
+        /// <returns>True if integrity checks should run, false otherwise</returns>
+        private bool ShouldRunIntegrityChecks()
+        {
+            return LightsOut2Settings.EnableIntegrityChecks 
+                && ++_framesSinceLastIntegrityCheck >= LightsOut2Settings.FramesBetweenIntegrityChecks;
+        }
+
+        /// <summary>
+        /// Loops over the cached results and verifies that all rooms are correct
+        /// </summary>
+        private void PerformIntegrityChecks()
+        {
+            _framesSinceLastIntegrityCheck = 0;
+            using(LightsOut2Mod.StaticLogger.OpenSection("Beginning RoomOccupancyTrackerGameComp integrity check", LogLevel.Trace))
+            {
+                foreach (Room room in _roomOccupancy.Keys)
+                {
+                    TryGetLastOccupancyStatus(room, out bool isOccupied);
+                    bool foundAnyOccupants = false;
+                    foreach (Pawn occupant in RoomOccupants(room))
+                    {
+                        foundAnyOccupants = true;
+                        // if the room is occupied and we found an occupant, then it checks out
+                        if (isOccupied) { break; }
+                        // otherwise log a warning for the pawn that's not being counted
+                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be empty, but found Pawn '{occupant}'");
+                    }
+                    if (isOccupied && !foundAnyOccupants)
+                    {
+                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be occupied, but found no occupants");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Marks the room as dirty so that it gets evaluated next tick
         /// </summary>
         /// <param name="room">The room to mark as dirty</param>
         private void FlagRoomForEvaluation(Room room)
         {
-            if (room is null) { return; }
+            if (room is null || room.IsDoorway) { return; }
 
             _dirtyRooms.Add(room);
         }
@@ -156,32 +199,29 @@ namespace LightsOut2.Comps
         {
             if (room is null) { return false; }
 
-            foreach (Pawn occupant in RoomPawns(room))
+            foreach (Pawn occupant in RoomOccupants(room))
             {
-                // skip null pawns or the pawn that just left the room
-                if (occupant is null || occupant == toIgnore) { continue; }
-                // otherwise check if the pawn should count
-                if (occupant.ActivatesLights())
-                {
-                    return true;
+                if (occupant != null && occupant != toIgnore) 
+                { 
+                    return true; 
                 }
             }
             return false;
         }
 
         /// <summary>
-        /// Retrieves the Pawns in the room
+        /// Retrieves the Pawns in the room that are considered occupants (may activate lights)
         /// </summary>
         /// <param name="room">The room to check</param>
         /// <returns>The enumerable list of Pawns in the given Room</returns>
-        private IEnumerable<Pawn> RoomPawns(Room room)
+        private IEnumerable<Pawn> RoomOccupants(Room room)
         {
             if (room is null) { yield break; }
 
             // loop over all of the Things in the room
             foreach(Thing thing in room.ContainedAndAdjacentThings)
             {
-                if (thing is Pawn pawn) { yield return pawn; }
+                if (thing is Pawn pawn && pawn.ActivatesLights()) { yield return pawn; }
             }
             yield break;
         }
@@ -200,6 +240,11 @@ namespace LightsOut2.Comps
         /// Cached evaluation results
         /// </summary>
         private readonly Dictionary<Room, bool> _roomOccupancy = new Dictionary<Room, bool>();
+
+        /// <summary>
+        /// The frame counter used in integrity checking
+        /// </summary>
+        private int _framesSinceLastIntegrityCheck = 0;
 
         /// <summary>
         /// A handler for a Room's occupancy being updated
