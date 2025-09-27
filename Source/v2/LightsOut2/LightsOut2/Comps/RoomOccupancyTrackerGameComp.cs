@@ -141,18 +141,28 @@ namespace LightsOut2.Comps
                 foreach (Room room in _roomOccupancy.Keys)
                 {
                     TryGetLastOccupancyStatus(room, out bool isOccupied);
-                    bool foundAnyOccupants = false;
-                    foreach (Pawn occupant in RoomOccupants(room))
+
+                    // if flicking lights is enabled then we have to check for occupants
+                    if (LightsOut2Settings.FlickingLightsEnabled())
                     {
-                        foundAnyOccupants = true;
-                        // if the room is occupied and we found an occupant, then it checks out
-                        if (isOccupied) { break; }
-                        // otherwise log a warning for the pawn that's not being counted
-                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be empty, but found Pawn '{occupant}'");
+                        bool foundAnyOccupants = false;
+                        foreach (Pawn occupant in RoomOccupants(room))
+                        {
+                            foundAnyOccupants = true;
+                            // if the room is occupied and we found an occupant, then it checks out
+                            if (isOccupied) { break; }
+                            // otherwise log a warning for the pawn that's not being counted
+                            LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be empty, but found Pawn '{occupant}'");
+                        }
+                        if (isOccupied && !foundAnyOccupants)
+                        {
+                            LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be occupied, but found no occupants");
+                        }
                     }
-                    if (isOccupied && !foundAnyOccupants)
+                    // otherwise all rooms should be occupied
+                    else if (!isOccupied)
                     {
-                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be occupied, but found no occupants");
+                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was considered empty but light flicking is disabled");
                     }
                 }
             }
@@ -198,6 +208,9 @@ namespace LightsOut2.Comps
         private bool IsRoomOccupied(Room room, Pawn toIgnore = null)
         {
             if (room is null) { return false; }
+
+            // if we aren't flicking lights then consider the room occupied
+            if (!LightsOut2Settings.FlickingLightsEnabled()) { return true; }
 
             foreach (Pawn occupant in RoomOccupants(room))
             {

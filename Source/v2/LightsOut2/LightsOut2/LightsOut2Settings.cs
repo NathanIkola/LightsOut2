@@ -27,7 +27,12 @@ namespace LightsOut2
             Label = "Keep lights on when pawns are sleeping",
             Tooltip = "If enabled, lights will stay on when all pawns in the room are sleeping",
             OnSettingChangedDelegateName = nameof(MarkAllRoomsDirty))]
-        public static bool NightLights;
+        public static bool KeepLightsOnWhenSleeping;
+
+        /// <summary>
+        /// Whether or not to turn lights off when pawns are sleeping
+        /// </summary>
+        public static bool FlickLightsForSleepingPawns => !KeepLightsOnWhenSleeping;
 
         [IntSetting(PackageId,
             DefaultValue = 30,
@@ -147,7 +152,7 @@ namespace LightsOut2
         /// <returns>True if light flicking is enabled, false otherwise</returns>
         public static bool FlickingLightsEnabled()
         {
-            return FlickLights || !NightLights;
+            return FlickLights || !KeepLightsOnWhenSleeping;
         }
 
         /// <summary>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Verse;
+﻿using Verse;
 
 namespace LightsOut2.Extensions
 {
@@ -16,14 +11,44 @@ namespace LightsOut2.Extensions
         /// <returns>Whether or not the pawn should activate lights</returns>
         public static bool ActivatesLights(this Pawn pawn)
         {
-            // pawn is an animal and animals are not configured to flick lights
-            if (pawn.RaceProps.Animal && !LightsOut2Settings.AnimalsFlickLights) { return false; }
-            // allowed to flick lights if they are in bed
-            // this is to allow users to turn off general flicking of lights
-            // but still allow pawns to turn off lights when pawns are sleeping
-            if (LightsOut2Settings.NightLights) { return true; }
-            // otherwise fall back to the the global setting
-            return LightsOut2Settings.FlickLights;
+            // pawn can't be considered an occupant at all, so ignore them
+            if (!pawn.CanBeOccupant()) { return false; }
+
+            // we want to turn off lights for sleeping pawns and the pawn is asleep, ignore them
+            if (LightsOut2Settings.FlickLightsForSleepingPawns && pawn.IsAsleep()) { return false; }
+
+            // otherwise this pawn should flick lights
+            return true;
+        }
+
+        /// <summary>
+        /// Determines if the pawn is asleep
+        /// </summary>
+        /// <param name="pawn">The pawn to check</param>
+        /// <returns>Whether or not the pawn is asleep</returns>
+        public static bool IsAsleep(this Pawn pawn)
+        {
+            return pawn?.jobs?.curDriver?.asleep ?? false;
+        }
+
+        /// <summary>
+        /// Whether or not the pawn should be onsidered an animal
+        /// </summary>
+        /// <param name="pawn">The pawn to check</param>
+        /// <returns>Whether or not the pawn is considered an animal</returns>
+        public static bool IsAnimal(this Pawn pawn)
+        {
+            return pawn.RaceProps.Animal;
+        }
+
+        /// <summary>
+        /// Whether or not this pawn can be an occupant
+        /// </summary>
+        /// <param name="pawn">The pawn to check</param>
+        /// <returns>Whether or not this pawn can be considered an occupant at all</returns>
+        public static bool CanBeOccupant(this Pawn pawn)
+        {
+            return LightsOut2Settings.AnimalsFlickLights;
         }
     }
 }
