@@ -35,7 +35,7 @@ namespace LightsOut2
         public static bool FlickLightsForSleepingPawns => !KeepLightsOnWhenSleeping;
 
         [IntSetting(PackageId,
-            DefaultValue = 30,
+            DefaultValue = 1,
             MinValue = 1,
             MaxValue = 60,
             Label = "Ticks between room checks",
@@ -152,7 +152,7 @@ namespace LightsOut2
         /// <returns>True if light flicking is enabled, false otherwise</returns>
         public static bool FlickingLightsEnabled()
         {
-            return FlickLights || !KeepLightsOnWhenSleeping;
+            return FlickLights || FlickLightsForSleepingPawns;
         }
 
         /// <summary>

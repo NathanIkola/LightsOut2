@@ -8,19 +8,16 @@ namespace LightsOut2.Comps
     /// </summary>
     public abstract class TickingCompBase : ThingComp, IDisposable
     {
-        public override void Initialize(CompProperties props)
-        {
-            base.Initialize(props);
-        }
-
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
+            LightsOut2Mod.StaticLogger.Trace($"PostDestroy for {parent}");
             base.PostDestroy(mode, previousMap);
             Dispose();
         }
 
         public override void PostDeSpawn(Map map)
         {
+            LightsOut2Mod.StaticLogger.Trace($"PostDeSpawn for {parent}");
             base.PostDeSpawn(map);
             Dispose();
         }
@@ -28,6 +25,7 @@ namespace LightsOut2.Comps
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            LightsOut2Mod.StaticLogger.Trace($"PostSpawnSetup for {parent}");
             RegisterTick();
         }
 
@@ -37,11 +35,11 @@ namespace LightsOut2.Comps
         protected abstract void Tick();
 
         /// <summary>
-        /// Whether or not it's still valid to be ticking
+        /// Whether or not to allow ticking
         /// </summary>
-        protected virtual bool IsValidToTick()
+        protected virtual bool AllowTicking()
         {
-            return parent?.Spawned ?? false;
+            return true;
         }
 
         /// <summary>
@@ -73,29 +71,30 @@ namespace LightsOut2.Comps
         /// </summary>
         private void ParentTick()
         {
-            // if we aren't already in violation, then go ahead and tick
-            bool isValid = IsValidToTick();
-            if (isValid || !_previouslyViolated) 
+            // if the comp doesn't want to tick right now, then just exit
+            if (!AllowTicking()) { return; }
+            // otherwise go ahead and tick
+            Tick();
+
+            // optionally perform integrity checking
+            if (LightsOut2Settings.EnableIntegrityChecks)
             {
-                // mark ourselves as in violation 
-                _previouslyViolated = !isValid;
-                Tick();
-            }
-            // otherwise it's likely invalid, but only log an error if it's still invalid across two separate ticks
-            // (this helps deal with cases where the Tick event runs prior to the Thing's tick event, which means we may observe incorrect state for up to one tick)
-            else if (LightsOut2Settings.EnableIntegrityChecks)
-            {
-                LightsOut2Mod.StaticLogger.Warning($"ThingComp with def '{parent.def.defName}' did not unregister from the static ticker before despawning");
+                // if the parent is currently spawned, there's no problem
+                if (parent.Spawned)
+                {
+                    _hasParentEverSpawned = true;
+                }
+                // otherwise if the parent WAS spawned and isn't anymore, it should have unregistered
+                else if (_hasParentEverSpawned)
+                {
+                    LightsOut2Mod.StaticLogger.Warning($"ThingComp with def '{parent.def.defName}' did not unregister from the static ticker before despawning");
+                }
             }
         }
 
         /// <summary>
-        /// Whether or not this comp was previously had an integrity violation
+        /// Whether or not this comp's parent has been seen as spawned
         /// </summary>
-        /// <remarks>
-        /// We should wait at least one tick to see if there's some state update that
-        /// simply hasn't happened yet (e.g., the ticking is processed before the parent Thing's tick runs)
-        /// </remarks>
-        private bool _previouslyViolated = false;
+        private bool _hasParentEverSpawned = false;
     }
 }

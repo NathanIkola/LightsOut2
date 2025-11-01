@@ -1,4 +1,5 @@
 ﻿using Verse;
+using LightsOut2.Extensions;
 
 namespace LightsOut2.Comps
 {
@@ -7,6 +8,24 @@ namespace LightsOut2.Comps
     /// </summary>
     public sealed class RoomTrackerComp : TickingCompBase
     {
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            // this comp only works for pawns, so no reason to subscribe to ticking if the parent isn't a pawn
+            if (parent is Pawn pawn)
+            {
+                base.PostSpawnSetup(respawningAfterLoad);
+                RoomOccupancyTrackerGameComp.Instance.UpdateRoom(pawn, pawn.GetRoom(), null);
+            }
+        }
+
+        protected override bool AllowTicking()
+        {
+            // respect the base setting
+            if (!base.AllowTicking()) { return false; }
+            // also only allow ticking if this pawn is allowed to be an occupant
+            return parent is Pawn pawn && pawn.CanBeOccupant();
+        }
+
         protected override void Tick()
         {
             // have not reached the tick counter yet, ignore it

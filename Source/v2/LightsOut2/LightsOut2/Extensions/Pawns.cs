@@ -48,7 +48,7 @@ namespace LightsOut2.Extensions
         /// <returns>Whether or not this pawn can be considered an occupant at all</returns>
         public static bool CanBeOccupant(this Pawn pawn)
         {
-            return LightsOut2Settings.AnimalsFlickLights;
+            return LightsOut2Settings.AnimalsFlickLights || !pawn.IsAnimal();
         }
     }
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Pawns -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[@ParentName="BasePawn"]/comps</xpath>
+        <value>
+            <li>
+                <compClass>LightsOut2.Comps.RoomTrackerComp</compClass>
+            </li>
+        </value>
+    </Operation>
+
+    <!-- Lamps (no interaction cell, consumes power, has a glower comp) -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[not(normalize-space(translate(hasInteractionCell,'TRUE','true'))='true') and comps/li[@Class='CompProperties_Power' and basePowerConsumption>0] and comps/li[contains(translate(@Class, "GLOWER", "glower"), "glower")]]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <isLight>True</isLight>
+                <standbyInfluencers>
+                    <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
+                    <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
+                </standbyInfluencers>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                <noDelay>True</noDelay>
+            </li>
+        </value>
+    </Operation>
+
+    <!-- Benches (interaction cell, consumes power) -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[hasInteractionCell and normalize-space(translate(hasInteractionCell,'TRUE','true'))='true' and comps/li[@Class='CompProperties_Power' and basePowerConsumption>0]]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <isLight>False</isLight>
+                <standbyInfluencers>
+                </standbyInfluencers>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+            </li>
+        </value>
+    </Operation>
+</Patch>

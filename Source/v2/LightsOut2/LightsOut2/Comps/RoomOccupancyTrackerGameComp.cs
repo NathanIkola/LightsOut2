@@ -9,7 +9,7 @@ namespace LightsOut2.Comps
     /// <summary>
     /// A class that tracks the rooms that pawns are in
     /// </summary>
-    public sealed class RoomOccupancyTrackerGameComp : GameComponent, IDisposable
+    public sealed class RoomOccupancyTrackerGameComp : GameComponent
     {
         /// <summary>
         /// An instance of the RoomTrackerGameComp for the current game
@@ -21,41 +21,6 @@ namespace LightsOut2.Comps
         /// </summary>
         /// <param name="_">The game this is being initialized for</param>
         public RoomOccupancyTrackerGameComp(Game _) { }
-
-        /// <summary>
-        /// Resets the room tracker when starting a new game
-        /// </summary>
-        public override void StartedNewGame()
-        {
-            base.StartedNewGame();
-            using (LightsOut2Mod.StaticLogger.OpenSection($"RoomTracker starting new game", LogLevel.Trace))
-            {
-                Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Resets the room tracker when loading a saved game
-        /// </summary>
-        public override void LoadedGame()
-        {
-            base.LoadedGame();
-            using (LightsOut2Mod.StaticLogger.OpenSection($"RoomTracker loading game", LogLevel.Trace))
-            {
-                Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Cleans up the cache
-        /// </summary>
-        public void Dispose()
-        {
-            int numRooms = _roomOccupancy.Count;
-            _roomOccupancy.Clear();
-            _dirtyRooms.Clear();
-            Logger.Trace($"Cleared {numRooms} rooms from {nameof(RoomOccupancyTrackerGameComp)} cache");
-        }
 
         /// <summary>
         /// Updates the room associated with the specified pawn
@@ -209,14 +174,11 @@ namespace LightsOut2.Comps
         {
             if (room is null) { return false; }
 
-            // if we aren't flicking lights then consider the room occupied
-            if (!LightsOut2Settings.FlickingLightsEnabled()) { return true; }
-
             foreach (Pawn occupant in RoomOccupants(room))
             {
                 if (occupant != null && occupant != toIgnore) 
                 { 
-                    return true; 
+                    return true;
                 }
             }
             return false;

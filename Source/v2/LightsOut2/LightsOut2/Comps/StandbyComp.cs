@@ -91,13 +91,15 @@ namespace LightsOut2.Comps
         /// <returns>The debug inspection strings</returns>
         public override string CompInspectStringExtra()
         {
+            StringBuilder sb = new StringBuilder();
+
             // show nothing unless we're in debug mode
             if (!DebugSettings.ShowDevGizmos)
             {
-                return base.CompInspectStringExtra();
+                if (InStandby) { sb.AppendLine("In standby"); }
+                return (base.CompInspectStringExtra() + sb.ToString()).Trim();
             }
 
-            StringBuilder sb = new StringBuilder();
             sb.AppendLine("LightsOut2");
             sb.AppendLine($"  Standby: {InStandby}");
             sb.AppendLine($"  Desires standby: {DesiresStandby}");
@@ -152,13 +154,16 @@ namespace LightsOut2.Comps
             _desiresStandby = WantsToBeInStandby();
 
             // this is the most likely case, so rule it out first
-            if (_inStandby == _desiresStandby) { return; }
+            if (_inStandby == _desiresStandby) 
+            {
+                UpdatePowerDraw();
+                return; 
+            }
             // if we're in standby and no longer want to be, then exit standby mode
             else if (_inStandby && !_desiresStandby)
             {
                 _inStandby = false;
                 _ticksUntilStandby = 0;
-                UpdatePowerDraw();
             }
             // otherwise, if we want to go into standby but aren't currently
             else if (_desiresStandby && !_inStandby)
@@ -175,9 +180,9 @@ namespace LightsOut2.Comps
                 if (_ticksUntilStandby <= 0) 
                 { 
                     _inStandby = true;
-                    UpdatePowerDraw();
                 }
             }
+            UpdatePowerDraw();
         }
 
         /// <summary>
