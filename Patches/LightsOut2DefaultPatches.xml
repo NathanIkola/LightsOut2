@@ -21,6 +21,7 @@
                 </standbyInfluencers>
                 <standbyEffects>
                     <li>LightsOut2.StandbyEffects.OnOffPowerEffect</li>
+                    <li>LightsOut2.StandbyEffects.DisableGlowerEffect</li>
                 </standbyEffects>
                 <compClass>LightsOut2.Comps.StandbyComp</compClass>
                 <noDelay>False</noDelay>
