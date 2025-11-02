@@ -1,5 +1,6 @@
-﻿using Verse;
-using LightsOut2.Extensions;
+﻿using LightsOut2.Extensions;
+using System.Text;
+using Verse;
 
 namespace LightsOut2.Comps
 {
@@ -38,6 +39,26 @@ namespace LightsOut2.Comps
             // update the room and broadcast the room change
             RoomOccupancyTrackerGameComp.Instance.UpdateRoom(parent as Pawn, newRoom, _lastRoom);
             _lastRoom = newRoom;
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            StringBuilder sb = new StringBuilder(base.CompInspectStringExtra());
+
+            // show nothing unless we're in debug mode
+            if (!DebugSettings.ShowDevGizmos)
+            {
+                return sb.ToString().Trim();
+            }
+
+            if (parent is Pawn pawn)
+            {
+                sb.AppendLine($"Activates lights: {pawn.ActivatesLights()}");
+                sb.AppendLine($"Is room occupant: {pawn.CanBeOccupant()}");
+                sb.AppendLine($"Sleeping: {pawn.IsAsleep()}");
+            }
+
+            return sb.ToString().Trim();
         }
 
         /// <summary>

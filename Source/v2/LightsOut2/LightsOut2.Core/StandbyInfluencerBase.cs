@@ -24,6 +24,12 @@ namespace LightsOut2.Core
         public virtual void Initialize() { }
 
         /// <summary>
+        /// Allows the influencer to have setup code after spawning
+        /// </summary>
+        /// <param name="respawningAfterLoad">Whether or not this is respawning after loading</param>
+        public virtual void PostSpawnSetup(bool respawningAfterLoad) { }
+
+        /// <summary>
         /// Whether this influencer wishes to be in standby mode
         /// </summary>
         public abstract bool WantsToBeInStandby { get; }

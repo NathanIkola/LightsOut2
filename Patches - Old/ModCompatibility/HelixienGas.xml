@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--<?xml version="1.0" encoding="utf-8"?>
 <Patch>
-    <!-- Gas Lamp -->
+    <!- - Gas Lamp - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Vanilla Helixien Gas Expanded</li>
@@ -16,7 +16,7 @@
         </match>
     </Operation>
     
-    <!-- Gas Wall Lamp -->
+    <!- - Gas Wall Lamp - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Vanilla Helixien Gas Expanded</li>
@@ -32,7 +32,7 @@
         </match>
     </Operation>
 
-    <!-- Gas Flood Lamp -->
+    <!- - Gas Flood Lamp - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Vanilla Helixien Gas Expanded</li>
@@ -48,3 +48,4 @@
         </match>
     </Operation>
 </Patch>
+-->

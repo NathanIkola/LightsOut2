@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--<?xml version="1.0" encoding="utf-8"?>
 <Patch>
-    <!-- Sauna Heater -->
+    <!- - Sauna Heater - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Dubs Bad Hygiene</li>
@@ -16,7 +16,7 @@
         </match>
     </Operation>
     
-    <!-- Ceiling Fan -->
+    <!- - Ceiling Fan - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Dubs Bad Hygiene</li>
@@ -32,7 +32,7 @@
         </match>
     </Operation>
 
-    <!-- Ceiling Fan (Small) -->
+    <!- - Ceiling Fan (Small) - ->
     <Operation Class="PatchOperationFindMod">
         <mods>
             <li>Dubs Bad Hygiene</li>
@@ -48,3 +48,4 @@
         </match>
     </Operation>
 </Patch>
+-->

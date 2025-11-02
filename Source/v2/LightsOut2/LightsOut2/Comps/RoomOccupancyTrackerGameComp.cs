@@ -1,7 +1,7 @@
 ﻿using jl08lib.Logging;
 using LightsOut2.Extensions;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace LightsOut2.Comps
@@ -37,10 +37,26 @@ namespace LightsOut2.Comps
 
             Logger.Trace($"Updating room for pawn {pawn} ({oldRoom?.ID} -> {newRoom.ID})");
 
+            // attempt to get the last known room for this pawn
+            // sometimes pawns just... teleport for no good reason
+            Room lastRoom = _pawnRooms.GetValueOrDefault(pawn);
+            _pawnRooms[pawn] = newRoom;
 
             // mark the old room as needing re-evaluation since it might now be empty
-            FlagRoomForEvaluation(oldRoom);
-            SetOccupancy(newRoom, true);
+            if (oldRoom != null && !oldRoom.IsDoorway)
+            {
+                FlagRoomForEvaluation(oldRoom, pawn);
+            }
+            // if we have a different last known room, then mark that as dirty too
+            if (lastRoom != null && lastRoom != oldRoom)
+            {
+                FlagRoomForEvaluation(lastRoom, pawn);
+            }
+            // set the new room to be occupied
+            if (newRoom != null && !newRoom.IsDoorway)
+            {
+                SetOccupancy(newRoom, true);
+            }
         }
 
         /// <summary>
@@ -49,6 +65,7 @@ namespace LightsOut2.Comps
         public override void GameComponentUpdate()
         {
             base.GameComponentUpdate();
+            RemoveDespawnedPawns();
             EvaluateDirtyRooms();
 
             if (ShouldRunIntegrityChecks())
@@ -63,13 +80,36 @@ namespace LightsOut2.Comps
         public void EvaluateDirtyRooms()
         {
             // grab and reset the currently dirty rooms
-            HashSet<Room> roomsToEvaluate = _dirtyRooms;
-            _dirtyRooms = new HashSet<Room>();
+            Dictionary<Room, HashSet<Pawn>> roomsToEvaluate = _dirtyRooms;
+            _dirtyRooms = new Dictionary<Room, HashSet<Pawn>>();
 
-            foreach (Room room in roomsToEvaluate)
+            foreach(KeyValuePair<Room, HashSet<Pawn>> pair in roomsToEvaluate)
             {
-                bool isOccupied = IsRoomOccupied(room);
+                Room room = pair.Key;
+                HashSet<Pawn> pawnsToIgnore = pair.Value;
+                bool isOccupied = room.IsOccupied(pawnsToIgnore);
                 SetOccupancy(room, isOccupied);
+            }
+        }
+
+        /// <summary>
+        /// Marks the room as dirty so that it gets evaluated next tick
+        /// </summary>
+        /// <param name="room">The room to mark as dirty</param>
+        /// <param name="triggeringPawn">The pawn that triggered the evaluation (to ignore when checking)</param>
+        public void FlagRoomForEvaluation(Room room, Pawn triggeringPawn)
+        {
+            if (room is null) { return; }
+
+            if (!_dirtyRooms.ContainsKey(room))
+            {
+                _dirtyRooms[room] = new HashSet<Pawn>();
+            }
+
+            // don't add null pawns to the list, just leave it empty
+            if (triggeringPawn != null)
+            {
+                _dirtyRooms[room].Add(triggeringPawn);
             }
         }
 
@@ -81,8 +121,7 @@ namespace LightsOut2.Comps
         /// <returns>True if the status was found, false if no status existed</returns>
         public bool TryGetLastOccupancyStatus(Room room, out bool lastStatus)
         {
-            if (!_roomOccupancy.TryGetValue(room, out lastStatus)) { return false; }
-            return true;
+            return _roomOccupancy.TryGetValue(room, out lastStatus);
         }
 
         /// <summary>
@@ -108,40 +147,21 @@ namespace LightsOut2.Comps
                     TryGetLastOccupancyStatus(room, out bool isOccupied);
 
                     // if flicking lights is enabled then we have to check for occupants
-                    if (LightsOut2Settings.FlickingLightsEnabled())
+                    bool foundAnyOccupants = false;
+                    foreach (Pawn occupant in room.Occupants())
                     {
-                        bool foundAnyOccupants = false;
-                        foreach (Pawn occupant in RoomOccupants(room))
-                        {
-                            foundAnyOccupants = true;
-                            // if the room is occupied and we found an occupant, then it checks out
-                            if (isOccupied) { break; }
-                            // otherwise log a warning for the pawn that's not being counted
-                            LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be empty, but found Pawn '{occupant}'");
-                        }
-                        if (isOccupied && !foundAnyOccupants)
-                        {
-                            LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be occupied, but found no occupants");
-                        }
+                        foundAnyOccupants = true;
+                        // if the room is occupied and we found an occupant, then it checks out
+                        if (isOccupied) { break; }
+                        // otherwise log a warning for the pawn that's not being counted
+                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be empty, but found Pawn '{occupant}'");
                     }
-                    // otherwise all rooms should be occupied
-                    else if (!isOccupied)
+                    if (isOccupied && !foundAnyOccupants)
                     {
-                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was considered empty but light flicking is disabled");
+                        LightsOut2Mod.StaticLogger.Warning($"Integrity violation: Room {room} was expected to be occupied, but found no occupants");
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Marks the room as dirty so that it gets evaluated next tick
-        /// </summary>
-        /// <param name="room">The room to mark as dirty</param>
-        private void FlagRoomForEvaluation(Room room)
-        {
-            if (room is null || room.IsDoorway) { return; }
-
-            _dirtyRooms.Add(room);
         }
 
         /// <summary>
@@ -165,40 +185,18 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
-        /// Checks to see if the given room is occupied
+        /// Goes through the list of pawns and removes any that have been despawned
         /// </summary>
-        /// <param name="room">The room to check</param>
-        /// <param name="toIgnore">The pawn to ignore</param>
-        /// <returns>Whether or not the room is currently occupied</returns>
-        private bool IsRoomOccupied(Room room, Pawn toIgnore = null)
+        private void RemoveDespawnedPawns()
         {
-            if (room is null) { return false; }
-
-            foreach (Pawn occupant in RoomOccupants(room))
+            List<Pawn> pawns = _pawnRooms.Keys.ToList();
+            foreach(Pawn pawn in pawns)
             {
-                if (occupant != null && occupant != toIgnore) 
-                { 
-                    return true;
+                if (!pawn.Spawned)
+                {
+                    _pawnRooms.Remove(pawn);
                 }
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Retrieves the Pawns in the room that are considered occupants (may activate lights)
-        /// </summary>
-        /// <param name="room">The room to check</param>
-        /// <returns>The enumerable list of Pawns in the given Room</returns>
-        private IEnumerable<Pawn> RoomOccupants(Room room)
-        {
-            if (room is null) { yield break; }
-
-            // loop over all of the Things in the room
-            foreach(Thing thing in room.ContainedAndAdjacentThings)
-            {
-                if (thing is Pawn pawn && pawn.ActivatesLights()) { yield return pawn; }
-            }
-            yield break;
         }
 
         /// <summary>
@@ -209,12 +207,17 @@ namespace LightsOut2.Comps
         /// <summary>
         /// The set of rooms that were marked dirty last tick
         /// </summary>
-        private HashSet<Room> _dirtyRooms = new HashSet<Room>();
+        private Dictionary<Room, HashSet<Pawn>> _dirtyRooms = new Dictionary<Room, HashSet<Pawn>>();
 
         /// <summary>
         /// Cached evaluation results
         /// </summary>
         private readonly Dictionary<Room, bool> _roomOccupancy = new Dictionary<Room, bool>();
+
+        /// <summary>
+        /// A list of the last room we observed a Pawn to be in
+        /// </summary>
+        private readonly Dictionary<Pawn, Room> _pawnRooms = new Dictionary<Pawn, Room>();
 
         /// <summary>
         /// The frame counter used in integrity checking

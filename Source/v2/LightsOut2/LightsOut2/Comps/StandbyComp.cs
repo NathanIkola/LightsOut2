@@ -58,6 +58,19 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
+        /// Performs post-spawn setup tasks for this comp and its influencers
+        /// </summary>
+        /// <param name="respawningAfterLoad">Whether or not this is a respawn after loading</param>
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            {
+                influencer.PostSpawnSetup(respawningAfterLoad);
+            }
+        }
+
+        /// <summary>
         /// Exposes the data for this comp to allow saving/loading
         /// </summary>
         public override void PostExposeData()
@@ -91,13 +104,13 @@ namespace LightsOut2.Comps
         /// <returns>The debug inspection strings</returns>
         public override string CompInspectStringExtra()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(base.CompInspectStringExtra());
 
             // show nothing unless we're in debug mode
             if (!DebugSettings.ShowDevGizmos)
             {
                 if (InStandby) { sb.AppendLine("In standby"); }
-                return (base.CompInspectStringExtra() + sb.ToString()).Trim();
+                return sb.ToString().Trim();
             }
 
             sb.AppendLine("LightsOut2");

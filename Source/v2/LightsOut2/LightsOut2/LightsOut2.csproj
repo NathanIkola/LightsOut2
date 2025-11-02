@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyVersion>2025.7.20.3</AssemblyVersion>
-    <FileVersion>2025.7.20.3</FileVersion>
+    <AssemblyVersion>2025.11.2.34</AssemblyVersion>
+    <FileVersion>2025.11.2.34</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +15,9 @@
     <ProjectReference Include="..\jl08lib\jl08lib.csproj" />
     <ProjectReference Include="..\LightsOut2.Core\LightsOut2.Core.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call $(ProjectDir)..\..\..\post-build.cmd" />
+  </Target>
 
 </Project>
