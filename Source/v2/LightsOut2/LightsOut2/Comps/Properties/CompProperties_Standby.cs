@@ -10,11 +10,6 @@ namespace LightsOut2.Comps.Properties
     public class CompProperties_Standby : CompProperties
     {
         /// <summary>
-        /// Whether or not this thing is tagged as a light source
-        /// </summary>
-        public bool isLight = false;
-
-        /// <summary>
         /// If true, this will prevent the comp from delaying standby mode
         /// </summary>
         public bool noDelay = false;
@@ -23,5 +18,10 @@ namespace LightsOut2.Comps.Properties
         /// The list of standby influencers to use
         /// </summary>
         public List<Type> standbyInfluencers = new List<Type>();
+
+        /// <summary>
+        /// The list of standby effects to use
+        /// </summary>
+        public List<Type> standbyEffects = new List<Type>();
     }
 }

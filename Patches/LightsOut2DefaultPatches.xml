@@ -15,13 +15,15 @@
         <xpath>/Defs/ThingDef[not(normalize-space(translate(hasInteractionCell,'TRUE','true'))='true') and comps/li[@Class='CompProperties_Power' and basePowerConsumption>0] and comps/li[contains(translate(@Class, "GLOWER", "glower"), "glower")]]/comps</xpath>
         <value>
             <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
-                <isLight>True</isLight>
                 <standbyInfluencers>
                     <li>LightsOut2.StandbyInfluencers.KeepOnInfluencer</li>
                     <li>LightsOut2.StandbyInfluencers.EmptyRoomInfluencer</li>
                 </standbyInfluencers>
+                <standbyEffects>
+                    <li>LightsOut2.StandbyEffects.OnOffPowerEffect</li>
+                </standbyEffects>
                 <compClass>LightsOut2.Comps.StandbyComp</compClass>
-                <noDelay>True</noDelay>
+                <noDelay>False</noDelay>
             </li>
         </value>
     </Operation>
@@ -31,10 +33,13 @@
         <xpath>/Defs/ThingDef[hasInteractionCell and normalize-space(translate(hasInteractionCell,'TRUE','true'))='true' and comps/li[@Class='CompProperties_Power' and basePowerConsumption>0]]/comps</xpath>
         <value>
             <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
-                <isLight>False</isLight>
                 <standbyInfluencers>
                 </standbyInfluencers>
+                <standbyEffects>
+                    <li>LightsOut2.StandbyEffects.ReducePowerEffect</li>
+                </standbyEffects>
                 <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                <noDelay>True</noDelay>
             </li>
         </value>
     </Operation>
