@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call $(ProjectDir)..\..\..\post-build.cmd" />
+    <Exec Command="call $(ProjectDir)..\..\post-build.cmd" />
   </Target>
 
 </Project>

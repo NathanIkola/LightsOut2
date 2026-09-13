@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
+    <IsTestProject>true</IsTestProject>
     <TargetFramework>net472</TargetFramework>
     <AssemblyVersion>2025.11.2.0</AssemblyVersion>
     <FileVersion>2025.11.2.0</FileVersion>
