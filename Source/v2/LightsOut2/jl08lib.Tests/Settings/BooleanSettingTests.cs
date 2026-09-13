@@ -171,7 +171,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A field which should not be a setting
         /// </summary>
-        public static bool FieldNonSetting;
+        public static bool FieldNonSetting = default;
 
         /// <summary>
         /// A property which should be a setting

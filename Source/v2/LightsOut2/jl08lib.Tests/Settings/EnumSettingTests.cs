@@ -156,8 +156,9 @@ namespace jl08lib.Tests.Settings
             EnumForTest actualValue = prop.Get<EnumForTest>();
             Assert.AreEqual(expectedValue, actualValue, "The setting should get set to the default value on initial load");
         }
+    }
 
-        /// <summary>
+    /// <summary>
         /// An enum to test with
         /// </summary>
         internal enum EnumForTest
@@ -181,7 +182,7 @@ namespace jl08lib.Tests.Settings
             /// <summary>
             /// A field which should not be a setting
             /// </summary>
-            public static EnumForTest FieldNonSetting;
+            public static EnumForTest FieldNonSetting = default;
 
             /// <summary>
             /// A property which should be a setting
@@ -194,5 +195,4 @@ namespace jl08lib.Tests.Settings
             /// </summary>
             public static EnumForTest PropertyNonSetting { get; set; }
         }
-    }
 }

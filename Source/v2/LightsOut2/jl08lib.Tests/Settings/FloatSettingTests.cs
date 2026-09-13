@@ -222,7 +222,7 @@ namespace jl08lib.Tests.Settings
         /// <summary>
         /// A field which should not be a setting
         /// </summary>
-        public static float FieldNonSetting;
+        public static float FieldNonSetting = default;
 
         /// <summary>
         /// A property which should be a setting
