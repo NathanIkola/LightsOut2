@@ -32,15 +32,15 @@ namespace LightsOut2.Comps
         {
             // sanity checks
             if (!Logger.AssertNonNull(pawn, nameof(pawn))) { return; }
-            if (!Logger.AssertNonNull(newRoom, nameof(newRoom))) { return; }
             if (!Logger.Assert(newRoom != oldRoom, "New room is the same as old room")) { return; }
 
-            Logger.Trace($"Updating room for pawn {pawn} ({oldRoom?.ID} -> {newRoom.ID})");
+            Logger.Trace($"Updating room for pawn {pawn} ({oldRoom?.ID} -> {newRoom?.ID})");
 
             // attempt to get the last known room for this pawn
             // sometimes pawns just... teleport for no good reason
             Room lastRoom = _pawnRooms.GetValueOrDefault(pawn);
-            _pawnRooms[pawn] = newRoom;
+            if (newRoom is null) { _pawnRooms.Remove(pawn); }
+            else { _pawnRooms[pawn] = newRoom; }
 
             // mark the old room as needing re-evaluation since it might now be empty
             if (oldRoom != null && !oldRoom.IsDoorway)
@@ -56,6 +56,23 @@ namespace LightsOut2.Comps
             if (newRoom != null && !newRoom.IsDoorway)
             {
                 SetOccupancy(newRoom, true);
+            }
+        }
+
+        /// <summary>
+        /// Marks every room known to the tracker for reevaluation.
+        /// </summary>
+        public void MarkAllRoomsDirty()
+        {
+            Logger.Trace("Marking all rooms dirty");
+            foreach (Room room in _roomOccupancy.Keys.ToList())
+            {
+                FlagRoomForEvaluation(room, null);
+            }
+
+            foreach (Room room in _pawnRooms.Values)
+            {
+                FlagRoomForEvaluation(room, null);
             }
         }
 
@@ -194,6 +211,7 @@ namespace LightsOut2.Comps
             {
                 if (!pawn.Spawned)
                 {
+                    FlagRoomForEvaluation(_pawnRooms[pawn], null);
                     _pawnRooms.Remove(pawn);
                 }
             }

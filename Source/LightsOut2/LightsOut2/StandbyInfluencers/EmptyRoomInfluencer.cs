@@ -35,7 +35,7 @@ namespace LightsOut2.StandbyInfluencers
         /// <summary>
         /// This only wnats to be in standby mode if the room is empty
         /// </summary>
-        public override bool WantsToBeInStandby => _roomEmpty;
+        public override bool WantsToBeInStandby => LightsOut2Settings.FlickingLightsEnabled() && _roomEmpty;
 
         public override string DebugInspectString()
         {
@@ -74,7 +74,11 @@ namespace LightsOut2.StandbyInfluencers
             Room parentRoom = _parent.GetRoom();
             if (parentRoom is null) { return; }
 
-            RoomOccupancyTrackerGameComp.Instance.TryGetLastOccupancyStatus(parentRoom, out bool isOccupied);
+            bool isOccupied;
+            if (!RoomOccupancyTrackerGameComp.Instance.TryGetLastOccupancyStatus(parentRoom, out isOccupied))
+            {
+                isOccupied = parentRoom.IsOccupied();
+            }
             _roomEmpty = !isOccupied;
             LightsOut2Mod.StaticLogger.Trace($"EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}' set initial state to {(isOccupied ? "occupied" : "empty")} for Room ID {parentRoom.ID}");
             _hasSetInitialState = true;

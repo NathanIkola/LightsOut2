@@ -1,6 +1,8 @@
 ﻿using jl08lib.Logging;
 using jl08lib.Settings;
 using jl08lib.Settings.Attributes;
+using LightsOut2.Comps;
+using Verse;
 
 namespace LightsOut2
 {
@@ -169,7 +171,10 @@ namespace LightsOut2
         /// </summary>
         public static void MarkAllRoomsDirty()
         {
-            LightsOut2Mod.StaticLogger.Trace("Marking all rooms dirty");
+            if (Current.Game != null)
+            {
+                RoomOccupancyTrackerGameComp.Instance?.MarkAllRoomsDirty();
+            }
         }
     }
 }

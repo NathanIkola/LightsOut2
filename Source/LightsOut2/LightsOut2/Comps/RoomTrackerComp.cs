@@ -15,7 +15,8 @@ namespace LightsOut2.Comps
             if (parent is Pawn pawn)
             {
                 base.PostSpawnSetup(respawningAfterLoad);
-                RoomOccupancyTrackerGameComp.Instance.UpdateRoom(pawn, pawn.GetRoom(), null);
+                _lastRoom = pawn.GetRoom();
+                RoomOccupancyTrackerGameComp.Instance.UpdateRoom(pawn, _lastRoom, null);
             }
         }
 

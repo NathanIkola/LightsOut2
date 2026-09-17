@@ -43,6 +43,12 @@ namespace LightsOut2.StandbyEffects
         /// </summary>
         private void UpdateGlower()
         {
+            if (_glower is null)
+            {
+                LightsOut2Mod.StaticLogger.Warning($"DisableGlowerEffect on '{_parent.def.defName}' has no compatible glower component", true);
+                return;
+            }
+
             Map map = _glower.parent?.Map;
             if (map is null) return;
 
@@ -194,9 +200,15 @@ namespace LightsOut2.StandbyEffects
                 }
 
                 PropertyInfo shouldBeLitNowProp = GetShouldBeLitNowPropertyInfo(glowerClass);
-                MethodInfo original = shouldBeLitNowProp.GetMethod;
+                MethodInfo original = shouldBeLitNowProp?.GetMethod;
                 MethodInfo patch = typeof(ThingDef_PostLoad).GetMethod(nameof(ShouldBeLitNowPatch), Flags);
-                
+
+                if (original is null || patch is null)
+                {
+                    LightsOut2Mod.StaticLogger.Warning($"Skipping glower patch for '{glowerClass}': no usable boolean ShouldBeLitNow property was found", true);
+                    return;
+                }
+
                 LightsOut2Mod.Instance.Harmony.Patch(original, null, new HarmonyMethod(patch));
                 LightsOut2Mod.StaticLogger.Information($"Patching type \"{glowerClass}\" as a glower");
                 _patchedTypes.Add(glowerClass);
@@ -236,9 +248,12 @@ namespace LightsOut2.StandbyEffects
                 // otherwise brute force trying to find one
                 foreach(PropertyInfo propInfo in glowerClass.GetProperties(Flags))
                 {
-                    if (propInfo.Name.ToLower().Contains("shouldbelitnow") && prop.DeclaringType == prop.ReflectedType)
+                    if (propInfo.Name.ToLower().Contains("shouldbelitnow")
+                        && propInfo.DeclaringType == propInfo.ReflectedType
+                        && propInfo.PropertyType == typeof(bool)
+                        && propInfo.GetMethod != null)
                     {
-                        return prop;
+                        return propInfo;
                     }
                 }
 
@@ -261,6 +276,11 @@ namespace LightsOut2.StandbyEffects
 
                 PropertyInfo propertyInfo = from.GetProperty(propertyName, Flags);
                 if (propertyInfo is null || propertyInfo.DeclaringType != propertyInfo.ReflectedType)
+                {
+                    return null;
+                }
+
+                if (propertyInfo.PropertyType != typeof(bool) || propertyInfo.GetMethod is null)
                 {
                     return null;
                 }

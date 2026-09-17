@@ -30,7 +30,7 @@ namespace LightsOut2.Extensions
         {
             foreach (Pawn occupant in room.Occupants())
             {
-                if (occupant != null && occupant != toIgnore)
+                if (occupant != toIgnore && occupant?.ActivatesLights() == true)
                 {
                     return true;
                 }
