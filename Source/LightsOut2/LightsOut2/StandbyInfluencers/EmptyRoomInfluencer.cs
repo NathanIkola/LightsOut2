@@ -1,30 +1,45 @@
 ﻿using LightsOut2.Comps;
 using LightsOut2.Core;
 using LightsOut2.Extensions;
+using LightsOut2.Logic;
 using System.Text;
 using Verse;
 
 namespace LightsOut2.StandbyInfluencers
 {
     /// <summary>
-    /// Influencer that reacts to whether the room is empty or not
+    /// Influencer that reacts to whether the room is empty or all occupants are asleep.
     /// </summary>
     public sealed class EmptyRoomInfluencer : StandbyInfluencerBase
     {
+        /// <summary>
+        /// Creates an influencer for the supplied light.
+        /// </summary>
+        /// <param name="parent">The light whose room state controls standby.</param>
         public EmptyRoomInfluencer(ThingWithComps parent)
             : base(parent) { }
 
+        /// <summary>
+        /// Subscribes to changes in the room's cached occupancy state.
+        /// </summary>
         public override void Initialize()
         {
             base.Initialize();
             SubscribeToRoomChanges();
         }
 
+        /// <summary>
+        /// Flags the light's room so the tracker initializes its cached lighting state.
+        /// </summary>
+        /// <param name="respawningAfterLoad">Whether the light is respawning after a save was loaded.</param>
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             TrySetInitialState();
         }
 
+        /// <summary>
+        /// Unsubscribes from changes in the room's cached occupancy state.
+        /// </summary>
         public override void Dispose()
         {
             LightsOut2Mod.StaticLogger.Trace($"Disposing EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}'");
@@ -33,22 +48,33 @@ namespace LightsOut2.StandbyInfluencers
         }
 
         /// <summary>
-        /// This only wnats to be in standby mode if the room is empty
+        /// Determines whether this light should enter standby based on the room's cached occupant state and settings.
         /// </summary>
-        public override bool WantsToBeInStandby => LightsOut2Settings.FlickingLightsEnabled() && _roomEmpty;
+        public override bool WantsToBeInStandby
+        {
+            get
+            {
+                return _hasRoomState
+                    && (_roomState == RoomOccupancy.Empty && LightsOut2Settings.FlickLights
+                        || _roomState == RoomOccupancy.OccupiedWithSleepingPawns && LightsOut2Settings.FlickLightsForSleepingPawns);
+            }
+        }
 
+        /// <summary>
+        /// Provides the current cached room lighting state for inspection.
+        /// </summary>
+        /// <returns>A description of the cached state and applicable settings.</returns>
         public override string DebugInspectString()
         {
             StringBuilder sb = new StringBuilder(base.DebugInspectString());
-
             Room parentRoom = _parent.GetRoom();
             sb.AppendLine($"Room ID: {parentRoom.ID}");
-            sb.AppendLine($"Room empty: {_roomEmpty}");
-            if(!_roomEmpty)
+            sb.AppendLine($"Room empty: {_roomState == RoomOccupancy.Empty}");
+            if (_hasRoomState && _roomState != RoomOccupancy.Empty)
             {
                 StringBuilder occupants = new StringBuilder();
                 bool first = true;
-                foreach(Pawn pawn in parentRoom.Occupants())
+                foreach (Pawn pawn in parentRoom.Occupants())
                 {
                     if (!first) { occupants.Append(", "); }
                     occupants.Append($"{pawn}");
@@ -60,6 +86,9 @@ namespace LightsOut2.StandbyInfluencers
             return sb.ToString().Trim();
         }
 
+        /// <summary>
+        /// Retries initialization until the room has a cached occupancy state.
+        /// </summary>
         public override void Tick()
         {
             base.Tick();
@@ -67,67 +96,69 @@ namespace LightsOut2.StandbyInfluencers
         }
 
         /// <summary>
-        /// Attempts to set the initial state for the influencer
+        /// Initializes this influencer from the tracker's cached room state.
         /// </summary>
         public void TrySetInitialState()
         {
             Room parentRoom = _parent.GetRoom();
             if (parentRoom is null) { return; }
 
-            bool isOccupied;
-            if (!RoomOccupancyTrackerGameComp.Instance.TryGetLastOccupancyStatus(parentRoom, out isOccupied))
+            RoomOccupancyTrackerGameComp tracker = RoomOccupancyTrackerGameComp.Instance;
+            if (!tracker.TryGetRoomLightingState(parentRoom, out _))
             {
-                isOccupied = parentRoom.IsOccupied();
+                tracker.FlagRoomForEvaluation(parentRoom, null);
+                tracker.EvaluateDirtyRooms();
             }
-            _roomEmpty = !isOccupied;
-            LightsOut2Mod.StaticLogger.Trace($"EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}' set initial state to {(isOccupied ? "occupied" : "empty")} for Room ID {parentRoom.ID}");
-            _hasSetInitialState = true;
+
+            _hasRoomState = tracker.TryGetRoomLightingState(parentRoom, out _roomState);
+            LightsOut2Mod.StaticLogger.Trace($"EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}' set initial state to {_roomState} for Room ID {parentRoom.ID}");
+            _hasSetInitialState = _hasRoomState;
         }
 
         /// <summary>
-        /// A handler for when the room's occupancy changes
+        /// Handles a change to the room's cached occupancy state.
         /// </summary>
-        /// <param name="room">The room that experienced an occupancy change</param>
-        /// <param name="isOccupied">Whether or not it's currently occupied</param>
-        public void OnOccupancyChangedHandler(Room room, bool isOccupied)
+        /// <param name="room">The room whose state changed.</param>
+        /// <param name="state">The room's new state.</param>
+        public void OnRoomStateChanged(Room room, RoomOccupancy state)
         {
             if (room is null) { return; }
 
-            _hasSetInitialState = true; // if we haven't set it yet, there's no reason to try setting it now
+            _hasSetInitialState = true;
             if (!ShouldBeRunning())
             {
                 Dispose();
                 return;
             }
 
-            Room parentRoom = _parent.GetRoom();
-            if (room == parentRoom)
+            if (room == _parent.GetRoom())
             {
-                LightsOut2Mod.StaticLogger.Trace($"EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}' detected occupancy change to {(isOccupied ? "occupied" : "empty")} for Room ID {room.ID}");
-                _roomEmpty = !isOccupied;
+                LightsOut2Mod.StaticLogger.Trace($"EmptyRoomInfluencer on ThingComp with def '{_parent.def.defName}' detected room state change to {state} for Room ID {room.ID}");
+                _roomState = state;
+                _hasRoomState = true;
             }
         }
 
         /// <summary>
-        /// Subscribes this instance to room change events
+        /// Subscribes this instance to room state changes.
         /// </summary>
         private void SubscribeToRoomChanges()
         {
-            RoomOccupancyTrackerGameComp.Instance.OnOccupancyChanged += OnOccupancyChangedHandler;
+            RoomOccupancyTrackerGameComp.Instance.OnRoomStateChanged += OnRoomStateChanged;
         }
 
         /// <summary>
-        /// Unregisters this instance from the room change events
+        /// Unregisters this instance from room state changes.
         /// </summary>
         private void UnsubscribeFromRoomChanges()
         {
-            RoomOccupancyTrackerGameComp.Instance.OnOccupancyChanged -= OnOccupancyChangedHandler;
+            RoomOccupancyTrackerGameComp.Instance.OnRoomStateChanged -= OnRoomStateChanged;
         }
 
         /// <summary>
-        /// Determines if this influencer should still be influencing
+        /// Determines whether this influencer should continue running.
         /// </summary>
-        /// <returns>True if the state of the system looks good, false if not (e.x., the parent Thing is despawned)</returns>
+        /// <returns>True if the parent has not despawned; otherwise, false.</returns>
         private bool ShouldBeRunning()
         {
             // not performing integrity checking, just return the simple answer
@@ -152,18 +183,24 @@ namespace LightsOut2.StandbyInfluencers
         }
 
         /// <summary>
-        /// Whether the room that this light is in is currently empty
+        /// The latest cached state for the light's room.
         /// </summary>
-        private bool _roomEmpty;
+        private RoomOccupancy _roomState;
 
         /// <summary>
-        /// Whether or not the comp has successfully set up the initial state
+        /// Whether a room state has been received for the light's room.
+        /// </summary>
+        private bool _hasRoomState = false;
+
+        /// <summary>
+        /// Whether initial room state has been set.
         /// </summary>
         private bool _hasSetInitialState = false;
 
         /// <summary>
-        /// Whether or not this influencer's parent has been seen as spawned
+        /// Whether the parent has ever been observed as spawned.
         /// </summary>
         private bool _hasParentEverSpawned = false;
+
     }
 }

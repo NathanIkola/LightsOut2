@@ -1,3 +1,13 @@
 {
-  "dotnet.defaultSolution": "Source/LightsOut2/LightsOut2.sln"
+  "dotnet.defaultSolution": "Source/LightsOut2/LightsOut2.sln",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/bin": true,
+    "**/obj": true,
+    "**/TestResults": true
+  }
 }

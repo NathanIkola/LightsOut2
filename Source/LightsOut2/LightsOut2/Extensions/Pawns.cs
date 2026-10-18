@@ -5,19 +5,14 @@ namespace LightsOut2.Extensions
     public static class Pawns
     {
         /// <summary>
-        /// Whether or not the given pawn should activate lights based on config
+        /// Whether or not the given pawn counts as an occupant based on config
         /// </summary>
         /// <param name="pawn">The pawn to check</param>
-        /// <returns>Whether or not the pawn should activate lights</returns>
+        /// <returns>Whether or not the pawn counts as an occupant</returns>
         public static bool ActivatesLights(this Pawn pawn)
         {
             // pawn can't be considered an occupant at all, so ignore them
             if (!pawn.CanBeOccupant()) { return false; }
-
-            // we want to turn off lights for sleeping pawns and the pawn is asleep, ignore them
-            if (LightsOut2Settings.FlickLightsForSleepingPawns && pawn.IsAsleep()) { return false; }
-
-            // otherwise this pawn should flick lights
             return true;
         }
 

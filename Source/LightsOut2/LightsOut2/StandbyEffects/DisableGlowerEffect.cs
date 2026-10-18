@@ -50,7 +50,7 @@ namespace LightsOut2.StandbyEffects
             }
 
             Map map = _glower.parent?.Map;
-            if (map is null) return;
+            if (map is null) { return; }
 
             if (_glower is CompGlower vanillaGlower)
             {
@@ -61,7 +61,7 @@ namespace LightsOut2.StandbyEffects
             // otherwise try updating lit on a modded glower
             MethodInfo updateLit = GetUpdateLitMethod(_glower.GetType());
             LightsOut2Mod.StaticLogger.Assert(updateLit != null, $"Failed to find UpdateLit method on type: {_glower.GetType()}", true);
-            if (updateLit is null) return;
+            if (updateLit is null) { return; }
             try
             {
                 int paramLength = updateLit.GetParameters().Length;
@@ -91,7 +91,8 @@ namespace LightsOut2.StandbyEffects
         /// <returns>The <see cref="MethodInfo"/> associated with the UpdateLit method of this type</returns>
         private MethodInfo GetUpdateLitMethod(Type type)
         {
-            if (UpdateLitMethods.ContainsKey(type)) return UpdateLitMethods[type];
+            if (type is null) { return null; }
+            if (UpdateLitMethods.TryGetValue(type, out MethodInfo cached)) { return cached; }
             MethodInfo method = type.GetMethod("UpdateLit", Flags);
             UpdateLitMethods.Add(type, method);
             return method;
@@ -105,11 +106,11 @@ namespace LightsOut2.StandbyEffects
         private static ThingComp GetGlower(ThingWithComps thing)
         {
             ThingComp glower = thing.TryGetComp<CompGlower>();
-            if (glower != null) return glower;
+            if (glower != null) { return glower; }
 
             // try to get modded glowers
             foreach (ThingComp comp in thing.AllComps)
-                if (comp.GetType().Name.Contains("Glow")) return comp;
+                if (comp.GetType().Name.Contains("Glow")) { return comp; }
 
             return null;
         }
@@ -194,7 +195,7 @@ namespace LightsOut2.StandbyEffects
             {
                 // check to see if we need to patch this type
                 Type glowerClass = GetGlowerClass(def);
-                if (glowerClass is null || _patchedTypes.Contains(glowerClass))
+                if (glowerClass is null)
                 {
                     return;
                 }
@@ -209,9 +210,11 @@ namespace LightsOut2.StandbyEffects
                     return;
                 }
 
+                if (_patchedGetters.Contains(original)) { return; }
+
                 LightsOut2Mod.Instance.Harmony.Patch(original, null, new HarmonyMethod(patch));
                 LightsOut2Mod.StaticLogger.Information($"Patching type \"{glowerClass}\" as a glower");
-                _patchedTypes.Add(glowerClass);
+                _patchedGetters.Add(original);
             }
 
             /// <summary>
@@ -221,10 +224,10 @@ namespace LightsOut2.StandbyEffects
             /// <returns>The associated glower type</returns>
             public static Type GetGlowerClass(ThingDef def)
             {
-                if (def.comps is null) { return null; }
+                if (def?.comps is null) { return null; }
                 foreach (CompProperties props in def.comps)
                 {
-                    if (props.compClass.Name.Contains("Glow"))
+                    if (props?.compClass?.Name.Contains("Glow") == true)
                     {
                         return props.compClass;
                     }
@@ -239,53 +242,38 @@ namespace LightsOut2.StandbyEffects
             /// <returns>The property, or null if not found</returns>
             private static PropertyInfo GetShouldBeLitNowPropertyInfo(Type glowerClass)
             {
+                // ensure this type is actually a comp
+                if (!glowerClass.IsSubclassOf(typeof(ThingComp)))
+                {
+                    return null;
+                }
                 // most common ones first
-                PropertyInfo prop = TryGetDeclaredProperty("ShouldBeLitNow", glowerClass) 
-                    ?? TryGetDeclaredProperty("shouldBeLitNow", glowerClass) 
+                PropertyInfo prop = TryGetDeclaredProperty("ShouldBeLitNow", glowerClass)
+                    ?? TryGetDeclaredProperty("shouldBeLitNow", glowerClass)
                     ?? TryGetDeclaredProperty("_ShouldBeLitNow", glowerClass);
                 if (prop != null) { return prop; }
 
                 // otherwise brute force trying to find one
-                foreach(PropertyInfo propInfo in glowerClass.GetProperties(Flags))
+                foreach (PropertyInfo candidate in glowerClass.GetProperties(Flags))
                 {
-                    if (propInfo.Name.ToLower().Contains("shouldbelitnow")
-                        && propInfo.DeclaringType == propInfo.ReflectedType
-                        && propInfo.PropertyType == typeof(bool)
-                        && propInfo.GetMethod != null)
-                    {
-                        return propInfo;
-                    }
+                    if (candidate.Name.IndexOf("ShouldBeLitNow", StringComparison.OrdinalIgnoreCase) >= 0
+                        && candidate.DeclaringType == candidate.ReflectedType
+                        && candidate.PropertyType == typeof(bool)
+                        && candidate.GetMethod != null)
+                    { return candidate; }
                 }
-
-                // didn't find it
                 return null;
             }
 
-            /// <summary>
-            /// Attempts to get the property, but only if it's declared on this type
-            /// </summary>
-            /// <param name="propertyName">The property to get</param>
-            /// <param name="from">The type to get the property from</param>
-            /// <returns>Whether or not the property was retrieved</returns>
+            /// <summary>Finds a supported property declared directly on the supplied type.</summary>
+            /// <param name="propertyName">The property name to find.</param>
+            /// <param name="from">The type to inspect.</param>
+            /// <returns>The property when it has a boolean getter declared on the type.</returns>
             private static PropertyInfo TryGetDeclaredProperty(string propertyName, Type from)
             {
-                if (from is null)
-                {
-                    return null;
-                }
-
-                PropertyInfo propertyInfo = from.GetProperty(propertyName, Flags);
-                if (propertyInfo is null || propertyInfo.DeclaringType != propertyInfo.ReflectedType)
-                {
-                    return null;
-                }
-
-                if (propertyInfo.PropertyType != typeof(bool) || propertyInfo.GetMethod is null)
-                {
-                    return null;
-                }
-
-                return propertyInfo;
+                PropertyInfo property = from?.GetProperty(propertyName, Flags);
+                return property != null && property.DeclaringType == property.ReflectedType
+                    && property.PropertyType == typeof(bool) && property.GetMethod != null ? property : null;
             }
 
             /// <summary>
@@ -302,16 +290,13 @@ namespace LightsOut2.StandbyEffects
                 if (standbyComp is null) { return; }
 
                 // if the light is in standby, it shouldn't be lit
-                if (standbyComp.InStandby)
-                {
-                    __result = false;
-                }
+                if (standbyComp.InStandby) { __result = false; }
             }
 
             /// <summary>
-            /// A dictionary of the glowers that have been patched already
+            /// Getters that have already been patched.
             /// </summary>
-            private static HashSet<Type> _patchedTypes = new HashSet<Type>();
+            private static HashSet<MethodInfo> _patchedGetters = new HashSet<MethodInfo>();
         }
         #endregion
     }

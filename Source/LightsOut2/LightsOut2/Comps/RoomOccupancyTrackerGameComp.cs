@@ -1,11 +1,23 @@
 ﻿using jl08lib.Logging;
 using LightsOut2.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 using Verse;
+using LightsOut2.Logic;
 
 namespace LightsOut2.Comps
 {
+    /// <summary>
+    /// Connects the game independent occupancy algorithm to RimWorld rooms and pawns.
+    /// </summary>
+    internal sealed class RimWorldOccupancyState : OccupancyStateBase<Room, Pawn>
+    {
+        /// <inheritdoc />
+        protected override bool IsDoorway(Room room) => room.IsDoorway;
+
+        /// <inheritdoc />
+        protected override RoomOccupancy GetState(Room room, ISet<Pawn> ignoredPawns) => room.GetLightingState(ignoredPawns);
+    }
+
     /// <summary>
     /// A class that tracks the rooms that pawns are in
     /// </summary>
@@ -20,7 +32,11 @@ namespace LightsOut2.Comps
         /// Constructor required by the game to initialize the component
         /// </summary>
         /// <param name="_">The game this is being initialized for</param>
-        public RoomOccupancyTrackerGameComp(Game _) { }
+        public RoomOccupancyTrackerGameComp(Game _)
+        {
+            _occupancyState.Changed += InvokeOccupancyChangedHandler;
+            _occupancyState.StateChanged += InvokeRoomStateChangedHandler;
+        }
 
         /// <summary>
         /// Updates the room associated with the specified pawn
@@ -32,31 +48,8 @@ namespace LightsOut2.Comps
         {
             // sanity checks
             if (!Logger.AssertNonNull(pawn, nameof(pawn))) { return; }
-            if (!Logger.Assert(newRoom != oldRoom, "New room is the same as old room")) { return; }
-
             Logger.Trace($"Updating room for pawn {pawn} ({oldRoom?.ID} -> {newRoom?.ID})");
-
-            // attempt to get the last known room for this pawn
-            // sometimes pawns just... teleport for no good reason
-            Room lastRoom = _pawnRooms.GetValueOrDefault(pawn);
-            if (newRoom is null) { _pawnRooms.Remove(pawn); }
-            else { _pawnRooms[pawn] = newRoom; }
-
-            // mark the old room as needing re-evaluation since it might now be empty
-            if (oldRoom != null && !oldRoom.IsDoorway)
-            {
-                FlagRoomForEvaluation(oldRoom, pawn);
-            }
-            // if we have a different last known room, then mark that as dirty too
-            if (lastRoom != null && lastRoom != oldRoom)
-            {
-                FlagRoomForEvaluation(lastRoom, pawn);
-            }
-            // set the new room to be occupied
-            if (newRoom != null && !newRoom.IsDoorway)
-            {
-                SetOccupancy(newRoom, true);
-            }
+            _occupancyState.PawnMoved(pawn, newRoom, oldRoom);
         }
 
         /// <summary>
@@ -65,15 +58,7 @@ namespace LightsOut2.Comps
         public void MarkAllRoomsDirty()
         {
             Logger.Trace("Marking all rooms dirty");
-            foreach (Room room in _roomOccupancy.Keys.ToList())
-            {
-                FlagRoomForEvaluation(room, null);
-            }
-
-            foreach (Room room in _pawnRooms.Values)
-            {
-                FlagRoomForEvaluation(room, null);
-            }
+            _occupancyState.MarkAllRoomsDirty();
         }
 
         /// <summary>
@@ -96,17 +81,7 @@ namespace LightsOut2.Comps
         /// </summary>
         public void EvaluateDirtyRooms()
         {
-            // grab and reset the currently dirty rooms
-            Dictionary<Room, HashSet<Pawn>> roomsToEvaluate = _dirtyRooms;
-            _dirtyRooms = new Dictionary<Room, HashSet<Pawn>>();
-
-            foreach(KeyValuePair<Room, HashSet<Pawn>> pair in roomsToEvaluate)
-            {
-                Room room = pair.Key;
-                HashSet<Pawn> pawnsToIgnore = pair.Value;
-                bool isOccupied = room.IsOccupied(pawnsToIgnore);
-                SetOccupancy(room, isOccupied);
-            }
+            _occupancyState.EvaluateDirtyRooms();
         }
 
         /// <summary>
@@ -116,18 +91,7 @@ namespace LightsOut2.Comps
         /// <param name="triggeringPawn">The pawn that triggered the evaluation (to ignore when checking)</param>
         public void FlagRoomForEvaluation(Room room, Pawn triggeringPawn)
         {
-            if (room is null) { return; }
-
-            if (!_dirtyRooms.ContainsKey(room))
-            {
-                _dirtyRooms[room] = new HashSet<Pawn>();
-            }
-
-            // don't add null pawns to the list, just leave it empty
-            if (triggeringPawn != null)
-            {
-                _dirtyRooms[room].Add(triggeringPawn);
-            }
+            _occupancyState.MarkRoomDirty(room, triggeringPawn);
         }
 
         /// <summary>
@@ -138,7 +102,18 @@ namespace LightsOut2.Comps
         /// <returns>True if the status was found, false if no status existed</returns>
         public bool TryGetLastOccupancyStatus(Room room, out bool lastStatus)
         {
-            return _roomOccupancy.TryGetValue(room, out lastStatus);
+            return _occupancyState.TryGetOccupancyStatus(room, out lastStatus);
+        }
+
+        /// <summary>
+        /// Retrieves the cached lighting state for a room.
+        /// </summary>
+        /// <param name="room">The room to check.</param>
+        /// <param name="state">Receives the cached room state when one exists.</param>
+        /// <returns>True when a cached status exists; otherwise, false.</returns>
+        public bool TryGetRoomLightingState(Room room, out RoomOccupancy state)
+        {
+            return _occupancyState.TryGetRoomState(room, out state);
         }
 
         /// <summary>
@@ -159,7 +134,7 @@ namespace LightsOut2.Comps
             _framesSinceLastIntegrityCheck = 0;
             using(LightsOut2Mod.StaticLogger.OpenSection("Beginning RoomOccupancyTrackerGameComp integrity check", LogLevel.Trace))
             {
-                foreach (Room room in _roomOccupancy.Keys)
+                foreach (Room room in _occupancyState.KnownRooms)
                 {
                     TryGetLastOccupancyStatus(room, out bool isOccupied);
 
@@ -182,39 +157,37 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
-        /// Update the cached occupancy value. If the occupancy changes, fires off the event
-        /// </summary>
-        /// <param name="room">The room to update</param>
-        /// <param name="isOccupied">Whether or not it is currently occupied</param>
-        private void SetOccupancy(Room room, bool isOccupied)
-        {
-            if (room is null) { return; }
-
-            // if this room wasn't previously in the cache or the occupancy changed
-            if (!TryGetLastOccupancyStatus(room, out bool wasOccupied) || isOccupied != wasOccupied)
-            {
-                OnOccupancyChanged?.Invoke(room, isOccupied);
-            }
-
-            // if the room is occupied, then we don't need to evaluate it
-            if (isOccupied) { _dirtyRooms.Remove(room); }
-            _roomOccupancy[room] = isOccupied;
-        }
-
-        /// <summary>
         /// Goes through the list of pawns and removes any that have been despawned
         /// </summary>
         private void RemoveDespawnedPawns()
         {
-            List<Pawn> pawns = _pawnRooms.Keys.ToList();
-            foreach(Pawn pawn in pawns)
+            foreach(Pawn pawn in _occupancyState.TrackedPawns)
             {
                 if (!pawn.Spawned)
                 {
-                    FlagRoomForEvaluation(_pawnRooms[pawn], null);
-                    _pawnRooms.Remove(pawn);
+                    _occupancyState.Forget(pawn);
                 }
             }
+        }
+
+        /// <summary>
+        /// Invokes the handler for a room's occupancy changing
+        /// </summary>
+        /// <param name="room">The room that had the occupancy updated</param>
+        /// <param name="isOccupied">Whether or not the Room is currently occupied</param>
+        private void InvokeOccupancyChangedHandler(Room room, bool isOccupied)
+        {
+            OnOccupancyChanged?.Invoke(room, isOccupied);
+        }
+
+        /// <summary>
+        /// Publishes a room's new cached state to interested lights.
+        /// </summary>
+        /// <param name="room">The room whose state changed.</param>
+        /// <param name="state">The room's new state.</param>
+        private void InvokeRoomStateChangedHandler(Room room, RoomOccupancy state)
+        {
+            OnRoomStateChanged?.Invoke(room, state);
         }
 
         /// <summary>
@@ -223,19 +196,9 @@ namespace LightsOut2.Comps
         private static LoggerBase Logger => LightsOut2Mod.StaticLogger;
 
         /// <summary>
-        /// The set of rooms that were marked dirty last tick
+        /// The occupancy state for rooms and tracked pawns.
         /// </summary>
-        private Dictionary<Room, HashSet<Pawn>> _dirtyRooms = new Dictionary<Room, HashSet<Pawn>>();
-
-        /// <summary>
-        /// Cached evaluation results
-        /// </summary>
-        private readonly Dictionary<Room, bool> _roomOccupancy = new Dictionary<Room, bool>();
-
-        /// <summary>
-        /// A list of the last room we observed a Pawn to be in
-        /// </summary>
-        private readonly Dictionary<Pawn, Room> _pawnRooms = new Dictionary<Pawn, Room>();
+        private readonly RimWorldOccupancyState _occupancyState = new RimWorldOccupancyState();
 
         /// <summary>
         /// The frame counter used in integrity checking
@@ -256,5 +219,17 @@ namespace LightsOut2.Comps
         /// This may be invoked even if the occupancy hasn't changed (it will just be invoked with the existing value)
         /// </remarks>
         public event OccupancyUpdateHandler OnOccupancyChanged;
+
+        /// <summary>
+        /// Raised when a room's full occupancy state is first cached or changes.
+        /// </summary>
+        public event RoomStateUpdateHandler OnRoomStateChanged;
+
+        /// <summary>
+        /// Handles a change to a room's full occupancy state.
+        /// </summary>
+        /// <param name="room">The room whose state changed.</param>
+        /// <param name="state">The room's new state.</param>
+        public delegate void RoomStateUpdateHandler(Room room, RoomOccupancy state);
     }
 }

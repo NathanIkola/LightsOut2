@@ -1,15 +1,35 @@
 ﻿using System.Collections.Generic;
 using Verse;
 
+using LightsOut2.Logic;
+
 namespace LightsOut2.Extensions
 {
     public static class Rooms
     {
         /// <summary>
-        /// Retrieves the Pawns in the room that are considered occupants (may activate lights)
+        /// Determines the room's lighting state while ignoring specified pawns.
+        /// </summary>
+        /// <param name="room">The room to inspect.</param>
+        /// <param name="ignoredPawns">Pawns excluded from this state calculation.</param>
+        /// <returns>The room's empty, occupied-awake, or occupied-asleep state.</returns>
+        public static RoomOccupancy GetLightingState(this Room room, ISet<Pawn> ignoredPawns)
+        {
+            bool foundOccupant = false;
+            foreach (Pawn pawn in room.Occupants())
+            {
+                if (ignoredPawns != null && ignoredPawns.Contains(pawn)) { continue; }
+                foundOccupant = true;
+                if (!pawn.IsAsleep()) { return RoomOccupancy.OccupiedWithAwakePawn; }
+            }
+            return foundOccupant ? RoomOccupancy.OccupiedWithSleepingPawns : RoomOccupancy.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves the pawns in the room that count as occupants for light control.
         /// </summary>
         /// <param name="room">The room to check</param>
-        /// <returns>The enumerable list of Pawns in the given Room</returns>
+        /// <returns>The eligible occupants in the given room.</returns>
         public static IEnumerable<Pawn> Occupants(this Room room)
         {
             // loop over all of the Things in the room
@@ -44,7 +64,7 @@ namespace LightsOut2.Extensions
         /// <param name="room">The room to check</param>
         /// <param name="toIgnore">The list of pawns to ignore</param>
         /// <returns>Whether or not the room is currently occupied</returns>
-        public static bool IsOccupied(this Room room, HashSet<Pawn> toIgnore)
+        public static bool IsOccupied(this Room room, ISet<Pawn> toIgnore)
         {
             foreach(Pawn occupant in room.Occupants())
             {

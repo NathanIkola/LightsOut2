@@ -1,7 +1,9 @@
 ﻿using LightsOut2.Comps.Properties;
 using LightsOut2.Core;
+using LightsOut2.Logic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Verse;
 
@@ -15,7 +17,7 @@ namespace LightsOut2.Comps
         /// <summary>
         /// Whether or not this comp is currently in standby mode
         /// </summary>
-        public bool InStandby => _inStandby;
+        public bool InStandby => _transition.InStandby;
 
         /// <summary>
         /// Whether or not this comp desires to be in standby
@@ -23,7 +25,7 @@ namespace LightsOut2.Comps
         /// <remarks>
         /// This may not match InStandby because the standby may be delayed
         /// </remarks>
-        public bool DesiresStandby => _desiresStandby;
+        public bool DesiresStandby => _transition.DesiresStandby;
 
         /// <summary>
         /// Initializes the comp with the given properties
@@ -205,37 +207,10 @@ namespace LightsOut2.Comps
         /// </summary>
         private void ReevaluateStandby()
         {
-            // update the desired standby state
-            bool previouslyDesiredStandby = _desiresStandby;
-            _desiresStandby = WantsToBeInStandby();
-
-            // this is the most likely case, so rule it out first
-            if (_inStandby == _desiresStandby) { return; }
-
-            // if we're in standby and no longer want to be, then exit standby mode
-            if (_inStandby && !_desiresStandby)
+            int delayTicks = UsesDelayOff ? GenTicks.SecondsToTicks(LightsOut2Settings.LightDelaySeconds) : 0;
+            if (_transition.Tick(WantsToBeInStandby(), delayTicks))
             {
-                _inStandby = false;
-                _ticksUntilStandby = 0;
                 UpdateStandbyEffects();
-            }
-            // otherwise, if we want to go into standby but aren't currently
-            else if (_desiresStandby && !_inStandby)
-            {
-                // count down a tick until standby
-                // do this before setting the standby state so that we don't immediately subtract a tick
-                if (_ticksUntilStandby > 0) { _ticksUntilStandby -= 1; }
-
-                // if this is the tick we started wanting standby, then begin the transition
-                if (!previouslyDesiredStandby) { BeginStandbyTransition(); }
-
-                // detect when standby is ready to be enabled
-                // this happens after the transition in case a user sets the delay to 0
-                if (_ticksUntilStandby <= 0)
-                {
-                    _inStandby = true;
-                    UpdateStandbyEffects();
-                }
             }
         }
 
@@ -246,23 +221,7 @@ namespace LightsOut2.Comps
         public bool WantsToBeInStandby()
         {
             // if any of the influencers are active then we are not in standby mode
-            if (_standbyInfluencers.Any(influencer => influencer.BuildingIsActive))
-            {
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Starts transitioning to standby mode
-        /// </summary>
-        private void BeginStandbyTransition()
-        {
-            // lights need to respect the delay setting
-            if (UsesDelayOff)
-            {
-                _ticksUntilStandby = GenTicks.SecondsToTicks(LightsOut2Settings.LightDelaySeconds);
-            }
+            return _standbyInfluencers.All(influencer => influencer.WantsToBeInStandby);
         }
 
         /// <summary>
@@ -272,7 +231,7 @@ namespace LightsOut2.Comps
         {
             foreach(StandbyEffectBase effect in _standbyEffects)
             {
-                effect.UpdateStandby(_inStandby);
+                effect.UpdateStandby(InStandby);
             }
         }
 
@@ -311,17 +270,7 @@ namespace LightsOut2.Comps
         /// <summary>
         /// Whether or not this thing is currently in standby mode
         /// </summary>
-        private bool _inStandby = false;
-
-        /// <summary>
-        /// Whether or not this thing desires to be in standby mode
-        /// </summary>
-        private bool _desiresStandby = false;
-
-        /// <summary>
-        /// The number of ticks until this thing will be in standby mode
-        /// </summary>
-        private int _ticksUntilStandby = 0;
+        private readonly StandbyTransition _transition = new StandbyTransition();
 
         /// <summary>
         /// The list of influencers that will determine if this thing is in standby mode
