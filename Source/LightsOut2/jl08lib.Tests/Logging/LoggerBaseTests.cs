@@ -17,7 +17,7 @@ namespace jl08lib.Tests.Logging
             LoggerBase logger = new MockLogger();
 
             bool result = true;
-            Assert.ThrowsException<ErrorException>(() =>
+            Assert.ThrowsExactly<ErrorException>(() =>
                 result = logger.Assert(false, "False", false)
             );
         }

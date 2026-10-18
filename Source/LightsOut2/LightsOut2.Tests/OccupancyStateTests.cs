@@ -36,12 +36,12 @@ namespace LightsOut2.Tests
         public void MoveToAnotherRoomAndThenNullReconcilesBothRooms()
         {
             var state = new FakeOccupancyState();
-            state.PawnMoved("pawn", "A", null);
-            state.PawnMoved("pawn", "B", "A");
+            state.SimulatePawnMove("pawn", "A", null);
+            state.SimulatePawnMove("pawn", "B", "A");
             state.EvaluateDirtyRooms();
             Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool a) && !a);
             Assert.IsTrue(state.TryGetOccupancyStatus("B", out bool b) && b);
-            state.PawnMoved("pawn", null, "B");
+            state.SimulatePawnMove("pawn", null, "B");
             state.EvaluateDirtyRooms();
             Assert.IsTrue(state.TryGetOccupancyStatus("B", out b) && !b);
         }
@@ -53,8 +53,8 @@ namespace LightsOut2.Tests
         public void TeleportReevaluatesKnownAndReportedOldRooms()
         {
             var state = new FakeOccupancyState();
-            state.PawnMoved("pawn", "A", null);
-            state.PawnMoved("pawn", "C", "B");
+            state.SimulatePawnMove("pawn", "A", null);
+            state.SimulatePawnMove("pawn", "C", "B");
             state.EvaluateDirtyRooms();
             Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool a) && !a);
             Assert.IsTrue(state.TryGetOccupancyStatus("B", out bool b) && !b);
@@ -68,10 +68,9 @@ namespace LightsOut2.Tests
         public void OtherOccupantsRemainCounted()
         {
             var state = new FakeOccupancyState();
-            state.PawnMoved("one", "A", null);
-            state.PawnMoved("two", "A", null);
-            state.PawnMoved("one", null, "A");
-            state.Occupants["A"] = new HashSet<string> { "two" };
+            state.SimulatePawnMove("one", "A", null);
+            state.SimulatePawnMove("two", "A", null);
+            state.SimulatePawnMove("one", null, "A");
             state.EvaluateDirtyRooms();
             Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool occupied) && occupied);
         }
@@ -83,29 +82,27 @@ namespace LightsOut2.Tests
         public void ReturningPawnKeepsFormerRoomOccupied()
         {
             var state = new FakeOccupancyState();
-            state.PawnMoved("pawn", "A", null);
-            state.PawnMoved("pawn", "B", "A");
-            state.PawnMoved("pawn", "A", "B");
-            state.Occupants["A"] = new HashSet<string> { "pawn" };
+            state.SimulatePawnMove("pawn", "A", null);
+            state.SimulatePawnMove("pawn", "B", "A");
+            state.SimulatePawnMove("pawn", "A", "B");
             state.EvaluateDirtyRooms();
             Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool occupied) && occupied);
             Assert.IsTrue(state.EvaluatedRooms.Contains("A"));
         }
 
         /// <summary>
-        /// A pawn still present in a flagged room is not excluded from its occupancy check.
+        /// A pawn supplied when flagging a room is excluded from its occupancy check.
         /// </summary>
         [TestMethod]
-        public void FlaggedRoomStillCountsItsTriggeringPawn()
+        public void FlaggedRoomExcludesItsTriggeringPawn()
         {
             var state = new FakeOccupancyState();
-            state.PawnMoved("pawn", "A", null);
-            state.Occupants["A"] = new HashSet<string> { "pawn" };
+            state.SimulatePawnMove("pawn", "A", null);
             state.MarkRoomDirty("A", "pawn");
             state.EvaluateDirtyRooms();
 
-            Assert.IsFalse(state.LastIgnoredPawns.Contains("pawn"));
-            Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool occupied) && occupied);
+            Assert.IsTrue(state.LastIgnoredPawns.Contains("pawn"));
+            Assert.IsTrue(state.TryGetOccupancyStatus("A", out bool occupied) && !occupied);
         }
 
         /// <summary>
@@ -136,23 +133,62 @@ namespace LightsOut2.Tests
         }
     }
 
-    /// <summary>Supplies configurable room properties to occupancy tests.</summary>
+    /// <summary>
+    /// Supplies configurable room properties to occupancy tests.
+    /// </summary>
     internal sealed class FakeOccupancyState : OccupancyStateBase<string, string>
     {
-        /// <summary>Rooms treated as doorways.</summary>
+        /// <summary>
+        /// Rooms treated as doorways.
+        /// </summary>
         public HashSet<string> Doorways { get; } = new HashSet<string>();
 
-        /// <summary>Rooms considered occupied without inspecting occupants.</summary>
+        /// <summary>
+        /// Rooms considered occupied without inspecting occupants.
+        /// </summary>
         public HashSet<string> OccupiedRooms { get; } = new HashSet<string>();
 
-        /// <summary>Current occupants by room.</summary>
+        /// <summary>
+        /// Current occupants by room.
+        /// </summary>
         public Dictionary<string, HashSet<string>> Occupants { get; } = new Dictionary<string, HashSet<string>>();
 
-        /// <summary>The ignored pawns supplied to the most recent occupancy check.</summary>
+        /// <summary>
+        /// The ignored pawns supplied to the most recent occupancy check.
+        /// </summary>
         public HashSet<string> LastIgnoredPawns { get; } = new HashSet<string>();
 
-        /// <summary>Rooms passed to the occupancy check.</summary>
+        /// <summary>
+        /// Rooms passed to the occupancy check.
+        /// </summary>
         public List<string> EvaluatedRooms { get; } = new List<string>();
+
+        /// <summary>
+        /// Updates the fake room occupants and records the pawn's room transition.
+        /// </summary>
+        /// <param name="pawn">The pawn whose room is changing.</param>
+        /// <param name="newRoom">The pawn's destination room, or <see langword="null"/>.</param>
+        /// <param name="reportedOldRoom">The room reported as the pawn's former room.</param>
+        public void SimulatePawnMove(string pawn, string newRoom, string reportedOldRoom)
+        {
+            foreach (HashSet<string> occupants in Occupants.Values)
+            {
+                occupants.Remove(pawn);
+            }
+
+            if (newRoom != null)
+            {
+                if (!Occupants.TryGetValue(newRoom, out HashSet<string> occupants))
+                {
+                    occupants = new HashSet<string>();
+                    Occupants.Add(newRoom, occupants);
+                }
+
+                occupants.Add(pawn);
+            }
+
+            PawnMoved(pawn, newRoom, reportedOldRoom);
+        }
 
         /// <inheritdoc />
         protected override bool IsDoorway(string room) => Doorways.Contains(room);
@@ -182,3 +218,4 @@ namespace LightsOut2.Tests
         }
     }
 }
+

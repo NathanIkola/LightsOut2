@@ -15,10 +15,10 @@ namespace LightsOut2.Comps
             Dispose();
         }
 
-        public override void PostDeSpawn(Map map)
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
         {
             LightsOut2Mod.StaticLogger.Trace($"PostDeSpawn for {parent}");
-            base.PostDeSpawn(map);
+            base.PostDeSpawn(map, mode);
             Dispose();
         }
 

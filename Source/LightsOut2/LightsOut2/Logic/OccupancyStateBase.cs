@@ -32,12 +32,16 @@ namespace LightsOut2.Logic
     public abstract class OccupancyStateBase<TRoom, TPawn> 
         where TRoom : class where TPawn : class
     {
-        /// <summary>Determines whether the supplied room is a doorway.</summary>
+        /// <summary>
+        /// Determines whether the supplied room is a doorway.
+        /// </summary>
         /// <param name="room">The room to inspect.</param>
         /// <returns>Whether the room should be excluded from occupancy tracking.</returns>
         protected abstract bool IsDoorway(TRoom room);
 
-        /// <summary>Gets the current state for a room, excluding pawns being reconciled.</summary>
+        /// <summary>
+        /// Gets the current state for a room, excluding pawns being reconciled.
+        /// </summary>
         /// <param name="room">The room to inspect.</param>
         /// <param name="ignoredPawns">Pawns whose movement caused reevaluation.</param>
         /// <returns>The current state of the room.</returns>

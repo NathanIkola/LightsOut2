@@ -265,7 +265,9 @@ namespace LightsOut2.StandbyEffects
                 return null;
             }
 
-            /// <summary>Finds a supported property declared directly on the supplied type.</summary>
+            /// <summary>
+            /// Finds a supported property declared directly on the supplied type.
+            /// </summary>
             /// <param name="propertyName">The property name to find.</param>
             /// <param name="from">The type to inspect.</param>
             /// <returns>The property when it has a boolean getter declared on the type.</returns>
