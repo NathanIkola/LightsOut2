@@ -48,6 +48,20 @@ namespace LightsOut2.Logic
         protected abstract RoomOccupancy GetState(TRoom room, ISet<TPawn> ignoredPawns);
 
         /// <summary>
+        /// Determines whether a cached room should be removed during pruning.
+        /// </summary>
+        /// <param name="room">The cached room to inspect.</param>
+        /// <returns>True when the room should be removed.</returns>
+        protected abstract bool ShouldPruneRoom(TRoom room);
+
+        /// <summary>
+        /// Determines whether a cached pawn should be removed during pruning.
+        /// </summary>
+        /// <param name="pawn">The cached pawn to inspect.</param>
+        /// <returns>True when the pawn should be removed.</returns>
+        protected abstract bool ShouldPrunePawn(TPawn pawn);
+
+        /// <summary>
         /// Raised when a room first becomes known or changes occupancy.
         /// </summary>
         public event OccupancyChangedHandler Changed;
@@ -171,6 +185,37 @@ namespace LightsOut2.Logic
             foreach (TRoom room in _pawnRooms.Values.ToList()) 
             {
                 MarkRoomDirty(room, null);
+            }
+        }
+
+        /// <summary>
+        /// Removes cached entries that do not belong to the current state.
+        /// </summary>
+        public void Prune()
+        {
+            foreach (TRoom room in _roomStates.Keys.ToList())
+            {
+                if (ShouldPruneRoom(room)) { _roomStates.Remove(room); }
+            }
+
+            foreach (KeyValuePair<TPawn, TRoom> pair in _pawnRooms.ToList())
+            {
+                if (ShouldPrunePawn(pair.Key) || ShouldPruneRoom(pair.Value))
+                {
+                    _pawnRooms.Remove(pair.Key);
+                }
+            }
+
+            foreach (TRoom room in _dirty.Keys.ToList())
+            {
+                if (ShouldPruneRoom(room))
+                {
+                    _dirty.Remove(room);
+                    continue;
+                }
+
+                HashSet<TPawn> ignoredPawns = _dirty[room];
+                ignoredPawns.RemoveWhere(ShouldPrunePawn);
             }
         }
 

@@ -12,6 +12,18 @@ namespace LightsOut2.Comps
     internal sealed class RimWorldOccupancyState : OccupancyStateBase<Room, Pawn>
     {
         /// <inheritdoc />
+        protected override bool ShouldPruneRoom(Room room)
+        {
+            return room == null || room.Map == null || !Current.Game.Maps.Contains(room.Map);
+        }
+
+        /// <inheritdoc />
+        protected override bool ShouldPrunePawn(Pawn pawn)
+        {
+            return pawn == null || !pawn.Spawned || pawn.Map == null || !Current.Game.Maps.Contains(pawn.Map);
+        }
+
+        /// <inheritdoc />
         protected override bool IsDoorway(Room room) => room.IsDoorway;
 
         /// <inheritdoc />
@@ -39,6 +51,24 @@ namespace LightsOut2.Comps
         }
 
         /// <summary>
+        /// Removes stale references after the loaded game's pawns have spawned.
+        /// </summary>
+        public override void LoadedGame()
+        {
+            base.LoadedGame();
+            PrunePreviousGameState();
+        }
+
+        /// <summary>
+        /// Removes stale references after the new game's pawns have spawned.
+        /// </summary>
+        public override void StartedNewGame()
+        {
+            base.StartedNewGame();
+            PrunePreviousGameState();
+        }
+
+        /// <summary>
         /// Updates the room associated with the specified pawn
         /// </summary>
         /// <param name="pawn">The pawn to update the room for</param>
@@ -59,6 +89,15 @@ namespace LightsOut2.Comps
         {
             Logger.Trace("Marking all rooms dirty");
             _occupancyState.MarkAllRoomsDirty();
+        }
+
+        /// <summary>
+        /// Removes cached references that do not belong to the current game's maps and pawns.
+        /// </summary>
+        private void PrunePreviousGameState()
+        {
+            _framesSinceLastIntegrityCheck = 0;
+            _occupancyState.Prune();
         }
 
         /// <summary>

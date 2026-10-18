@@ -163,6 +163,12 @@ namespace LightsOut2.Tests
         /// </summary>
         public List<string> EvaluatedRooms { get; } = new List<string>();
 
+        /// <inheritdoc />
+        protected override bool ShouldPruneRoom(string room) => false;
+
+        /// <inheritdoc />
+        protected override bool ShouldPrunePawn(string pawn) => false;
+
         /// <summary>
         /// Updates the fake room occupants and records the pawn's room transition.
         /// </summary>
