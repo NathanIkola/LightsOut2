@@ -91,7 +91,7 @@ namespace jl08lib.Logging
         {
             Log(message, LogLevel.Warning, false);
         }
-        
+
         /// <summary>
         /// Logs a warning, optionally only once
         /// </summary>

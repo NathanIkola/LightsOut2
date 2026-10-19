@@ -159,40 +159,40 @@ namespace jl08lib.Tests.Settings
     }
 
     /// <summary>
-        /// An enum to test with
+    /// An enum to test with
+    /// </summary>
+    internal enum EnumForTest
+    {
+        Value0 = 0,
+        Value1 = 1,
+        Value2 = 2,
+    }
+
+    /// <summary>
+    /// A class that has enum settings set up for testing
+    /// </summary>
+    internal class EnumSettings
+    {
+        /// <summary>
+        /// A field which should be a setting
         /// </summary>
-        internal enum EnumForTest
-        {
-            Value0 = 0,
-            Value1 = 1,
-            Value2 = 2,
-        }
+        [EnumSetting("Test")]
+        public static EnumForTest FieldSetting;
 
         /// <summary>
-        /// A class that has enum settings set up for testing
+        /// A field which should not be a setting
         /// </summary>
-        internal class EnumSettings
-        {
-            /// <summary>
-            /// A field which should be a setting
-            /// </summary>
-            [EnumSetting("Test")]
-            public static EnumForTest FieldSetting;
+        public static EnumForTest FieldNonSetting = default;
 
-            /// <summary>
-            /// A field which should not be a setting
-            /// </summary>
-            public static EnumForTest FieldNonSetting = default;
+        /// <summary>
+        /// A property which should be a setting
+        /// </summary>
+        [EnumSetting("Test")]
+        public static EnumForTest PropertySetting { get; set; }
 
-            /// <summary>
-            /// A property which should be a setting
-            /// </summary>
-            [EnumSetting("Test")]
-            public static EnumForTest PropertySetting { get; set; }
-
-            /// <summary>
-            /// A property which should not be a setting
-            /// </summary>
-            public static EnumForTest PropertyNonSetting { get; set; }
-        }
+        /// <summary>
+        /// A property which should not be a setting
+        /// </summary>
+        public static EnumForTest PropertyNonSetting { get; set; }
+    }
 }

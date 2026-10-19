@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace jl08lib.Logging
+﻿namespace jl08lib.Logging
 {
     public class VerseLogger : LoggerBase
     {

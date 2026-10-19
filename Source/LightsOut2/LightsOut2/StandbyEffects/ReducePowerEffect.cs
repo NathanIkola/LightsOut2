@@ -24,7 +24,7 @@ namespace LightsOut2.StandbyEffects
         /// </summary>
         /// <param name="wasInStandby"></param>
         /// <param name="isInStandby"></param>
-        protected override void OnStandbyChanged(bool wasInStandby, bool isInStandby) 
+        protected override void OnStandbyChanged(bool wasInStandby, bool isInStandby)
         {
             // nothing to do on the change, everything is handled in the tick
         }
@@ -75,7 +75,7 @@ namespace LightsOut2.StandbyEffects
         /// <returns>The coefficient based on the current state</returns>
         private float ResourceDrawMultiplier()
         {
-            return _inStandby 
+            return _inStandby
                 // make sure the standby rate stays within the lower bound
                 // without clamping this >0, some buildings shown the "no power" icon and break pathing
                 ? Math.Max(StandbyDrawCoefficientDecimal(), LightsOut2Settings.MinDrawCoefficientDecimal)

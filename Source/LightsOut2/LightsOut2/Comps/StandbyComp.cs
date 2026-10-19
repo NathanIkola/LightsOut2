@@ -37,7 +37,7 @@ namespace LightsOut2.Comps
             if (props is CompProperties_Standby standbyProps)
             {
                 // create the standby influencers based on the properties
-                foreach(Type influencerType in standbyProps.standbyInfluencers)
+                foreach (Type influencerType in standbyProps.standbyInfluencers)
                 {
                     if (influencerType.IsSubclassOf(typeof(StandbyInfluencerBase)))
                     {
@@ -75,12 +75,12 @@ namespace LightsOut2.Comps
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            foreach (StandbyInfluencerBase influencer in _standbyInfluencers)
             {
                 influencer.PostSpawnSetup(respawningAfterLoad);
             }
 
-            foreach(StandbyEffectBase effect in _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 effect.PostSpawnSetup(respawningAfterLoad);
             }
@@ -92,12 +92,12 @@ namespace LightsOut2.Comps
         public override void PostExposeData()
         {
             base.PostExposeData();
-            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            foreach (StandbyInfluencerBase influencer in _standbyInfluencers)
             {
                 influencer.ExposeData();
             }
 
-            foreach(StandbyEffectBase effect in _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 effect.ExposeData();
             }
@@ -139,7 +139,7 @@ namespace LightsOut2.Comps
             sb.AppendLine($"  Desires standby: {DesiresStandby}");
             sb.AppendLine($"  Delays shutoff: {UsesDelayOff}");
 
-            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            foreach (StandbyInfluencerBase influencer in _standbyInfluencers)
             {
                 string debugString = influencer.DebugInspectString()?.Trim();
                 if (!string.IsNullOrWhiteSpace(debugString))
@@ -148,7 +148,7 @@ namespace LightsOut2.Comps
                 }
             }
 
-            foreach(StandbyEffectBase effect in _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 string debugString = effect.DebugInspectString()?.Trim();
                 if (!string.IsNullOrWhiteSpace(debugString))
@@ -172,12 +172,12 @@ namespace LightsOut2.Comps
         public override void Dispose()
         {
             base.Dispose();
-            foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
+            foreach (StandbyInfluencerBase influencer in _standbyInfluencers)
             {
                 influencer.Dispose();
             }
 
-            foreach(StandbyEffectBase effect in _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 effect.Dispose();
             }
@@ -229,7 +229,7 @@ namespace LightsOut2.Comps
         /// </summary>
         private void UpdateStandbyEffects()
         {
-            foreach(StandbyEffectBase effect in _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 effect.UpdateStandby(InStandby);
             }
@@ -251,7 +251,7 @@ namespace LightsOut2.Comps
         /// </summary>
         private void TickStandbyEffects()
         {
-            foreach (StandbyEffectBase effect in  _standbyEffects)
+            foreach (StandbyEffectBase effect in _standbyEffects)
             {
                 effect.Tick();
             }

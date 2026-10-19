@@ -266,7 +266,7 @@ namespace jl08lib.Settings.Exposed
         /// <param name="logger">The logger to use for errors</param>
         /// <param name="defaultValue">The default value to use for the setting</param>
         public SettingBase(Type type, string memberName, SettingAttributeBase attribute, LoggerBase logger, TSettingType defaultValue)
-            : base(type, memberName, attribute, logger) 
+            : base(type, memberName, attribute, logger)
         {
             _defaultValue = defaultValue;
             Set(_defaultValue);
@@ -295,7 +295,7 @@ namespace jl08lib.Settings.Exposed
         /// <summary>
         /// Allows getting the setting of the current generic type
         /// </summary>
-        /// <returns>The result of Get<TSettingType>()</returns>
+        /// <returns>The result of Get using TSettingType</returns>
         public TSettingType Get() { return Get<TSettingType>(); }
 
         /// <summary>

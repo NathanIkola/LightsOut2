@@ -161,7 +161,7 @@ namespace LightsOut2.Comps
         /// <returns>True if integrity checks should run, false otherwise</returns>
         private bool ShouldRunIntegrityChecks()
         {
-            return LightsOut2Settings.EnableIntegrityChecks 
+            return LightsOut2Settings.EnableIntegrityChecks
                 && ++_framesSinceLastIntegrityCheck >= LightsOut2Settings.FramesBetweenIntegrityChecks;
         }
 
@@ -171,7 +171,7 @@ namespace LightsOut2.Comps
         private void PerformIntegrityChecks()
         {
             _framesSinceLastIntegrityCheck = 0;
-            using(LightsOut2Mod.StaticLogger.OpenSection("Beginning RoomOccupancyTrackerGameComp integrity check", LogLevel.Trace))
+            using (LightsOut2Mod.StaticLogger.OpenSection("Beginning RoomOccupancyTrackerGameComp integrity check", LogLevel.Trace))
             {
                 foreach (Room room in _occupancyState.KnownRooms)
                 {
@@ -200,7 +200,7 @@ namespace LightsOut2.Comps
         /// </summary>
         private void RemoveDespawnedPawns()
         {
-            foreach(Pawn pawn in _occupancyState.TrackedPawns)
+            foreach (Pawn pawn in _occupancyState.TrackedPawns)
             {
                 if (!pawn.Spawned)
                 {

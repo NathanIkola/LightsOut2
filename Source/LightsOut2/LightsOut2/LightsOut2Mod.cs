@@ -30,7 +30,7 @@ namespace LightsOut2
         /// Initializes the mod
         /// </summary>
         /// <param name="content">The mod content</param>
-        public LightsOut2Mod(ModContentPack content) 
+        public LightsOut2Mod(ModContentPack content)
             : base(content, new FilteredVerseLogger(content.Name))
         {
             Settings = GetSettings<LightsOut2Settings>();

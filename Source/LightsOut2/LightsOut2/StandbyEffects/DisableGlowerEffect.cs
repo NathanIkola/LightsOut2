@@ -15,7 +15,7 @@ namespace LightsOut2.StandbyEffects
     public sealed class DisableGlowerEffect : StandbyEffectBase
     {
         #region main class
-        public DisableGlowerEffect(ThingWithComps parent) 
+        public DisableGlowerEffect(ThingWithComps parent)
             : base(parent) { }
 
         /// <summary>
@@ -110,7 +110,9 @@ namespace LightsOut2.StandbyEffects
 
             // try to get modded glowers
             foreach (ThingComp comp in thing.AllComps)
+            {
                 if (comp.GetType().Name.Contains("Glow")) { return comp; }
+            }
 
             return null;
         }

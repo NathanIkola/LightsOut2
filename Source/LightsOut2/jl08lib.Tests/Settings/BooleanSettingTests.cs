@@ -36,7 +36,7 @@ namespace jl08lib.Tests.Settings
                 nameof(BooleanSettings.FieldSetting),
                 nameof(BooleanSettings.PropertySetting),
             };
-            foreach(Tuple<SettingAttributeBase, SettingBase> setting in settings)
+            foreach (Tuple<SettingAttributeBase, SettingBase> setting in settings)
             {
                 string memberName = setting.Item2.MemberName;
                 bool isExpectedMember = expectedMembers.Contains(memberName);

@@ -24,7 +24,7 @@ namespace jl08lib.Settings.Exposed
                 _curValue = Get<float>();
                 _buffer = _curValue.ToString();
             }
-            
+
             settingListing.TextFieldNumericLabelled(_label, ref _curValue, ref _buffer, _tooltip);
         }
 

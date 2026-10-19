@@ -43,9 +43,9 @@ namespace jl08lib.Settings.Attributes
         public Type ShowInSettingsDelegateType { get; set; }
 
         public string ShowInSettingsDelegateName { get; set; }
-        
+
         public Type OnSettingChangedDelegateType { get; set; }
-        
+
         public string OnSettingChangedDelegateName { get; set; }
 
         /// <summary>

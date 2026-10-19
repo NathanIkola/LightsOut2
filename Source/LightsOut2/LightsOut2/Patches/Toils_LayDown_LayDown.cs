@@ -59,9 +59,9 @@ namespace LightsOut2.Patches
                 {
                     Pawn pawn = __result.actor;
                     bool? isSleepingBefore = pawn?.jobs.curDriver?.asleep;
-                    
+
                     tickAction();
-                    
+
                     bool? isSleepingAfter = pawn?.jobs.curDriver?.asleep;
                     // if the pawn isn't valid or their sleep state didn't change, ignore it
                     if (isSleepingBefore == isSleepingAfter || !pawn.CanBeOccupant()) { return; }

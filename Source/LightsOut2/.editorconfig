@@ -1,0 +1,30 @@
+root = true
+
+[*.cs]
+# Remove unused using directives with `dotnet format`.
+dotnet_diagnostic.IDE0005.severity = warning
+
+# Require braces around single statements.
+csharp_prefer_braces = true
+dotnet_diagnostic.IDE0011.severity = warning
+
+# Require private fields to use _camelCase.
+dotnet_naming_rule.private_fields_should_be_underscore_camel_case.severity = warning
+dotnet_naming_rule.private_fields_should_be_underscore_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_underscore_camel_case.style = underscore_camel_case
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# Require public methods and properties to use PascalCase.
+dotnet_naming_rule.public_methods_and_properties_should_be_pascal_case.severity = warning
+dotnet_naming_rule.public_methods_and_properties_should_be_pascal_case.symbols = public_methods_and_properties
+dotnet_naming_rule.public_methods_and_properties_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_symbols.public_methods_and_properties.applicable_kinds = method, property
+dotnet_naming_symbols.public_methods_and_properties.applicable_accessibilities = public
+
+dotnet_naming_style.pascal_case.capitalization = pascal_case

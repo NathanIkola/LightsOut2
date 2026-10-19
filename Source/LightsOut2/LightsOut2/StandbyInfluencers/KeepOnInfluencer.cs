@@ -21,7 +21,7 @@ namespace LightsOut2.StandbyInfluencers
         public override void ExposeData()
         {
             base.ExposeData();
-            
+
             bool keepOn = _keepOnGizmo.KeepOn;
             Scribe_Values.Look(ref keepOn, "KeepOn");
             _keepOnGizmo.KeepOn = keepOn;

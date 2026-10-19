@@ -66,7 +66,7 @@ namespace LightsOut2.Extensions
         /// <returns>Whether or not the room is currently occupied</returns>
         public static bool IsOccupied(this Room room, ISet<Pawn> toIgnore)
         {
-            foreach(Pawn occupant in room.Occupants())
+            foreach (Pawn occupant in room.Occupants())
             {
                 if (occupant is null) { continue; }
                 if (toIgnore is null || !toIgnore.Contains(occupant))

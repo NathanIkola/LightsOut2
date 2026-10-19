@@ -23,13 +23,13 @@ namespace LightsOut2.Logic
         /// </summary>
         OccupiedWithSleepingPawns
     }
-    
+
     /// <summary>
     /// Stores room occupancy and reconciles rooms affected by pawn movement.
     /// </summary>
     /// <typeparam name="TRoom">The room identity type.</typeparam>
     /// <typeparam name="TPawn">The pawn identity type.</typeparam>
-    public abstract class OccupancyStateBase<TRoom, TPawn> 
+    public abstract class OccupancyStateBase<TRoom, TPawn>
         where TRoom : class where TPawn : class
     {
         /// <summary>
@@ -128,7 +128,7 @@ namespace LightsOut2.Logic
             // either set the new room for the pawn or remove them entirely
             if (newRoom is null) { _pawnRooms.Remove(pawn); }
             else { _pawnRooms[pawn] = newRoom; }
-            
+
             MarkRoomDirty(reportedOldRoom, pawn);
             // if we did miss a transition, then mark the last known room dirty as well
             if (knownOldRoom != reportedOldRoom)
@@ -182,7 +182,7 @@ namespace LightsOut2.Logic
                 MarkRoomDirty(room, null);
             }
 
-            foreach (TRoom room in _pawnRooms.Values.ToList()) 
+            foreach (TRoom room in _pawnRooms.Values.ToList())
             {
                 MarkRoomDirty(room, null);
             }
@@ -274,7 +274,7 @@ namespace LightsOut2.Logic
         /// </summary>
         /// <param name="pawn">The pawn to look up the current room for</param>
         /// <param name="currentRoom">The pawn's current room, or null if not found</param>
-        /// <returns><see cref="true"/> if a room was found, <see cref="false"/> otherwise</returns>
+        /// <returns><see langword="true"/> if a room was found, <see langword="false"/> otherwise</returns>
         private bool TryGetCurrentRoom(TPawn pawn, out TRoom currentRoom)
         {
             return _pawnRooms.TryGetValue(pawn, out currentRoom);

@@ -30,7 +30,7 @@ namespace jl08lib.Settings.Exposed
 
             _enumOptions = new Dictionary<int, EnumOptionData>();
             // build out the options from the enum values
-            foreach(int value in Enum.GetValues(enumType))
+            foreach (int value in Enum.GetValues(enumType))
             {
                 EnumOptionData displayData = GetDisplayData(enumType, value);
                 _enumOptions.Add(value, displayData);
@@ -63,7 +63,7 @@ namespace jl08lib.Settings.Exposed
             {
                 caption = valueName;
             }
-            
+
             return new EnumOptionData()
             {
                 Caption = caption,
@@ -77,7 +77,7 @@ namespace jl08lib.Settings.Exposed
             if (settingListing.ButtonTextLabeledPct(_label, selectedOption.Caption, 0.6f, TextAnchor.MiddleLeft, null, _tooltip))
             {
                 List<FloatMenuOption> menuOptions = new List<FloatMenuOption>();
-                foreach(KeyValuePair<int, EnumOptionData> option in _enumOptions)
+                foreach (KeyValuePair<int, EnumOptionData> option in _enumOptions)
                 {
                     EnumOptionData optionData = option.Value;
                     menuOptions.Add(new FloatMenuOption(optionData.Caption, () =>

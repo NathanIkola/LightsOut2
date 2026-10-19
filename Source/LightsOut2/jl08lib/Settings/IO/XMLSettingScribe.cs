@@ -33,16 +33,16 @@ namespace jl08lib.Settings.IO
             XElement element = _document.Root.Element(settingKey);
             // if the value is equal to the default, just remove it entirely to keep sizes down
             if (!forceSave && value.Equals(defaultValue)) { element?.Remove(); }
-            else 
+            else
             {
                 // if the element didn't exist but should, create it
-                if (element is null) 
-                { 
+                if (element is null)
+                {
                     element = new XElement(settingKey);
                     _document.Root.Add(element);
                 }
                 // update the value
-                element.SetValue(value); 
+                element.SetValue(value);
             }
         }
 

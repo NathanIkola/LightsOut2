@@ -1,6 +1,5 @@
 ﻿using jl08lib.Logging;
 using jl08lib.Settings.Attributes;
-using jl08lib.Settings.Attributes.Data;
 using jl08lib.Settings.Exposed;
 using System;
 using System.Collections.Generic;

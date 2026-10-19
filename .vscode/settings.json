@@ -1,5 +1,12 @@
 {
   "dotnet.defaultSolution": "Source/LightsOut2/LightsOut2.sln",
+  "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
+  "[csharp]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

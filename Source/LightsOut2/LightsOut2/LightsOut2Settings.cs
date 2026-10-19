@@ -146,7 +146,7 @@ namespace LightsOut2
         /// <summary>
         /// The mod's package ID
         /// </summary>
-        private const string PackageId = "juanlopez2008.lightsout2";
+        public const string PackageId = "juanlopez2008.lightsout2";
 
         /// <summary>
         /// Whether or not light flicking is enabled

@@ -7,7 +7,7 @@ namespace LightsOut2.StandbyEffects
     /// </summary>
     public sealed class OnOffPowerEffect : ReducePowerEffect
     {
-        public OnOffPowerEffect(ThingWithComps parent) 
+        public OnOffPowerEffect(ThingWithComps parent)
             : base(parent) { }
 
         /// <summary>

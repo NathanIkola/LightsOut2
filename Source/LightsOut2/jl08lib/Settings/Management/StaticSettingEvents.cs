@@ -1,6 +1,4 @@
-﻿using jl08lib.Logging;
-
-namespace jl08lib.Settings.Management
+﻿namespace jl08lib.Settings.Management
 {
     public static class StaticSettingEvents
     {
