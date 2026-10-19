@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Pawns -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[@ParentName="BasePawn"]/comps</xpath>
+        <value>
+            <li>
+                <compClass>LightsOut2.Comps.RoomTrackerComp</compClass>
+            </li>
+        </value>
+    </Operation>
+</Patch>

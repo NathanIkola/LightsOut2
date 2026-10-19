@@ -32,7 +32,7 @@ LightsOut 2 is a RimWorld mod. The repository root is the installable mod layout
 
 ## Runtime flow
 
-1. `Patches/LightsOut2DefaultPatches.xml` attaches `RoomTrackerComp` to pawns. It also adds `StandbyComp` to eligible powered lights and powered interaction-cell buildings, selecting their influencer and effect types.
+1. `Patches/PawnRoomTracking.xml` attaches `RoomTrackerComp` to pawns. `Patches/PoweredLights.xml` adds `StandbyComp` to eligible powered lights. `Patches/PoweredInteractionBuildings.xml` configures eligible powered interaction-cell buildings and the vanilla autodoor for standby.
 2. Room tracker and game component classes observe pawn room occupancy. `RoomOccupancyTrackerGameComp` and `RoomTrackerComp` coordinate room changes and reevaluation; `TickerGameComp`/`TickingCompBase` provide scheduled ticking.
 3. `StandbyComp` combines configured influencers (such as `EmptyRoomInfluencer` and `KeepOnInfluencer`) to decide when a building desires standby, with configured delay behavior.
 4. Effects apply that state: `OnOffPowerEffect` and `DisableGlowerEffect` control lights; `ReducePowerEffect` adjusts power draw for other devices. `KeepOnGizmo` lets a player prevent a building from entering standby.
@@ -50,7 +50,7 @@ LightsOut 2 is a RimWorld mod. The repository root is the installable mod layout
 | Task | Start here |
 | --- | --- |
 | Mod metadata and supported game version | `About/About.xml`, `loadFolders.xml` |
-| Which game defs get mod components | `Patches/LightsOut2DefaultPatches.xml` |
+| Which game defs get mod components | `Patches/PawnRoomTracking.xml`, `Patches/PoweredLights.xml`, `Patches/PoweredInteractionBuildings.xml` |
 | Settings and defaults | `Source/LightsOut2/LightsOut2/LightsOut2Settings.cs` |
 | Room occupancy and light decisions | `Source/LightsOut2/LightsOut2/Comps/` |
 | Standby policy and effects | `Source/LightsOut2/LightsOut2/StandbyInfluencers/`, `StandbyEffects/`, and `LightsOut2.Core/` |

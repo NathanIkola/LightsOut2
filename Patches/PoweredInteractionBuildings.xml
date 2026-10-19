@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Benches (interaction cell, consumes power) -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[hasInteractionCell and normalize-space(translate(hasInteractionCell,'TRUE','true'))='true' and comps/li[@Class='CompProperties_Power' and basePowerConsumption>0]]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <standbyInfluencers>
+                </standbyInfluencers>
+                <standbyEffects>
+                    <li>LightsOut2.StandbyEffects.ReducePowerEffect</li>
+                </standbyEffects>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                <noDelay>True</noDelay>
+            </li>
+        </value>
+    </Operation>
+
+    <!-- Vanilla autodoor -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="Autodoor" and not(comps/li[@Class="LightsOut2.Comps.Properties.CompProperties_Standby"])]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <standbyInfluencers>
+                    <li>LightsOut2.StandbyInfluencers.AutodoorOpenInfluencer</li>
+                </standbyInfluencers>
+                <standbyEffects>
+                    <li>LightsOut2.StandbyEffects.ReducePowerEffect</li>
+                </standbyEffects>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                <noDelay>True</noDelay>
+            </li>
+        </value>
+    </Operation>
+
+</Patch>

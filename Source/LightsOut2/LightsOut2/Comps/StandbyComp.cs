@@ -141,7 +141,7 @@ namespace LightsOut2.Comps
 
             foreach(StandbyInfluencerBase influencer in _standbyInfluencers)
             {
-                string debugString = influencer.DebugInspectString().Trim();
+                string debugString = influencer.DebugInspectString()?.Trim();
                 if (!string.IsNullOrWhiteSpace(debugString))
                 {
                     sb.AppendLine($"  {debugString}");
@@ -150,7 +150,7 @@ namespace LightsOut2.Comps
 
             foreach(StandbyEffectBase effect in _standbyEffects)
             {
-                string debugString = effect.DebugInspectString().Trim();
+                string debugString = effect.DebugInspectString()?.Trim();
                 if (!string.IsNullOrWhiteSpace(debugString))
                 {
                     sb.AppendLine($"  {debugString}");
