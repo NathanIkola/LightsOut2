@@ -6,6 +6,7 @@
         <value>
             <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
                 <standbyInfluencers>
+                    <li>LightsOut2.StandbyInfluencers.InUseInfluencer</li>
                 </standbyInfluencers>
                 <standbyEffects>
                     <li>LightsOut2.StandbyEffects.ReducePowerEffect</li>
@@ -33,4 +34,20 @@
         </value>
     </Operation>
 
+    <!-- Vanilla televisions -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="TubeTelevision" or defName="FlatscreenTelevision" or defName="MegascreenTelevision"]/comps</xpath>
+        <value>
+            <li Class="LightsOut2.Comps.Properties.CompProperties_Standby">
+                <standbyInfluencers>
+                    <li>LightsOut2.StandbyInfluencers.InUseInfluencer</li>
+                </standbyInfluencers>
+                <standbyEffects>
+                    <li>LightsOut2.StandbyEffects.ReducePowerEffect</li>
+                </standbyEffects>
+                <compClass>LightsOut2.Comps.StandbyComp</compClass>
+                <noDelay>True</noDelay>
+            </li>
+        </value>
+    </Operation>
 </Patch>

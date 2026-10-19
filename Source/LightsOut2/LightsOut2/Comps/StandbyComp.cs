@@ -28,6 +28,19 @@ namespace LightsOut2.Comps
         public bool DesiresStandby => _transition.DesiresStandby;
 
         /// <summary>
+        /// Tries to retrieve the first standby influencer of the requested type.
+        /// </summary>
+        /// <typeparam name="TInfluencer">The influencer type to retrieve.</typeparam>
+        /// <param name="influencer">The matching influencer, if one is attached.</param>
+        /// <returns>True if a matching influencer was found; otherwise, false.</returns>
+        public bool TryGetInfluencer<TInfluencer>(out TInfluencer influencer)
+            where TInfluencer : StandbyInfluencerBase
+        {
+            influencer = _standbyInfluencers.OfType<TInfluencer>().FirstOrDefault();
+            return influencer != null;
+        }
+
+        /// <summary>
         /// Initializes the comp with the given properties
         /// </summary>
         /// <param name="props">The properties</param>
