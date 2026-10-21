@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug RimWorld",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build and deploy LightsOut2",
+      "program": "C:/Program Files (x86)/Steam/steamapps/common/RimWorld/RimWorld.exe",
+      "cwd": "C:/Program Files (x86)/Steam/steamapps/common/RimWorld"
+    }
+  ]
+}

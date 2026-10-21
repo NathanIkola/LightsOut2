@@ -28,7 +28,7 @@ namespace jl08lib
             : base(content)
         {
             Logger = logger;
-            Log.Message($"Initializing {content.Name}");
+            Log.Message($"Initializing {content.Name} v{GetType().Assembly.GetName().Version}");
 
             // do Harmony patching
             Harmony = new Harmony(content.Name);

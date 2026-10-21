@@ -9,7 +9,7 @@ mkdir "../../../Assemblies"
 echo f | xcopy /f /Y "bin/Debug/net10.0/LightsOut2.dll" "../../../Assemblies/LightsOut2.dll"
 echo f | xcopy /f /Y "bin/Debug/net10.0/LightsOut2.Core.dll" "../../../Assemblies/LightsOut2.Core.dll"
 echo f | xcopy /f /Y "bin/Debug/net10.0/jl08lib.dll" "../../../Assemblies/jl08lib.dll"
-
-:: Pop up to the Source directory and execute the custom post-build if it's present
-cd ../..
-if exist "post-build-custom.cmd" ( call post-build-custom.cmd )
+:: Copy portable symbols so VS Code can bind breakpoints in the deployed mod
+echo f | xcopy /f /Y "bin/Debug/net10.0/LightsOut2.pdb" "../../../Assemblies/LightsOut2.pdb"
+echo f | xcopy /f /Y "bin/Debug/net10.0/LightsOut2.Core.pdb" "../../../Assemblies/LightsOut2.Core.pdb"
+echo f | xcopy /f /Y "bin/Debug/net10.0/jl08lib.pdb" "../../../Assemblies/jl08lib.pdb"
